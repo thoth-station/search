@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/Gkrumbach07/thoth-search/static/css/main.6dea0f05.chunk.css",
+    "main.js": "/Gkrumbach07/thoth-search/static/js/main.131ca7a4.chunk.js",
+    "main.js.map": "/Gkrumbach07/thoth-search/static/js/main.131ca7a4.chunk.js.map",
+    "runtime-main.js": "/Gkrumbach07/thoth-search/static/js/runtime-main.ac323f3c.js",
+    "runtime-main.js.map": "/Gkrumbach07/thoth-search/static/js/runtime-main.ac323f3c.js.map",
+    "static/js/2.40642ed0.chunk.js": "/Gkrumbach07/thoth-search/static/js/2.40642ed0.chunk.js",
+    "static/js/2.40642ed0.chunk.js.map": "/Gkrumbach07/thoth-search/static/js/2.40642ed0.chunk.js.map",
+    "static/js/3.e962e539.chunk.js": "/Gkrumbach07/thoth-search/static/js/3.e962e539.chunk.js",
+    "static/js/3.e962e539.chunk.js.map": "/Gkrumbach07/thoth-search/static/js/3.e962e539.chunk.js.map",
+    "index.html": "/Gkrumbach07/thoth-search/index.html",
+    "static/css/main.6dea0f05.chunk.css.map": "/Gkrumbach07/thoth-search/static/css/main.6dea0f05.chunk.css.map",
+    "static/js/2.40642ed0.chunk.js.LICENSE.txt": "/Gkrumbach07/thoth-search/static/js/2.40642ed0.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.ac323f3c.js",
+    "static/js/2.40642ed0.chunk.js",
+    "static/css/main.6dea0f05.chunk.css",
+    "static/js/main.131ca7a4.chunk.js"
+  ]
+}
