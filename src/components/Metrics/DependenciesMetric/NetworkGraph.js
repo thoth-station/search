@@ -2,26 +2,18 @@
 import React, { useEffect, useRef } from "react";
 
 // utils and configs
-import { recurseToRoot } from "../utils/recurseToRoot"
-import { options } from "../configs/networkOptions"
+import { recurseToRoot } from "utils/recurseToRoot";
+import { options } from "config/networkOptions";
 
 // vis-network
 import { Network } from "vis-network/standalone/esm/vis-network";
 
 // material ui
-import SearchBar from "../components/SearchBar"
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
-
+import SearchBar from "components/Shared/SearchBar";
+import { makeStyles } from "@material-ui/core/styles";
 
 // styling
-const useStyles = makeStyles((theme) => ({
-  paper: {
-      margin: theme.spacing(6),
-      display: "flex",
-      flexFlow: "column",
-      flexGrow: 1
-  },
+const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
     flexFlow: "column nowrap",
@@ -33,20 +25,20 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
 const NetworkGraph = (data, searchText) => {
   const visJsRef = useRef(null);
   const classes = useStyles();
-  let network = null
+  let network = null;
 
   useEffect(() => {
-    network = visJsRef.current && new Network(visJsRef.current, data.data, options)
+    network =
+      visJsRef.current && new Network(visJsRef.current, data.data, options);
 
     // set root node to have specific color
-    const root = data.data.nodes.get(0)
-    root.color = "#4fc1ea"
-    root.font = {color: "#4fc1ea", strokeWidth: 3, size: 20}
-    data.data.nodes.updateOnly(root)
+    const root = data.data.nodes.get(0);
+    root.color = "#4fc1ea";
+    root.font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
+    data.data.nodes.updateOnly(root);
 
     // change curser when hovering and grabbing
     // Get the canvas HTML element
@@ -58,26 +50,26 @@ const NetworkGraph = (data, searchText) => {
     function changeCursor(newCursorStyle) {
       networkCanvas.style.cursor = newCursorStyle;
     }
-    network.on("hoverNode", function () {
+    network.on("hoverNode", function() {
       changeCursor("grab");
     });
-    network.on("blurNode", function () {
+    network.on("blurNode", function() {
       changeCursor("default");
     });
-    network.on("dragStart", function () {
+    network.on("dragStart", function() {
       changeCursor("grabbing");
     });
-    network.on("dragging", function () {
+    network.on("dragging", function() {
       changeCursor("grabbing");
     });
-    network.on("dragEnd", function () {
+    network.on("dragEnd", function() {
       changeCursor("grab");
     });
 
     // fix (stick in place) node when done dragging
     network.on("dragEnd", function(params) {
       if (params.nodes.length !== 0) {
-        network.editNode(params.nodes[0])
+        network.editNode(params.nodes[0]);
       }
     });
 
@@ -85,84 +77,100 @@ const NetworkGraph = (data, searchText) => {
     network.on("dragStart", function(params) {
       // check if node has not been touched or is fixed
       // if fixed then un fix
-      if (params.nodes.length !== 0 &&
+      if (
+        params.nodes.length !== 0 &&
         network.body.nodes[params.nodes[0]].options.x !== undefined &&
-        network.body.nodes[params.nodes[0]].options.x) {
+        network.body.nodes[params.nodes[0]].options.x
+      ) {
         // un fix node
-        network.editNode(params.nodes[0])
+        network.editNode(params.nodes[0]);
       }
     });
   }, [visJsRef, data.data, network]);
 
-
   // recursivly finds all paths from search result to root
   const handleSearch = (query, data, network) => {
     // clear selection if empty search bar
-    data.data.nodes.updateOnly(data.data.nodes.get().map(e => {
-      if(e.id !== 0) {
-        e["color"] = options.nodes.color
-        e["font"] = options.nodes.font
-      }
-      return(e)
-    }));
+    data.data.nodes.updateOnly(
+      data.data.nodes.get().map(e => {
+        if (e.id !== 0) {
+          e["color"] = options.nodes.color;
+          e["font"] = options.nodes.font;
+        }
+        return e;
+      })
+    );
 
     // reset edge colors
-    data.data.edges.updateOnly(data.data.edges.get().map(e => {
-      e["color"] = options.edges.color
-      return(e)
-    }));
+    data.data.edges.updateOnly(
+      data.data.edges.get().map(e => {
+        e["color"] = options.edges.color;
+        return e;
+      })
+    );
 
-    if(query === "") {
+    if (query === "") {
       // reset node colors
-      return
+      return;
     }
 
     // use input text to find possible results
     let possible_results = data.data.nodes.get({
-      filter: function (node) {
-        return (node.label.includes(query));
+      filter: function(node) {
+        return node.label.includes(query);
       }
-    })
+    });
 
     // recurse through possible results
-    const selected = recurseToRoot(possible_results.map(node => node.label), 0, data.data.edges.map(e => e))
+    const selected = recurseToRoot(
+      possible_results.map(node => node.id),
+      0,
+      data.data.edges.map(e => e)
+    );
 
     // grey out non search results
     // nodes that are not in search results
-    const unselected_edges = data.data.edges.get().filter(edge => !selected.edges.includes(edge.id)).map(e => {
-      e["color"] = { color: "#e3e5e8" }
-      return(e)
-    })
+    const unselected_edges = data.data.edges
+      .get()
+      .filter(edge => !selected.edges.includes(edge.id))
+      .map(e => {
+        e["color"] = { color: "#e3e5e8" };
+        return e;
+      });
 
     // edges that are not in search results
-    const unselected_nodes = data.data.nodes.get().filter(node => !selected.nodes.includes(node.id)).map(e => {
-      if(e.id !== 0) {
-        e["color"] = { background: "#e3e5e8" }
-        e["font"] = {color: "#e3e5e8", strokeWidth: 2, size: 15}
-      }
-      return(e)
-    })
+    const unselected_nodes = data.data.nodes
+      .get()
+      .filter(node => !selected.nodes.includes(node.id))
+      .map(e => {
+        if (e.id !== 0) {
+          e["color"] = { background: "#e3e5e8" };
+          e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
+        }
+        return e;
+      });
 
     // set searched nodes to a different color
     possible_results = possible_results.map(e => {
-      e["color"] = { background: "#f39200" }
-      return(e)
-    })
+      if (e.id !== 0) {
+        e["color"] = { background: "#f39200" };
+      }
+      return e;
+    });
 
     // update nodes and edges in the dataset
     data.data.nodes.updateOnly(unselected_nodes.concat(possible_results));
     data.data.edges.updateOnly(unselected_edges);
+  };
 
-  }
-
-  return(
+  return (
     <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <SearchBar setKeyword={(text) => handleSearch(text, data, network) } />
-        <div ref = { visJsRef } id = "mynetwork" className={classes.canvas}/>
-      </Paper>
+      <SearchBar
+        label="Filter packages"
+        onChange={text => handleSearch(text, data, network)}
+      />
+      <div ref={visJsRef} id="mynetwork" className={classes.canvas} />
     </div>
-
   );
 };
 

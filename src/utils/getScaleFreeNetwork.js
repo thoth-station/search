@@ -1,6 +1,5 @@
 import { DataSet } from "vis-network/standalone/esm/vis-network";
 
-
 export function getScaleFreeNetwork(nodeCount) {
   const nodes = [];
   const edges = [];
@@ -10,7 +9,7 @@ export function getScaleFreeNetwork(nodeCount) {
   for (let i = 0; i < nodeCount; i++) {
     nodes.push({
       id: i,
-      label: String(i),
+      label: String(i)
     });
 
     connectionCount[i] = 0;
@@ -21,7 +20,7 @@ export function getScaleFreeNetwork(nodeCount) {
       const to = 0;
       edges.push({
         from: from,
-        to: to,
+        to: to
       });
       connectionCount[from]++;
       connectionCount[to]++;
@@ -39,7 +38,7 @@ export function getScaleFreeNetwork(nodeCount) {
       const to = j;
       edges.push({
         from: from,
-        to: to,
+        to: to
       });
       connectionCount[from]++;
       connectionCount[to]++;
