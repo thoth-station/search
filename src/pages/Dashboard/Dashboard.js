@@ -1,17 +1,17 @@
 // React
 import React from "react";
 
-// local components
-import NetworkGraph from "components/Metrics/DependenciesMetric/NetworkGraph.js";
-import InfoCard from "components/InfoCard/InfoCard";
-
-// utils
-import { getScaleFreeNetwork } from "utils/getScaleFreeNetwork";
+// local
+import PackageMetrics from "components/Dashboard/PackageMetrics";
+import PackageHeader from "components/Dashboard/PackageHeader";
+import TabPanel from "components/Shared/TabPanel";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 
+// component styling
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -24,26 +24,33 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const Dashboard = () => {
+export const Dashboard = ({ location }) => {
   const classes = useStyles();
+  const { state } = location;
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={3}>
-        {[0, 1, 2, 3].map(i => {
-          return (
-            <Grid item xs={6} key={i}>
-              <InfoCard
-                cardMeta={{
-                  title: "Title",
-                  subTitle: "This is the subTitle"
-                }}
-                cardBody={<NetworkGraph data={getScaleFreeNetwork(20)} />}
-              />
-            </Grid>
-          );
-        })}
-      </Grid>
+      <PackageHeader data={state} />
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        indicatorColor="primary"
+        textColor="primary"
+      >
+        <Tab label="Overview" />
+        <Tab label="Dependencies" />
+      </Tabs>
+      <TabPanel value={value} index={0}>
+        <PackageMetrics />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        Item Two
+      </TabPanel>
     </div>
   );
 };

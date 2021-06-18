@@ -1,5 +1,5 @@
 // react
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
 
@@ -8,8 +8,11 @@ import { Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 // local
-import { DASHBOARD, ROOT } from "navigation/CONSTANTS";
+import { ROOT, DASHBOARD } from "navigation/CONSTANTS";
 import SearchBar from "components/Shared/SearchBar";
+
+// api
+import { searchForPackage } from "services/thothApi";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -39,30 +42,48 @@ const Home = () => {
   const history = useHistory();
   const classes = useStyles();
 
-  const goTo = path => {
-    history.push(path || ROOT);
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = e => {
+    setSearch(e);
+    if (error !== "") {
+      setError("");
+    }
   };
 
-  const handleChange = e => {};
+  const handleSearch = () => {
+    if (search !== "") {
+      searchForPackage(search)
+        .then(result => {
+          history.push(DASHBOARD + "?q=" + search, result.data);
+        })
+        .catch(() => {
+          setError("No results");
+        });
+    }
+  };
 
   return (
     <div className={classes.root}>
       <Typography variant="h4" className={classes.title}>
         <b>Thoth Search</b>
       </Typography>
-      <Typography variant="b1" className={classes.description}>
+      <Typography variant="body1" className={classes.description}>
         Use this search box to lookup specific Python packages.
       </Typography>
       <div className={classes.search}>
         <SearchBar
           label="Search for a Python package"
           onChange={e => handleChange(e)}
+          helperText={error}
+          error={error !== ""}
         />
 
         <Button
           variant="contained"
           color="primary"
-          onClick={() => goTo(DASHBOARD)}
+          onClick={() => handleSearch()}
           className={classes.button}
         >
           <b>Search</b>
@@ -70,10 +91,6 @@ const Home = () => {
       </div>
     </div>
   );
-};
-
-Home.propTypes = {
-  title: PropTypes.string.isRequired
 };
 
 export default Home;
