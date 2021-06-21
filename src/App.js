@@ -9,6 +9,9 @@ import { RouterConfig } from "navigation/RouterConfig";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
+// globals
+global.packagesReleases = {};
+
 function App() {
   return (
     <MuiThemeProvider theme={themeLight}>

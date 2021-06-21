@@ -16,8 +16,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
-    flexFlow: "column nowrap",
-    minHeight: "100vh"
+    flexFlow: "column nowrap"
   },
   canvas: {
     flex: "1 1 auto",
@@ -25,20 +24,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NetworkGraph = (data, searchText) => {
+const NetworkGraph = ({ data, searchText, root, ...props }) => {
   const visJsRef = useRef(null);
   const classes = useStyles();
   let network = null;
 
   useEffect(() => {
-    network =
-      visJsRef.current && new Network(visJsRef.current, data.data, options);
+    network = visJsRef.current && new Network(visJsRef.current, data, options);
 
     // set root node to have specific color
-    const root = data.data.nodes.get(0);
-    root.color = "#4fc1ea";
-    root.font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
-    data.data.nodes.updateOnly(root);
+    const rootNode = data.nodes.get(root);
+    rootNode.color = "#4fc1ea";
+    rootNode.font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
+    data.nodes.updateOnly(rootNode);
 
     // change curser when hovering and grabbing
     // Get the canvas HTML element
@@ -86,14 +84,14 @@ const NetworkGraph = (data, searchText) => {
         network.editNode(params.nodes[0]);
       }
     });
-  }, [visJsRef, data.data, network]);
+  }, [visJsRef, data, network]);
 
   // recursivly finds all paths from search result to root
   const handleSearch = (query, data, network) => {
     // clear selection if empty search bar
-    data.data.nodes.updateOnly(
-      data.data.nodes.get().map(e => {
-        if (e.id !== 0) {
+    data.nodes.updateOnly(
+      data.nodes.get().map(e => {
+        if (e.id !== root) {
           e["color"] = options.nodes.color;
           e["font"] = options.nodes.font;
         }
@@ -102,8 +100,8 @@ const NetworkGraph = (data, searchText) => {
     );
 
     // reset edge colors
-    data.data.edges.updateOnly(
-      data.data.edges.get().map(e => {
+    data.edges.updateOnly(
+      data.edges.get().map(e => {
         e["color"] = options.edges.color;
         return e;
       })
@@ -115,7 +113,7 @@ const NetworkGraph = (data, searchText) => {
     }
 
     // use input text to find possible results
-    let possible_results = data.data.nodes.get({
+    let possible_results = data.nodes.get({
       filter: function(node) {
         return node.label.includes(query);
       }
@@ -124,13 +122,13 @@ const NetworkGraph = (data, searchText) => {
     // recurse through possible results
     const selected = recurseToRoot(
       possible_results.map(node => node.id),
-      0,
-      data.data.edges.map(e => e)
+      root,
+      data.edges.map(e => e)
     );
 
     // grey out non search results
     // nodes that are not in search results
-    const unselected_edges = data.data.edges
+    const unselected_edges = data.edges
       .get()
       .filter(edge => !selected.edges.includes(edge.id))
       .map(e => {
@@ -139,11 +137,11 @@ const NetworkGraph = (data, searchText) => {
       });
 
     // edges that are not in search results
-    const unselected_nodes = data.data.nodes
+    const unselected_nodes = data.nodes
       .get()
       .filter(node => !selected.nodes.includes(node.id))
       .map(e => {
-        if (e.id !== 0) {
+        if (e.id !== root) {
           e["color"] = { background: "#e3e5e8" };
           e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
         }
@@ -152,19 +150,19 @@ const NetworkGraph = (data, searchText) => {
 
     // set searched nodes to a different color
     possible_results = possible_results.map(e => {
-      if (e.id !== 0) {
+      if (e.id !== root) {
         e["color"] = { background: "#f39200" };
       }
       return e;
     });
 
     // update nodes and edges in the dataset
-    data.data.nodes.updateOnly(unselected_nodes.concat(possible_results));
-    data.data.edges.updateOnly(unselected_edges);
+    data.nodes.updateOnly(unselected_nodes.concat(possible_results));
+    data.edges.updateOnly(unselected_edges);
   };
 
   return (
-    <div className={classes.root}>
+    <div className={`${classes.root} ${props.className}`}>
       <SearchBar
         label="Filter packages"
         onChange={text => handleSearch(text, data, network)}

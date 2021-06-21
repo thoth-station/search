@@ -1,9 +1,5 @@
 // local components
-import NetworkGraph from "components/Metrics/DependenciesMetric/NetworkGraph.js";
 import InfoCard from "components/InfoCard/InfoCard";
-
-// utils
-import { getScaleFreeNetwork } from "utils/getScaleFreeNetwork";
 
 // material-ui
 import Grid from "@material-ui/core/Grid";

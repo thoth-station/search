@@ -5,6 +5,7 @@ import React from "react";
 import PackageMetrics from "components/Dashboard/PackageMetrics";
 import PackageHeader from "components/Dashboard/PackageHeader";
 import TabPanel from "components/Shared/TabPanel";
+import PackageDependencies from "components/Dashboard/PackageDependencies";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
@@ -49,7 +50,7 @@ export const Dashboard = ({ location }) => {
         <PackageMetrics />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        <PackageDependencies data={state} />
       </TabPanel>
     </div>
   );

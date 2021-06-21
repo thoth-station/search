@@ -6,7 +6,7 @@ export function recurseToRoot(start, end, edges) {
   // note there could be multiple starting points
   let combined = { nodes: [], edges: [] };
   starting_edges.forEach(edge => {
-    const path = recurse(edge, { nodes: [], edges: [] }, edges);
+    const path = recurse(edge, { nodes: [], edges: [] }, edges, end);
     combined = {
       nodes: [...new Set([...path.nodes, ...combined.nodes])],
       edges: [...new Set([...path.edges, ...combined.edges])]
@@ -16,7 +16,7 @@ export function recurseToRoot(start, end, edges) {
   return combined;
 }
 
-function recurse(edge, selection, edges) {
+function recurse(edge, selection, edges, end) {
   // cycle or allready visited OR
   if (selection.edges.includes(edge.id)) {
     return selection;
@@ -27,8 +27,7 @@ function recurse(edge, selection, edges) {
   selection.edges.push(edge.id);
 
   // cycle or allready visited OR
-  console.log(edge);
-  if (edge.to === 0) {
+  if (edge.to === end) {
     return selection;
   } else {
     // find the next edges to go
@@ -38,7 +37,7 @@ function recurse(edge, selection, edges) {
     edges
       .filter(e => e.from === edge.to)
       .forEach(e => {
-        const path = recurse(e, selection, edges);
+        const path = recurse(e, selection, edges, end);
         combined = {
           nodes: [...new Set([...path.nodes, ...combined.nodes])],
           edges: [...new Set([...path.edges, ...combined.edges])]
