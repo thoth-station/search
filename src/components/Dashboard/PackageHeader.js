@@ -36,20 +36,20 @@ const PackageHeader = ({ data }) => {
           <b>{data.info.name}</b>
         </Typography>
         <Typography className={classes.marginLeft} variant="subtitle1">
-          v{data.info.version}
+          v{data.info?.version}
         </Typography>
       </div>
       <Typography gutterBottom variant="body1">
-        {data.info.summary}
+        {data.info?.summary}
       </Typography>
       <div className={classes.linksRow}>
-        <IconText text={data.info.license} icon={<GavelIcon />} />
+        <IconText text={data.info?.license} icon={<GavelIcon />} />
         <IconText
           className={classes.marginLeft}
           text={
             "Latest version published " +
             timeSince(
-              new Date(data.releases[data.info.version][0].upload_time)
+              new Date(data.releases[data.info.version][0]?.upload_time)
             ) +
             " ago."
           }

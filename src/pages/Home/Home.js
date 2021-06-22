@@ -1,6 +1,5 @@
 // react
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
 
 // material-ui
@@ -8,7 +7,7 @@ import { Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 // local
-import { ROOT, DASHBOARD } from "navigation/CONSTANTS";
+import { DASHBOARD } from "navigation/CONSTANTS";
 import SearchBar from "components/Shared/SearchBar";
 
 // api
@@ -56,7 +55,8 @@ const Home = () => {
     if (search !== "") {
       searchForPackage(search)
         .then(result => {
-          history.push(DASHBOARD + "?q=" + search, result.data);
+          //history.push(DASHBOARD + "?q=" + search, result.data);
+          history.push(DASHBOARD + "/" + search, result.data);
         })
         .catch(() => {
           setError("No results");
