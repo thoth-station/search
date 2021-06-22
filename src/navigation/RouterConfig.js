@@ -9,8 +9,13 @@ export const RouterConfig = () => {
   return (
     <Switch>
       <Route exact path={ROOT} component={Home} />
-      <Route exact path={DASHBOARD} component={Dashboard} />
+      <Route
+        exact
+        path={DASHBOARD + "/:package/:version?"}
+        component={Dashboard}
+      />
       <Route exact path={SEARCH} component={SearchResults} />
+
       <Route path="*">
         <NotFound />
       </Route>
