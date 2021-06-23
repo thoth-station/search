@@ -5,7 +5,7 @@
 This is a React powered web app for displaying Python package metadata and insights using Thoth Advise.
 
 ## Website
-You can check of the latest build here: [gkrumbach07.github.io/thoth-search](gkrumbach07.github.io/thoth-search)
+You can check of the latest build here: [gkrumbach07.github.io/thoth-search](https://gkrumbach07.github.io/thoth-search)
 
 ## Code Journal
 
