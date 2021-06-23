@@ -1,5 +1,5 @@
 // React
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 // local components
 import NetworkGraph from "components/Metrics/DependenciesMetric/NetworkGraph.js";
