@@ -33,7 +33,6 @@ const PackageDependencies = ({ data }) => {
   useEffect(() => {
     createDependencyGraph(data.info.name, data.info.version)
       .then(r => {
-        console.log(r);
         setGraphData({
           nodes: new DataSet(r.nodes),
           edges: new DataSet(r.edges)

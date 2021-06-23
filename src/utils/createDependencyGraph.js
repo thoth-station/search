@@ -60,7 +60,7 @@ export async function createDependencyGraph(
             if (
               res.data.info.requires_dist !== null &&
               res.data.info.requires_dist.length !== 0 &&
-              depth < 2
+              depth < 3
             ) {
               return await createDependencyGraph(
                 initDeps[i].name,
