@@ -1,5 +1,6 @@
 // React
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 // local
 import PackageMetrics from "components/Dashboard/PackageMetrics";
@@ -11,12 +12,13 @@ import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 // API
 import { searchForPackage } from "services/thothApi";
 
+// utils
+import { produceMetrics } from "utils/produceMetrics";
+
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-
-import { useParams } from "react-router-dom";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -34,23 +36,27 @@ const useStyles = makeStyles(theme => ({
 export const Dashboard = ({ location }) => {
   const classes = useStyles();
   const params = useParams();
-  const [state, setState] = useState(location.state);
-  const [value, setValue] = React.useState(0);
+  const [metadata, setMetadata] = useState(location.state);
+  const [graphData, setGraphData] = useState(undefined);
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     // if user doesnt directly navigate then get the package
     // if the package or version doesnt exists, act accordingly
-    if (!state) {
+    if (!metadata) {
       searchForPackage(params?.package, params?.version)
         .then(r => {
-          setState(r.data);
+          setMetadata(r.data);
+          produceMetrics(r.data).then(state => {
+            setGraphData(state.graphData);
+          });
         })
         .catch(e => {
           // does not exist
-          setState("error");
+          setMetadata("error");
         });
     }
-  }, [state, params]);
+  }, [metadata, params, location]);
 
   // handle tab chnage
   const handleChange = (event, newValue) => {
@@ -60,15 +66,15 @@ export const Dashboard = ({ location }) => {
   return (
     <LoadingErrorTemplate
       state={
-        state === undefined
+        metadata === undefined
           ? "loading"
-          : state === "error"
+          : metadata === "error"
           ? "error"
           : undefined // if state is populated
       }
     >
       <div className={classes.root}>
-        <PackageHeader data={state} />
+        <PackageHeader data={metadata} />
         <Tabs
           value={value}
           onChange={handleChange}
@@ -82,7 +88,7 @@ export const Dashboard = ({ location }) => {
           <PackageMetrics />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <PackageDependencies data={state} />
+          <PackageDependencies graphData={graphData} metadata={metadata} />
         </TabPanel>
       </div>
     </LoadingErrorTemplate>
