@@ -1,6 +1,11 @@
+![CI/CD](https://github.com/gkrumbach07/thoth-search/workflows/CI/CD/badge.svg)
+
 # Thoth Search
 
 This is a React powered web app for displaying Python package metadata and insights using Thoth Advise.
+
+## Website
+You can check of the latest build here: gkrumbach07.github.io/thoth-search/
 
 ## Code Journal
 
