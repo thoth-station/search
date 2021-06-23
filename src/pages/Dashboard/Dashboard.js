@@ -36,27 +36,24 @@ const useStyles = makeStyles(theme => ({
 export const Dashboard = ({ location }) => {
   const classes = useStyles();
   const params = useParams();
-  const [metadata, setMetadata] = useState(location.state);
+  const [metadata, setMetadata] = useState(undefined);
   const [graphData, setGraphData] = useState(undefined);
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    // if user doesnt directly navigate then get the package
     // if the package or version doesnt exists, act accordingly
-    if (!metadata) {
-      searchForPackage(params?.package, params?.version)
-        .then(r => {
-          setMetadata(r.data);
-          produceMetrics(r.data).then(state => {
-            setGraphData(state.graphData);
-          });
-        })
-        .catch(e => {
-          // does not exist
-          setMetadata("error");
+    searchForPackage(params?.package, params?.version)
+      .then(r => {
+        setMetadata(r.data);
+        produceMetrics(r.data).then(state => {
+          setGraphData(state.graphData);
         });
-    }
-  }, [metadata, params, location]);
+      })
+      .catch(e => {
+        // does not exist
+        setMetadata("error");
+      });
+  }, [params]);
 
   // handle tab chnage
   const handleChange = (event, newValue) => {

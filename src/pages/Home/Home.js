@@ -56,7 +56,7 @@ const Home = () => {
       searchForPackage(search)
         .then(result => {
           //history.push(DASHBOARD + "?q=" + search, result.data);
-          history.push(DASHBOARD + "/" + search, result.data);
+          history.push(DASHBOARD + "/" + search);
         })
         .catch(() => {
           setError("No results");
