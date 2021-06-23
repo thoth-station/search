@@ -27,10 +27,10 @@ const useStyles = makeStyles(theme => ({
 const NetworkGraph = ({ data, searchText, root, ...props }) => {
   const visJsRef = useRef(null);
   const classes = useStyles();
-  let network = null;
 
   useEffect(() => {
-    network = visJsRef.current && new Network(visJsRef.current, data, options);
+    const network =
+      visJsRef.current && new Network(visJsRef.current, data, options);
 
     // set root node to have specific color
     const rootNode = data.nodes.get(root);
@@ -84,10 +84,10 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
         network.editNode(params.nodes[0]);
       }
     });
-  }, [visJsRef, data, network]);
+  }, [visJsRef, data, root]);
 
   // recursivly finds all paths from search result to root
-  const handleSearch = (query, data, network) => {
+  const handleSearch = (query, data) => {
     // clear selection if empty search bar
     data.nodes.updateOnly(
       data.nodes.get().map(e => {
@@ -165,7 +165,7 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
     <div className={`${classes.root} ${props.className}`}>
       <SearchBar
         label="Filter packages"
-        onChange={text => handleSearch(text, data, network)}
+        onChange={text => handleSearch(text, data)}
       />
       <div ref={visJsRef} id="mynetwork" className={classes.canvas} />
     </div>

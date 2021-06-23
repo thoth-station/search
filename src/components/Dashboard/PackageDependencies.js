@@ -6,7 +6,6 @@ import NetworkGraph from "components/Metrics/DependenciesMetric/NetworkGraph.js"
 
 // utils
 import { createDependencyGraph } from "utils/createDependencyGraph";
-import { getScaleFreeNetwork } from "utils/getScaleFreeNetwork";
 
 // material-ui
 import { Paper } from "@material-ui/core";
