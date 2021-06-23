@@ -1,15 +1,17 @@
 // React
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 // local components
 import NetworkGraph from "components/Metrics/DependenciesMetric/NetworkGraph.js";
-
-// utils
-import { createDependencyGraph } from "utils/createDependencyGraph";
+import ErrorPage from "components/Shared/ErrorPage";
 
 // material-ui
 import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
+
+//vis-dataset
+import { DataSet } from "vis-network/standalone/esm/vis-network";
 
 const useStyles = makeStyles(theme => ({
   graph: {
@@ -17,26 +19,31 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PackageDependencies = ({ data }) => {
+const PackageDependencies = ({ graphData, metadata }) => {
   const classes = useStyles();
-  const [graphData, setGraphData] = useState(undefined);
-
-  useEffect(() => {
-    createDependencyGraph(data.info.name, data.info.version).then(r => {
-      setGraphData(r);
-    });
-  }, [data]);
 
   return (
-    <Paper>
-      {graphData !== undefined ? (
+    <LoadingErrorTemplate
+      state={
+        graphData === undefined
+          ? "loading"
+          : graphData === "error"
+          ? "error"
+          : undefined
+      }
+      errorPage={<ErrorPage text={"Could not load in dependency graph"} />}
+    >
+      <Paper>
         <NetworkGraph
-          data={graphData}
+          data={{
+            nodes: new DataSet(graphData?.nodes),
+            edges: new DataSet(graphData?.edges)
+          }}
           className={classes.graph}
-          root={data.info.name + data.info.version}
+          root={metadata.info.name + metadata.info.version}
         />
-      ) : null}
-    </Paper>
+      </Paper>
+    </LoadingErrorTemplate>
   );
 };
 
