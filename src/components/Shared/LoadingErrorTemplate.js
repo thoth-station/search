@@ -6,22 +6,35 @@ import PropTypes from "prop-types";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 // local
+import ErrorPage from "components/Shared/ErrorPage";
 import NotFound from "navigation/NotFound";
 
-const LoadingErrorTemplate = ({ children, state, errorPage, loadingPage }) => {
+const LoadingErrorTemplate = ({
+  children,
+  state,
+  errorText,
+  show404,
+  loadingPage
+}) => {
   return (
     <>
-      {state === "error"
-        ? errorPage ?? <NotFound />
-        : state === "loading"
-        ? loadingPage ?? <CircularProgress />
-        : children}
+      {state === "error" ? (
+        show404 ? (
+          <NotFound text={show404} />
+        ) : (
+          <ErrorPage text={errorText ?? "A unknown error occured"} />
+        )
+      ) : state === undefined ? ( // loading if undefined
+        loadingPage ?? <CircularProgress style={{ marginLeft: "50%" }} />
+      ) : (
+        children
+      )}
     </>
   );
 };
 
 LoadingErrorTemplate.propTypes = {
-  state: PropTypes.oneOf(["loading", "error", undefined])
+  state: PropTypes.any
 };
 
 export default LoadingErrorTemplate;

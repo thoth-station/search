@@ -2,7 +2,11 @@ import { Typography } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 const ErrorPage = ({ text }) => {
-  return <Typography variant="h2">{text}</Typography>;
+  return (
+    <Typography align="center" color="error" variant="body1">
+      {text}
+    </Typography>
+  );
 };
 
 ErrorPage.propTypes = {
