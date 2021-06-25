@@ -19,28 +19,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PackageDependencies = ({ graphData, metadata }) => {
+const PackageDependencies = ({ state }) => {
   const classes = useStyles();
 
   return (
     <LoadingErrorTemplate
-      state={
-        graphData === undefined
-          ? "loading"
-          : graphData === "error"
-          ? "error"
-          : undefined
-      }
-      errorPage={<ErrorPage text={"Could not load in dependency graph"} />}
+      state={state.error.graph ? "error" : state.graph}
+      errorText="Could not load in dependency graph."
     >
       <Paper>
         <NetworkGraph
           data={{
-            nodes: new DataSet(graphData?.nodes),
-            edges: new DataSet(graphData?.edges)
+            nodes: new DataSet(state.graph?.nodes),
+            edges: new DataSet(state.graph?.edges)
           }}
           className={classes.graph}
-          root={metadata.info.name + metadata.info.version}
+          root={state.metadata.info.name + state.metadata.info.version}
         />
       </Paper>
     </LoadingErrorTemplate>

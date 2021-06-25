@@ -1,5 +1,5 @@
 // React
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import { useParams } from "react-router-dom";
 
 // local
@@ -13,7 +13,10 @@ import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 import { searchForPackage } from "services/thothApi";
 
 // utils
-import { produceMetrics } from "utils/produceMetrics";
+import {
+  produceDeepMetrics,
+  produceShallowMetrics
+} from "utils/produceMetrics";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,7 +27,7 @@ import Tab from "@material-ui/core/Tab";
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    maxWidth: "1440px",
+    maxWidth: "95%",
     marginLeft: "auto",
     marginRight: "auto",
     paddingRight: theme.spacing(3),
@@ -33,27 +36,106 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+function reducer(state, action) {
+  switch (action.type) {
+    case "metadata":
+      return { ...state, metadata: action.payload };
+    case "graph":
+      return { ...state, graph: action.payload };
+    case "metric":
+      return {
+        ...state,
+        metrics: { ...state.metrics, [action.metricName]: action.payload }
+      };
+    case "metric-field":
+      return {
+        ...state,
+        metrics: {
+          ...state.metrics,
+          [action.metricName]: {
+            ...state.metrics[action.metricName],
+            [action.fieldName]: action.payload
+          }
+        }
+      };
+    case "error": {
+      return {
+        ...state,
+        error: { [action.who]: action.payload }
+      };
+    }
+
+    default:
+      return state;
+  }
+}
+
+// The page that displays all analyis data
 export const Dashboard = ({ location }) => {
   const classes = useStyles();
   const params = useParams();
-  const [metadata, setMetadata] = useState(undefined);
-  const [graphData, setGraphData] = useState(undefined);
+
+  // for state control
+  const [state, dispatch] = useReducer(reducer, {
+    metadata: undefined,
+    graph: undefined,
+    metrics: {},
+    error: {
+      graph: false,
+      metadata: false
+    }
+  });
+
+  // for tab control
   const [value, setValue] = useState(0);
 
+  // before render
   useEffect(() => {
     // if the package or version doesnt exists, act accordingly
     searchForPackage(params?.package, params?.version)
       .then(r => {
-        setMetadata(r.data);
-        produceMetrics(r.data).then(state => {
-          setGraphData(state.graphData);
-        });
+        // set root/parent package metdata for shallow analyis
+        dispatch({ type: "metadata", payload: r.data });
+        applyMetrics(produceShallowMetrics(r.data).metrics);
+
+        // preform deep analysis in the background, update state when finished
+        produceDeepMetrics(r.data, 3)
+          .then(deepMetrics => {
+            // set graph data and metrics to state
+            dispatch({ type: "graph", payload: deepMetrics.graph });
+            applyMetrics(deepMetrics.metrics);
+          })
+          .catch(e => {
+            dispatch({
+              type: "error",
+              who: "graph",
+              payload: true
+            });
+          });
       })
       .catch(e => {
         // does not exist
-        setMetadata("error");
+        dispatch({ type: "error", who: "metadata", payload: true });
       });
   }, [params]);
+
+  // component specific functions //
+
+  // applsy all metrics to state q
+  const applyMetrics = metrics => {
+    for (const metricName of Object.keys(metrics)) {
+      // for each field on metric
+      for (const [field, payload] of Object.entries(metrics[metricName])) {
+        // add metrics to state.
+        dispatch({
+          type: "metric-field",
+          fieldName: field,
+          metricName: metricName,
+          payload: payload
+        });
+      }
+    }
+  };
 
   // handle tab chnage
   const handleChange = (event, newValue) => {
@@ -62,16 +144,11 @@ export const Dashboard = ({ location }) => {
 
   return (
     <LoadingErrorTemplate
-      state={
-        metadata === undefined
-          ? "loading"
-          : metadata === "error"
-          ? "error"
-          : undefined // if state is populated
-      }
+      state={state.error.metadata ? "error" : state.metadata}
+      show404={"Package"}
     >
       <div className={classes.root}>
-        <PackageHeader data={metadata} />
+        <PackageHeader data={state.metadata} />
         <Tabs
           value={value}
           onChange={handleChange}
@@ -82,10 +159,10 @@ export const Dashboard = ({ location }) => {
           <Tab label="Dependencies" />
         </Tabs>
         <TabPanel value={value} index={0}>
-          <PackageMetrics />
+          <PackageMetrics state={state} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <PackageDependencies graphData={graphData} metadata={metadata} />
+          <PackageDependencies state={state} />
         </TabPanel>
       </div>
     </LoadingErrorTemplate>

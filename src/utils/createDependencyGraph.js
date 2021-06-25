@@ -64,7 +64,7 @@ export async function createDependencyGraph(
               nodes.push({
                 id: directDependencies[i].name + directDependencies[i].version,
                 label: directDependencies[i].name,
-                data: res.data,
+                metadata: res.data,
                 depth: depth
               });
 
@@ -109,6 +109,10 @@ export async function createDependencyGraph(
       };
     })
     .catch(error => {
+      // if timeout
+      if (error.isAxiosError) {
+        return new Error(error.message);
+      }
       // package or version is not in Thoth DB
       // skip its dependencies
       return {

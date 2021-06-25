@@ -20,6 +20,7 @@ export const thothGetDependencies = (
       version: version,
       index: index
     },
+    timeout: 3000,
     headers: {
       accept: "application/json"
     }
