@@ -3,7 +3,6 @@ import React from "react";
 
 // local components
 import NetworkGraph from "components/Metrics/DependenciesMetric/NetworkGraph.js";
-import ErrorPage from "components/Shared/ErrorPage";
 
 // material-ui
 import { Paper } from "@material-ui/core";
