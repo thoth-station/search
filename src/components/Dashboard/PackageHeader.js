@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PackageHeader = ({ data }) => {
+const PackageHeader = ({ data, warning }) => {
   const classes = useStyles();
 
   return (
@@ -39,6 +39,12 @@ const PackageHeader = ({ data }) => {
           v{data.info?.version}
         </Typography>
       </div>
+      {warning ? (
+        <Typography color="error" gutterBottom variant="body2">
+          {warning}
+        </Typography>
+      ) : null}
+
       <Typography gutterBottom variant="body1">
         {data.info?.summary}
       </Typography>

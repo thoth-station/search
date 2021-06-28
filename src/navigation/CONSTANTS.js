@@ -3,4 +3,3 @@ const SUBROUTE = "thoth-search/";
 
 export const ROOT = "/" + SUBROUTE;
 export const DASHBOARD = ROOT + "dashboard";
-export const SEARCH = ROOT + "search";
