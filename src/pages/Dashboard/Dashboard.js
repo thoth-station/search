@@ -17,6 +17,7 @@ import {
   produceDeepMetrics,
   produceShallowMetrics
 } from "utils/produceMetrics";
+import compareVersions from "tiny-version-compare";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
@@ -102,7 +103,7 @@ export const Dashboard = ({ location }) => {
       .then(r => {
         // check if thoth is up to data for package
         thothCompareLatestVersion(r.data.info.name).then(v => {
-          if (v !== r.data.info.version) {
+          if (v === null || compareVersions(r.data.info.version, v) > 0) {
             dispatch({
               type: "warning",
               payload: v
