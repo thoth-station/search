@@ -10,7 +10,7 @@ import PackageDependencies from "components/Dashboard/PackageDependencies";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
 // API
-import { searchForPackage } from "services/thothApi";
+import { searchForPackage, thothCompareLatestVersion } from "services/thothApi";
 
 // utils
 import {
@@ -58,6 +58,12 @@ function reducer(state, action) {
           }
         }
       };
+    case "warning": {
+      return {
+        ...state,
+        warning: action.payload
+      };
+    }
     case "error": {
       return {
         ...state,
@@ -94,6 +100,22 @@ export const Dashboard = ({ location }) => {
     // if the package or version doesnt exists, act accordingly
     searchForPackage(params?.package, params?.version)
       .then(r => {
+        // check if thoth is up to data for package
+        thothCompareLatestVersion(r.data.info.name).then(v => {
+          if (v !== r.data.info.version) {
+            dispatch({
+              type: "warning",
+              payload: v
+                ? "Thoth currently supports up to version " +
+                  v +
+                  ", while the most recent version is " +
+                  r.data.info.version +
+                  "."
+                : "Thoth currently does not support this package."
+            });
+          }
+        });
+
         // set root/parent package metdata for shallow analyis
         dispatch({ type: "metadata", payload: r.data });
         applyMetrics(produceShallowMetrics(r.data).metrics);
@@ -148,7 +170,7 @@ export const Dashboard = ({ location }) => {
       show404={"Package"}
     >
       <div className={classes.root}>
-        <PackageHeader data={state.metadata} />
+        <PackageHeader data={state.metadata} warning={state.warning} />
         <Tabs
           value={value}
           onChange={handleChange}
