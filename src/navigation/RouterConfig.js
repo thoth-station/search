@@ -14,7 +14,7 @@ export const RouterConfig = () => {
         component={Dashboard}
       />
 
-      <Route path="*">
+      <Route path="*" status={404}>
         <NotFound />
       </Route>
     </Switch>

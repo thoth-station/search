@@ -55,10 +55,10 @@ const Home = () => {
     if (search !== "") {
       searchForPackage(search)
         .then(result => {
-          //history.push(DASHBOARD + "?q=" + search, result.data);
           history.push(DASHBOARD + "/" + search);
         })
-        .catch(() => {
+        .catch(e => {
+          console.log(e);
           setError("No results");
         });
     }
