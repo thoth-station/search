@@ -11,7 +11,7 @@ const MetricLayout = ({ state }) => {
     <Grid container spacing={3}>
       {Object.entries(state.metrics).map(([key, value]) => {
         return (
-          <Grid item xs={6} key={key}>
+          <Grid item xs={12} sm={6} key={key}>
             <InfoCard
               cardMeta={{
                 title: key.charAt(0).toUpperCase() + key.slice(1)
