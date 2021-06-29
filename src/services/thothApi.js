@@ -28,7 +28,7 @@ export const thothGetDependencies = (
   });
 };
 
-export const thothCompareLatestVersion = name => {
+export const thothGetLatestVersion = name => {
   return axios
     .get(THOTH + "/python/package/versions", {
       params: {

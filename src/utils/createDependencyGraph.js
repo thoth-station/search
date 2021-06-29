@@ -1,7 +1,7 @@
 import { thothGetDependencies, searchForPackage } from "services/thothApi";
 import compareVersions from "tiny-version-compare";
 
-// this function populates the globla state
+// this function populates the global state
 // with a graph of all package dependencies.
 // It uses Thoth API to get dependencies.
 // And uses PyPi to get metadata
@@ -9,6 +9,7 @@ export async function createDependencyGraph(
   name,
   version,
   depth = 2,
+  currentDepth = 0,
   haveVisited = []
 ) {
   const nodes = [];
@@ -23,7 +24,7 @@ export async function createDependencyGraph(
   }
 
   // increase depth tracker
-  depth -= 1;
+  currentDepth += 1;
 
   // get dep list through thoth's database
   return await thothGetDependencies(name, version)
@@ -73,12 +74,13 @@ export async function createDependencyGraph(
               if (
                 res.data.info.requires_dist !== null &&
                 res.data.info.requires_dist.length !== 0 &&
-                depth !== 0
+                currentDepth <= depth
               ) {
                 return await createDependencyGraph(
                   directDependencies[i].name,
                   directDependencies[i].version,
                   depth,
+                  currentDepth,
                   haveVisited
                 ).then(r => {
                   // return child tree (nodes and edges)
