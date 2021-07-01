@@ -28,7 +28,7 @@ export const thothGetDependencies = (
   });
 };
 
-export const thothGetLatestVersion = name => {
+export const thothGetLatestVersion = (name, version) => {
   return axios
     .get(THOTH + "/python/package/versions", {
       params: {
@@ -46,6 +46,11 @@ export const thothGetLatestVersion = name => {
         const sorted = res.data.versions.sort(function(a, b) {
           return compareVersions(a.package_version, b.package_version);
         });
+
+        // compare to version if supplied
+        if (version && sorted.includes(version)) {
+          return version;
+        }
 
         return sorted[sorted.length - 1].package_version;
       }

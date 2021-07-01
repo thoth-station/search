@@ -1,3 +1,6 @@
+// React
+import React, { useContext } from "react";
+
 // material-ui
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,6 +12,9 @@ import IconText from "components/Shared/IconText";
 
 // utils
 import { timeSince } from "utils/timeSince";
+
+// redux
+import { StateContext } from "App";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -26,36 +32,44 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PackageHeader = ({ data, warning }) => {
+const PackageHeader = () => {
   const classes = useStyles();
+  const { roots } = useContext(StateContext);
 
   return (
     <div>
       <div className={classes.titleRow}>
         <Typography variant="h4">
-          <b>{data.info.name}</b>
+          <b>{roots[0]?.metadata?.info?.name}</b>
         </Typography>
         <Typography className={classes.marginLeft} variant="subtitle1">
-          v{data.info?.version}
+          v{roots[0]?.metadata?.info?.version ?? "NaN"}
         </Typography>
       </div>
-      {warning ? (
+      {roots[0].error ? (
         <Typography color="error" gutterBottom variant="body2">
-          {warning}
+          {roots[0].error}
         </Typography>
       ) : null}
 
       <Typography gutterBottom variant="body1">
-        {data.info?.summary}
+        {roots[0]?.metadata?.info?.summary ?? "NaN"}
       </Typography>
       <div className={classes.linksRow}>
-        <IconText text={data.info?.license} icon={<GavelIcon />} />
+        <IconText
+          text={roots[0]?.metadata?.info?.license ?? "NaN"}
+          icon={<GavelIcon />}
+        />
         <IconText
           className={classes.marginLeft}
           text={
             "Latest version published " +
             timeSince(
-              new Date(data.releases[data.info.version][0]?.upload_time)
+              new Date(
+                roots[0]?.metadata?.releases?.[
+                  roots[0]?.metadata?.info?.version
+                ]?.[0]?.upload_time
+              )
             ) +
             " ago."
           }

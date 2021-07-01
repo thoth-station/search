@@ -28,14 +28,14 @@ const LicenseMetric = ({ metric, deepError }) => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="body2" gutterBottom className={classes.label}>
+      <Typography variant="body2" gutterBottom>
         <b>License</b>
       </Typography>
       <Divider />
       <Typography className={classes.marginBottom} variant="h6">
         {metric.root}
       </Typography>
-      <Typography variant="body2" gutterBottom className={classes.label}>
+      <Typography variant="body2" gutterBottom>
         <b>Dependency Licenses</b>
       </Typography>
       <Divider />

@@ -1,3 +1,6 @@
+// React
+import React, { useContext } from "react";
+
 // local components
 import InfoCard from "components/InfoCard/InfoCard";
 import DependenciesMetric from "components/Metrics/DependenciesMetric";
@@ -6,10 +9,15 @@ import LicenseMetric from "components/Metrics/LicenseMetric";
 // material-ui
 import Grid from "@material-ui/core/Grid";
 
-const MetricLayout = ({ state }) => {
+// redux
+import { StateContext } from "App";
+
+const MetricLayout = () => {
+  const state = useContext(StateContext);
+
   return (
     <Grid container spacing={3}>
-      {Object.entries(state.metrics).map(([key, value]) => {
+      {Object.keys(state.metrics).map(key => {
         return (
           <Grid item xs={12} sm={6} key={key}>
             <InfoCard
@@ -18,12 +26,9 @@ const MetricLayout = ({ state }) => {
               }}
               cardBody={
                 key === "dependencies" ? (
-                  <DependenciesMetric
-                    metric={value}
-                    deepError={state.error.graph}
-                  />
+                  <DependenciesMetric />
                 ) : key === "licenses" ? (
-                  <LicenseMetric metric={value} deepError={state.error.graph} />
+                  <LicenseMetric />
                 ) : null
               }
             />

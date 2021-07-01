@@ -2,7 +2,7 @@
 import React from "react";
 
 // local components
-import NetworkGraph from "components/Metrics/DependenciesMetric/NetworkGraph.js";
+import NetworkGraph from "components/Metrics/NetworkGraph.js";
 
 // material-ui
 import { Paper } from "@material-ui/core";

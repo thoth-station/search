@@ -51,13 +51,13 @@ export class Graph {
   /**
    * Generic graph search where we can pass a bfs or dfs
    */
-  static *graphSearch(first, type = "bfs") {
+  *graphSearch(first, type = "bfs") {
     const visited = new Map();
     const visitList = [];
 
     visitList.push(first);
 
-    while (!visitList.isEmpty()) {
+    while (visitList.length !== 0) {
       const node = type === "dfs" ? visitList.pop() : visitList.shift();
       if (node && !visited.has(node)) {
         yield node;
