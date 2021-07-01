@@ -17,6 +17,8 @@ const LicenseMetric = () => {
   return (
     <LoadingErrorTemplate
       state={state.error ? "error" : state.metrics.licenses.total}
+      amount={state?.loading?.init?.amount}
+      note={state?.loading?.init?.note}
     >
       {state.metrics.dependencies.all.roots === 1 ? (
         <SingleLicenseMetric metric={state.metrics.licenses} />

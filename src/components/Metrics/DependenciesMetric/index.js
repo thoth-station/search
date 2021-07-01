@@ -17,6 +17,8 @@ const DependenciesMetric = () => {
   return (
     <LoadingErrorTemplate
       state={state.error ? "error" : state.metrics.dependencies.all.roots}
+      amount={state?.loading?.init?.amount}
+      note={state?.loading?.init?.note}
     >
       {state.metrics.dependencies.all.roots === 1 ? (
         <SingleDependenciesMetric metric={state.metrics.dependencies} />

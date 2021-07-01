@@ -12,16 +12,28 @@ export function reducer(state, action) {
           [action.metric]: action.payload
         }
       };
-    case "warning": {
-      return {
-        ...state,
-        warning: action.payload
-      };
-    }
-    case "error": {
+    case "packageError": {
       return {
         ...state,
         error: action.payload
+      };
+    }
+    case "thothError": {
+      return {
+        ...state,
+        error: action.payload
+      };
+    }
+    case "loading": {
+      return {
+        ...state,
+        loading: action.payload
+      };
+    }
+    case "packageWarning": {
+      return {
+        ...state,
+        packageWarning: action.payload
       };
     }
 

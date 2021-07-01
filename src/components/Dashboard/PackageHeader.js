@@ -26,15 +26,27 @@ const useStyles = makeStyles(theme => ({
   marginLeft: {
     marginLeft: theme.spacing(2)
   },
+  marginRight: {
+    marginRight: theme.spacing(2)
+  },
   linksRow: {
     display: "flex",
     marginBottom: theme.spacing(3)
+  },
+  warning: {
+    display: "flex"
   }
 }));
 
 const PackageHeader = () => {
   const classes = useStyles();
-  const { roots } = useContext(StateContext);
+  const { roots, packageWarning } = useContext(StateContext);
+
+  const [open, setOpen] = React.useState(true);
+
+  const handleExpand = () => {
+    setOpen(!open);
+  };
 
   return (
     <div>
@@ -76,6 +88,22 @@ const PackageHeader = () => {
           icon={<BookmarkIcon />}
         />
       </div>
+      {packageWarning && packageWarning.length !== 0
+        ? packageWarning.map(p => {
+            return (
+              <Typography
+                gutterBottom
+                color={"error"}
+                className={classes.marginRight}
+                variant="body2"
+              >
+                Dependency <i>{packageWarning[0].value.label}</i>{" "}
+                <i>{packageWarning[0].value.metadata.info.version}</i> is
+                currently not supported by Thoth.
+              </Typography>
+            );
+          })
+        : null}
     </div>
   );
 };

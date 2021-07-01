@@ -81,14 +81,18 @@ export const Dashboard = ({ location }) => {
     });
 
     Promise.all(roots).then(roots => {
-      dispatch({
-        type: "roots",
-        payload: roots
-      });
+      if (roots.length === 1 && roots[0] === null) {
+        history.push(ROOT);
+      } else {
+        dispatch({
+          type: "roots",
+          payload: roots
+        });
+      }
     });
   }, [dispatch, params.package, params.version, packages, history]);
 
-  useCreateGraph(state.roots, 2);
+  useCreateGraph(state.roots, 6);
 
   useComputeMetrics(state.roots, state.graph);
 

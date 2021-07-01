@@ -24,6 +24,8 @@ export function useComputeMetrics(roots, graph) {
 
     let licenses = { total: undefined, all: {} };
 
+    let packageWarning = [];
+
     let starts = roots;
     if (typeof starts === "string") {
       starts = [roots];
@@ -36,7 +38,9 @@ export function useComputeMetrics(roots, graph) {
         return;
       }
 
-      const bfs = graph.graphSearch(graph.nodes.get(root.name + root.version));
+      const bfs = graph.graphSearch(
+        graph.nodes.get(root.metadata.info.name + root.metadata.info.version)
+      );
       const visitedOrder = Array.from(bfs);
 
       // depth to type of dependency
@@ -48,6 +52,11 @@ export function useComputeMetrics(roots, graph) {
             ? "direct"
             : "indirect";
 
+        // is not in thoth
+        if (node.value.thoth === false) {
+          packageWarning.push(node);
+        }
+
         // dependency metric
         dependencies = {
           all: {
@@ -56,11 +65,14 @@ export function useComputeMetrics(roots, graph) {
           },
           roots: {
             ...dependencies.roots,
-            [root.name + root.version]: {
-              ...(dependencies.roots[root.name + root.version] ?? null),
+            [root.metadata.info.name + root.metadata.info.version]: {
+              ...(dependencies.roots[
+                root.metadata.info.name + root.metadata.info.version
+              ] ?? null),
               [depth]:
-                (dependencies.roots?.[root.name + root.version]?.[depth] ?? 0) +
-                1
+                (dependencies.roots?.[
+                  root.metadata.info.name + root.metadata.info.version
+                ]?.[depth] ?? 0) + 1
             }
           }
         };
@@ -90,6 +102,10 @@ export function useComputeMetrics(roots, graph) {
       type: "metric",
       metric: "licenses",
       payload: licenses
+    });
+    dispatch({
+      type: "packageWarning",
+      payload: packageWarning
     });
   }, [graph, roots, dispatch]);
 }
@@ -126,6 +142,15 @@ export function useCreateGraph(roots, depth = -1) {
     if (!roots || roots.length === 0) {
       return;
     }
+
+    // set loading
+    dispatch({
+      type: "loading",
+      payload: { init: { amount: 0, note: "Building dependency graph." } }
+    });
+    let directDependencies = 0;
+    let visitedDirectDependencies = 0;
+
     const graph = new Graph();
 
     // helper vars for bfs
@@ -145,16 +170,19 @@ export function useCreateGraph(roots, depth = -1) {
       const root = graph.addVertex(value.id, value);
 
       // for each package
-      roots.forEach(metadata => {
+      roots.forEach(r => {
         // if root package (not app) has an error
-        if (metadata.error) {
+        if (r.error) {
           return;
         }
+
+        directDependencies += r.metadata.info?.requires_dist?.length ?? 0;
+
         const v = {
-          id: metadata.name + metadata.version,
-          label: metadata.name,
+          id: r.metadata.info.name + r.metadata.info.version,
+          label: r.metadata.info.name,
           depth: 0,
-          metadata: metadata
+          metadata: r.metadata
         };
 
         // add package to graph
@@ -170,10 +198,13 @@ export function useCreateGraph(roots, depth = -1) {
         return;
       }
 
+      // set loading data
+      directDependencies = roots[0].metadata.info?.requires_dist?.length ?? 0;
+
       // if only one package
       const value = {
-        id: roots[0].name + roots[0].version,
-        label: roots[0].name,
+        id: roots[0].metadata.info.name + roots[0].metadata.info.version,
+        label: roots[0].metadata.info.name,
         depth: 0,
         metadata: roots[0].metadata
       };
@@ -184,55 +215,79 @@ export function useCreateGraph(roots, depth = -1) {
 
     (async () => {
       while (visitList.length !== 0) {
-        const node = visitList.shift();
+        const node = visitList.pop();
         if (node && !visited.has(node)) {
           visited.set(node);
+
+          // loading
+          if (node.value.depth === 1) {
+            visitedDirectDependencies += 1;
+            // set loading
+
+            dispatch({
+              type: "loading",
+              payload: {
+                init: {
+                  amount:
+                    (visitedDirectDependencies / directDependencies) * 100,
+                  note: "Building dependency graph :: " + node.value.label
+                }
+              }
+            });
+          }
 
           if (node.value.depth !== depth) {
             // get dependencies
             await thothGetDependencies(
               node.value.metadata.info.name,
               node.value.metadata.info.version
-            ).then(async r => {
-              // sort the direct dependencies by version
-              const directDependencies = r.data.dependencies.sort(function(
-                a,
-                b
-              ) {
-                return compareVersions(a.version, b.version);
-              });
+            )
+              .then(async r => {
+                // sort the direct dependencies by version
+                const directDependencies = r.data.dependencies.sort(function(
+                  a,
+                  b
+                ) {
+                  return compareVersions(a.version, b.version);
+                });
 
-              // this will prevent duplicate direct dependencies
-              const directHaveVisited = [];
+                // this will prevent duplicate direct dependencies
+                const directHaveVisited = [];
 
-              // for each direct dependency (start at bottom to get the latest versions first)
-              for (let i = directDependencies.length - 1; i >= 0; i--) {
-                // only include one version of a dependency (latest)
-                if (!directHaveVisited.includes(directDependencies[i].name)) {
-                  // add dependency to have direct visited lookup table
-                  directHaveVisited.push(directDependencies[i].name);
+                // for each direct dependency (start at bottom to get the latest versions first)
+                for (let i = directDependencies.length - 1; i >= 0; i--) {
+                  // only include one version of a dependency (latest)
+                  if (!directHaveVisited.includes(directDependencies[i].name)) {
+                    // add dependency to have direct visited lookup table
+                    directHaveVisited.push(directDependencies[i].name);
 
-                  // make new node and add the edge between
-                  // get metadata of  package
-                  await searchForPackage(
-                    directDependencies[i].name,
-                    directDependencies[i].version
-                  ).then(res => {
-                    const v = {
-                      id: res.data.info.name + res.data.info.version,
-                      label: res.data.info.name,
-                      depth: node.value.depth + 1,
-                      metadata: res.data
-                    };
-                    const adjacent = graph.addVertex(v.id, v);
+                    // make new node and add the edge between
+                    // get metadata of  package
+                    await searchForPackage(
+                      directDependencies[i].name,
+                      directDependencies[i].version
+                    ).then(res => {
+                      const v = {
+                        id: res.data.info.name + res.data.info.version,
+                        label: res.data.info.name,
+                        depth: node.value.depth + 1,
+                        metadata: res.data
+                      };
+                      const adjacent = graph.addVertex(v.id, v);
 
-                    // add an edge between them
-                    graph.addEdge(node.key, adjacent.key);
-                    visitList.push(adjacent);
-                  });
+                      // add an edge between them
+                      graph.addEdge(node.key, adjacent.key);
+                      visitList.push(adjacent);
+                    });
+                  }
                 }
-              }
-            });
+              })
+              .catch(e => {
+                if (e?.response?.status === 404) {
+                  node.value.thoth = false;
+                  return;
+                }
+              });
           }
         }
       }
