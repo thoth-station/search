@@ -4,7 +4,17 @@ import PropTypes from "prop-types";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Divider } from "@material-ui/core";
+import {
+  Typography,
+  Divider,
+  Collapse,
+  Box,
+  List,
+  ListItem,
+  ListItemText
+} from "@material-ui/core";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 
 // local
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
@@ -16,7 +26,8 @@ const useStyles = makeStyles(theme => ({
   },
   marginBottom: {
     marginBottom: theme.spacing(2)
-  }
+  },
+  flex: {}
 }));
 
 const LicenseMetric = ({ metric, deepError }) => {
@@ -26,15 +37,18 @@ const LicenseMetric = ({ metric, deepError }) => {
     0
   );
 
+  const [open, setOpen] = React.useState(null);
+
+  const handleExpand = key => {
+    if (open === key) {
+      setOpen(null);
+    } else {
+      setOpen(key);
+    }
+  };
+
   return (
     <div className={classes.root}>
-      <Typography variant="body2" gutterBottom>
-        <b>License</b>
-      </Typography>
-      <Divider />
-      <Typography className={classes.marginBottom} variant="h6">
-        {metric.root}
-      </Typography>
       <Typography variant="body2" gutterBottom>
         <b>Dependency Licenses</b>
       </Typography>
@@ -45,13 +59,68 @@ const LicenseMetric = ({ metric, deepError }) => {
       >
         {Object.entries(metric?.all ?? {}).map(([key, value]) => {
           return (
-            <ProgressBar
-              key={key}
-              value={value ?? 0}
-              total={totalLicenses}
-              label={key}
-              className={classes.bar}
-            />
+            <div>
+              <div className={classes.flex} onClick={() => handleExpand(key)}>
+                <ProgressBar
+                  key={key}
+                  value={Object.keys(value).length ?? 0}
+                  total={totalLicenses}
+                  label={key}
+                  className={classes.bar}
+                  action={open === key ? <ExpandLess /> : <ExpandMore />}
+                />
+              </div>
+
+              <Collapse in={open === key} timeout="auto" unmountOnExit>
+                <Typography variant="body2" gutterBottom>
+                  Root Packages
+                </Typography>
+                <Divider />
+                <List component="nav">
+                  {Object.entries(value)
+                    .filter(([k, v]) => v === 0)
+                    .map(k => {
+                      return (
+                        <ListItem>
+                          <ListItemText inset primary={k} />
+                        </ListItem>
+                      );
+                    })}
+                </List>
+
+                <Typography variant="body2" gutterBottom>
+                  Direct Dependencies
+                </Typography>
+                <Divider />
+                <List component="nav">
+                  {Object.entries(value)
+                    .filter(([k, v]) => v === 1)
+                    .map(k => {
+                      return (
+                        <ListItem>
+                          <ListItemText inset primary={k} />
+                        </ListItem>
+                      );
+                    })}
+                </List>
+
+                <Typography variant="body2" gutterBottom>
+                  Indirect Dependencies
+                </Typography>
+                <Divider />
+                <List component="nav">
+                  {Object.entries(value)
+                    .filter(([k, v]) => v > 1)
+                    .map(k => {
+                      return (
+                        <ListItem>
+                          <ListItemText inset primary={k} />
+                        </ListItem>
+                      );
+                    })}
+                </List>
+              </Collapse>
+            </div>
           );
         })}
       </LoadingErrorTemplate>

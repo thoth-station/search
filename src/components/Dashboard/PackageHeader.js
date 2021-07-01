@@ -42,12 +42,6 @@ const PackageHeader = () => {
   const classes = useStyles();
   const { roots, packageWarning } = useContext(StateContext);
 
-  const [open, setOpen] = React.useState(true);
-
-  const handleExpand = () => {
-    setOpen(!open);
-  };
-
   return (
     <div>
       <div className={classes.titleRow}>

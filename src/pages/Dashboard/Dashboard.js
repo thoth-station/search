@@ -62,7 +62,7 @@ export const Dashboard = ({ location }) => {
     // parse packages into object list
     let starts = packages?.map(p => {
       return {
-        package: p,
+        name: p,
         version: undefined
       };
     });
@@ -90,9 +90,9 @@ export const Dashboard = ({ location }) => {
         });
       }
     });
-  }, [dispatch, params.package, params.version, packages, history]);
+  }, []);
 
-  useCreateGraph(state.roots, 6);
+  useCreateGraph(state.roots, 2);
 
   useComputeMetrics(state.roots, state.graph);
 
@@ -107,7 +107,7 @@ export const Dashboard = ({ location }) => {
       show404={"Package"}
     >
       <div className={classes.root}>
-        <PackageHeader />
+        {state?.roots?.length === 1 ? <PackageHeader /> : null}
         <Tabs
           value={value}
           onChange={handleChange}
