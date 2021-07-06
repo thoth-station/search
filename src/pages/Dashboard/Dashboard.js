@@ -47,8 +47,6 @@ export const Dashboard = ({ location }) => {
   const classes = useStyles();
   const params = useParams();
   const query = useQuery();
-  const packages = query.get("packages")?.split(",");
-
   const state = useContext(StateContext);
 
   // for tab control
@@ -57,6 +55,8 @@ export const Dashboard = ({ location }) => {
   const [starts, setStarts] = useState(null);
   // after render
   useEffect(() => {
+    const packages = query.get("packages")?.split(",");
+
     // parse packages into object list
     let s = packages?.map(p => {
       return {
