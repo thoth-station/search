@@ -22,6 +22,10 @@ const useStyles = makeStyles(theme => ({
   },
   header: {
     marginTop: theme.spacing(3)
+  },
+  flex: {
+    display: "flex",
+    flexDirection: "column"
   }
 }));
 
@@ -61,22 +65,27 @@ const MultipleDependenciesMetric = ({ metric }) => {
       <Divider className={classes.bar} />
       <List component="nav">
         {Object.entries(metric.roots).map(([key, value], i) => {
+          const t =
+            (metric.roots[key].direct ?? 0) + (metric.roots[key].indirect ?? 0);
           return (
             <div key={key}>
               <ListItem>
-                <ListItemText primary={value.label} />
-                <ProgressBar
-                  value={metric.roots[key].direct ?? 0}
-                  total={totalDependencies}
-                  label={"Direct"}
-                  className={classes.bar}
-                />
-                <ProgressBar
-                  value={metric.roots[key].indirect ?? 0}
-                  total={totalDependencies}
-                  label={"Indirect"}
-                />
+                <ListItemText primary={key} />
+                <div className={classes.flex}>
+                  <ProgressBar
+                    value={metric.roots[key].direct ?? 0}
+                    total={t}
+                    label={"Direct"}
+                    className={classes.bar}
+                  />
+                  <ProgressBar
+                    value={metric.roots[key].indirect ?? 0}
+                    total={t}
+                    label={"Indirect"}
+                  />
+                </div>
               </ListItem>
+              <Divider variant={"middle"} className={classes.bar} />
             </div>
           );
         })}

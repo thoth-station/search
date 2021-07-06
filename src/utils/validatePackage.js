@@ -21,7 +21,7 @@ export async function validatePackage(name, version) {
             return {
               metadata: r.data,
               error:
-                "Thoth currently does not support " + r.data.info.name + "."
+                "Thoth currently does not support '" + r.data.info.name + "'."
             };
           }
           // thoth does not have the latest but has a version
@@ -30,9 +30,13 @@ export async function validatePackage(name, version) {
               metadata: r.data,
               thothVersion: v,
               error:
-                "Thoth currently supports up to version " +
+                "Thoth currently supports '" +
+                r.data.info.name +
+                "' up to version " +
                 v +
-                ", while the most recent version is " +
+                ", while the most recent version of '" +
+                r.data.info.name +
+                "' is " +
                 r.data.info.version +
                 "."
             };

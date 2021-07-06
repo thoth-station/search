@@ -14,13 +14,15 @@ import { StateContext } from "App";
 const DependenciesMetric = () => {
   const state = useContext(StateContext);
 
+  console.log(state);
+
   return (
     <LoadingErrorTemplate
       state={state.error ? "error" : state.metrics.dependencies.all.roots}
       amount={state?.loading?.init?.amount}
       note={state?.loading?.init?.note}
     >
-      {state.metrics.dependencies.all.roots === 1 ? (
+      {state.roots.length === 1 ? (
         <SingleDependenciesMetric metric={state.metrics.dependencies} />
       ) : (
         <MultipleDependenciesMetric metric={state.metrics.dependencies} />

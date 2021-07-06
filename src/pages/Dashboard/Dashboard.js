@@ -21,8 +21,7 @@ import { DispatchContext, StateContext } from "App";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
+import { Tab, Tabs, Typography } from "@material-ui/core";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -82,7 +81,10 @@ export const Dashboard = ({ location }) => {
 
     Promise.all(roots).then(roots => {
       if (roots.length === 1 && roots[0] === null) {
-        history.push(ROOT);
+        dispatch({
+          type: "packageError",
+          payload: "Package does not exist"
+        });
       } else {
         dispatch({
           type: "roots",
@@ -103,11 +105,21 @@ export const Dashboard = ({ location }) => {
 
   return (
     <LoadingErrorTemplate
-      state={state.error ? "error" : state.roots}
+      state={state.packageError ? "error" : state.roots}
       show404={"Package"}
     >
       <div className={classes.root}>
         {state?.roots?.length === 1 ? <PackageHeader /> : null}
+        {state?.roots?.map(r => {
+          if (r.error) {
+            return (
+              <Typography color="error" gutterBottom variant="body2">
+                {r.error}
+              </Typography>
+            );
+          }
+          return null;
+        })}
         <Tabs
           value={value}
           onChange={handleChange}

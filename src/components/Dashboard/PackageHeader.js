@@ -52,11 +52,6 @@ const PackageHeader = () => {
           v{roots[0]?.metadata?.info?.version ?? "NaN"}
         </Typography>
       </div>
-      {roots[0].error ? (
-        <Typography color="error" gutterBottom variant="body2">
-          {roots[0].error}
-        </Typography>
-      ) : null}
 
       <Typography gutterBottom variant="body1">
         {roots[0]?.metadata?.info?.summary ?? "NaN"}
