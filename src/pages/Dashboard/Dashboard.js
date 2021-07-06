@@ -36,18 +36,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// A custom hook that builds on useLocation to parse
-// the query string for you.
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 // The page that displays all analyis data
 export const Dashboard = ({ location }) => {
   const classes = useStyles();
   const params = useParams();
-  const query = useQuery();
   const state = useContext(StateContext);
+  const search = useLocation().search;
 
   // for tab control
   const [value, setValue] = useState(0);
@@ -55,6 +49,8 @@ export const Dashboard = ({ location }) => {
   const [starts, setStarts] = useState(null);
   // after render
   useEffect(() => {
+    const query = new URLSearchParams(search);
+
     const packages = query.get("packages")?.split(",");
 
     // parse packages into object list
@@ -74,15 +70,12 @@ export const Dashboard = ({ location }) => {
     ];
 
     setStarts(s);
-  }, []);
+  }, [params.package, params.version, search]);
 
+  // custom hooks
   useSetRoots(starts);
-
   useCreateGraph(state.roots, 2);
-
   useComputeMetrics(state.roots, state.graph);
-
-  console.log(state);
 
   // handle tab change
   const handleChange = (event, newValue) => {
