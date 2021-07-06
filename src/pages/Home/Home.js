@@ -1,5 +1,5 @@
 // react
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 // material-ui
@@ -9,6 +9,9 @@ import { makeStyles } from "@material-ui/core/styles";
 // local
 import { DASHBOARD } from "navigation/CONSTANTS";
 import SearchBar from "components/Shared/SearchBar";
+
+// redux
+import { DispatchContext } from "App";
 
 // api
 import { searchForPackage } from "services/thothApi";
@@ -42,6 +45,7 @@ const useStyles = makeStyles(theme => ({
 const Home = () => {
   const history = useHistory();
   const classes = useStyles();
+  const dispatch = useContext(DispatchContext);
 
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
@@ -80,6 +84,9 @@ const Home = () => {
 
         // only naviagte to dashbaord if the search query is valid
         if (failSearch) {
+          dispatch({
+            type: "reset"
+          });
           if (splitSearch.length === 1) {
             history.push(DASHBOARD + "/" + splitSearch[0]);
           }

@@ -1,6 +1,6 @@
 // React
 import React, { useEffect, useState, useContext } from "react";
-import { useParams, useLocation, useHistory } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 // local
 import PackageMetrics from "components/Dashboard/PackageMetrics";
@@ -9,15 +9,15 @@ import TabPanel from "components/Shared/TabPanel";
 import PackageDependencies from "components/Dashboard/PackageDependencies";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
-// navigation
-import { ROOT } from "navigation/CONSTANTS";
-
 // utils
-import { useCreateGraph, useComputeMetrics } from "utils/produceMetrics";
-import { validatePackage } from "utils/validatePackage";
+import {
+  useCreateGraph,
+  useComputeMetrics,
+  useSetRoots
+} from "utils/produceMetrics";
 
 // redux
-import { DispatchContext, StateContext } from "App";
+import { StateContext } from "App";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
@@ -44,22 +44,21 @@ function useQuery() {
 
 // The page that displays all analyis data
 export const Dashboard = ({ location }) => {
-  const history = useHistory();
   const classes = useStyles();
   const params = useParams();
   const query = useQuery();
   const packages = query.get("packages")?.split(",");
 
-  const dispatch = useContext(DispatchContext);
   const state = useContext(StateContext);
 
   // for tab control
   const [value, setValue] = useState(0);
 
+  const [starts, setStarts] = useState(null);
   // after render
   useEffect(() => {
     // parse packages into object list
-    let starts = packages?.map(p => {
+    let s = packages?.map(p => {
       return {
         name: p,
         version: undefined
@@ -67,36 +66,23 @@ export const Dashboard = ({ location }) => {
     });
 
     // if not muliple packages, then reset to the params
-    starts = starts ?? [
+    s = s ?? [
       {
         name: params.package,
         version: params?.version
       }
     ];
 
-    // for each package (could be one) validate
-    const roots = starts.map(async start => {
-      return validatePackage(start.name, start?.version);
-    });
-
-    Promise.all(roots).then(roots => {
-      if (roots.length === 1 && roots[0] === null) {
-        dispatch({
-          type: "packageError",
-          payload: "Package does not exist"
-        });
-      } else {
-        dispatch({
-          type: "roots",
-          payload: roots
-        });
-      }
-    });
+    setStarts(s);
   }, []);
+
+  useSetRoots(starts);
 
   useCreateGraph(state.roots, 2);
 
   useComputeMetrics(state.roots, state.graph);
+
+  console.log(state);
 
   // handle tab change
   const handleChange = (event, newValue) => {

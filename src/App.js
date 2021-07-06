@@ -14,7 +14,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import React, { useReducer } from "react";
 
 // redux
-import { reducer } from "redux/reducer";
+import { reducer, initState } from "redux/reducer";
 
 // context for reducer
 export const StateContext = React.createContext();
@@ -22,29 +22,7 @@ export const DispatchContext = React.createContext();
 
 function App() {
   // for state control
-  const [state, dispatch] = useReducer(reducer, {
-    graph: undefined, // vis-network
-    roots: undefined,
-    metrics: {
-      // metric cards
-      dependencies: {
-        // counts for dependency types
-        all: {
-          // aggragate of all root packages (mostly will just be one)
-          // roots: undefined, // starting package (has count of 1 unless looking at multiple packages)
-          // direct: undefined, // direct dependency count of all root packages
-          // indirect: undefined // indirect dependency count of all root packages
-        },
-        roots: {} // specific root packages and their direct and indirect
-        // holds key of package to navigage to it
-      },
-      licenses: {
-        total: undefined,
-        all: {} // Map of all licences (key) and and their dependencies (values)
-      }
-    },
-    error: false
-  });
+  const [state, dispatch] = useReducer(reducer, initState);
   return (
     <MuiThemeProvider theme={themeLight}>
       <CssBaseline />

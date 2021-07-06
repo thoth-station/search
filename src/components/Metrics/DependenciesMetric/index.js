@@ -14,8 +14,6 @@ import { StateContext } from "App";
 const DependenciesMetric = () => {
   const state = useContext(StateContext);
 
-  console.log(state);
-
   return (
     <LoadingErrorTemplate
       state={state.error ? "error" : state.metrics.dependencies.all.roots}

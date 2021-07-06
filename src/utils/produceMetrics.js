@@ -1,12 +1,14 @@
 import { thothGetDependencies, searchForPackage } from "services/thothApi";
 import compareVersions from "tiny-version-compare";
 
+// utils
 import { Graph } from "utils/Graph";
+import { validatePackage } from "utils/validatePackage";
 
 // redux
 import { DispatchContext } from "App";
 
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // React hook for computing metrics and applying to state
 export function useComputeMetrics(roots, graph) {
@@ -110,29 +112,71 @@ export function useComputeMetrics(roots, graph) {
   }, [graph, roots, dispatch]);
 }
 
-export function formatVisGraph(root, graph) {
-  const data = {
-    nodes: [],
-    edges: []
-  };
+export function useFormatVisGraph(root, graph) {
+  const [visGraph, setVisGraph] = useState(undefined);
 
-  const bfs = graph.graphSearch(graph.nodes.get(root));
-  const visitedOrder = Array.from(bfs);
+  useEffect(() => {
+    if (!root || !graph) {
+      return;
+    }
 
-  visitedOrder.forEach(node => {
-    data.nodes.push({
-      id: node.value.value.id,
-      label: node.value.value.label
-    });
-    node.value.adjacents.forEach(adj => {
-      data.edges.push({
-        to: node.value.value.id,
-        from: adj.value.value.id
+    const data = {
+      nodes: [],
+      edges: []
+    };
+
+    const bfs = graph.graphSearch(graph.nodes.get(root));
+    const visitedOrder = Array.from(bfs);
+
+    visitedOrder.forEach(node => {
+      data.nodes.push({
+        id: node.value.id,
+        label: node.value.label
+      });
+
+      node.adjacents.forEach(adj => {
+        data.edges.push({
+          to: node.value.id,
+          from: adj.value.id
+        });
       });
     });
-  });
 
-  return data;
+    setVisGraph(data);
+  }, [root, graph]);
+
+  return visGraph;
+}
+
+// takes a list of start node(s) in form { name: string, *version: string } and
+// sets the the new roots
+export function useSetRoots(startNodes) {
+  const dispatch = useContext(DispatchContext);
+
+  useEffect(() => {
+    if (!startNodes) {
+      return;
+    }
+
+    // for each package (could be one) validate
+    const roots = startNodes.map(async start => {
+      return validatePackage(start.name, start?.version);
+    });
+
+    Promise.all(roots).then(roots => {
+      if (roots.length === 1 && roots[0] === null) {
+        dispatch({
+          type: "packageError",
+          payload: "Package does not exist"
+        });
+      } else {
+        dispatch({
+          type: "roots",
+          payload: roots
+        });
+      }
+    });
+  }, [startNodes, dispatch]);
 }
 
 export function useCreateGraph(roots, depth = -1) {
@@ -153,7 +197,7 @@ export function useCreateGraph(roots, depth = -1) {
 
     const graph = new Graph();
 
-    // helper vars for bfs
+    // helper vars for dfs
     const visited = new Map();
     const visitList = [];
 
@@ -223,7 +267,6 @@ export function useCreateGraph(roots, depth = -1) {
           if (node.value.depth === 1) {
             visitedDirectDependencies += 1;
             // set loading
-
             dispatch({
               type: "loading",
               payload: {
