@@ -10,7 +10,7 @@ export const RouterConfig = () => {
       <Route exact path={ROOT} component={Home} />
       <Route
         exact
-        path={DASHBOARD + "/:package/:version?"}
+        path={DASHBOARD + "/:package?/:version?"}
         component={Dashboard}
       />
 

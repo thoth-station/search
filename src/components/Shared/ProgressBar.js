@@ -39,12 +39,14 @@ const useStyles = makeStyles(theme => ({
     textAlign: "end"
   },
   bar: {
-    gridColumnStart: 3,
-    gridColumnEnd: "span 4"
+    gridColumnStart: "span 3"
+  },
+  end: {
+    gridColumnStart: 6
   }
 }));
 
-const ProgressBar = ({ value, total, label, ...props }) => {
+const ProgressBar = ({ value, total, label, action, ...props }) => {
   const classes = useStyles();
   return (
     <div className={`${classes.root} ${props.className}`}>
@@ -63,6 +65,7 @@ const ProgressBar = ({ value, total, label, ...props }) => {
         value={total > 0 ? (value / total) * 100 : 0}
         className={classes.bar}
       />
+      <div className={classes.end}>{action ?? null}</div>
     </div>
   );
 };

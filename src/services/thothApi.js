@@ -2,6 +2,18 @@ import axios from "axios";
 import { PYPI, THOTH } from "./CONSTANTS";
 import compareVersions from "tiny-version-compare";
 
+// interceptors
+// axios.interceptors.response.use(null, (error) => {
+//   if (error.config && error.response && error.response.status === 401) {
+//     return updateToken().then((token) => {
+//       error.config.headers.xxxx <= set the token
+//       return axios.request(config);
+//     });
+//   }
+//
+//   return Promise.reject(error);
+// });
+
 // pypi
 export const searchForPackage = (name, version) => {
   return axios.get(
@@ -21,14 +33,14 @@ export const thothGetDependencies = (
       version: version,
       index: index
     },
-    timeout: 5000,
+    //timeout: 5000,
     headers: {
       accept: "application/json"
     }
   });
 };
 
-export const thothCompareLatestVersion = name => {
+export const thothGetLatestVersion = (name, version) => {
   return axios
     .get(THOTH + "/python/package/versions", {
       params: {
@@ -46,6 +58,11 @@ export const thothCompareLatestVersion = name => {
         const sorted = res.data.versions.sort(function(a, b) {
           return compareVersions(a.package_version, b.package_version);
         });
+
+        // compare to version if supplied
+        if (version && sorted.includes(version)) {
+          return version;
+        }
 
         return sorted[sorted.length - 1].package_version;
       }

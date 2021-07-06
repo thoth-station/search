@@ -1,6 +1,6 @@
 // React
-import React, { useEffect, useState, useReducer } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { useParams, useLocation } from "react-router-dom";
 
 // local
 import PackageMetrics from "components/Dashboard/PackageMetrics";
@@ -9,20 +9,19 @@ import TabPanel from "components/Shared/TabPanel";
 import PackageDependencies from "components/Dashboard/PackageDependencies";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
-// API
-import { searchForPackage, thothCompareLatestVersion } from "services/thothApi";
-
 // utils
 import {
-  produceDeepMetrics,
-  produceShallowMetrics
+  useCreateGraph,
+  useComputeMetrics,
+  useSetRoots
 } from "utils/produceMetrics";
-import compareVersions from "tiny-version-compare";
+
+// redux
+import { StateContext } from "App";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
+import { Tab, Tabs, Typography } from "@material-ui/core";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -37,141 +36,69 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function reducer(state, action) {
-  switch (action.type) {
-    case "metadata":
-      return { ...state, metadata: action.payload };
-    case "graph":
-      return { ...state, graph: action.payload };
-    case "metric":
-      return {
-        ...state,
-        metrics: { ...state.metrics, [action.metricName]: action.payload }
-      };
-    case "metric-field":
-      return {
-        ...state,
-        metrics: {
-          ...state.metrics,
-          [action.metricName]: {
-            ...state.metrics[action.metricName],
-            [action.fieldName]: action.payload
-          }
-        }
-      };
-    case "warning": {
-      return {
-        ...state,
-        warning: action.payload
-      };
-    }
-    case "error": {
-      return {
-        ...state,
-        error: { [action.who]: action.payload }
-      };
-    }
-
-    default:
-      return state;
-  }
-}
-
 // The page that displays all analyis data
 export const Dashboard = ({ location }) => {
   const classes = useStyles();
   const params = useParams();
-
-  // for state control
-  const [state, dispatch] = useReducer(reducer, {
-    metadata: undefined,
-    graph: undefined,
-    metrics: {},
-    error: {
-      graph: false,
-      metadata: false
-    }
-  });
+  const state = useContext(StateContext);
+  const search = useLocation().search;
 
   // for tab control
   const [value, setValue] = useState(0);
 
-  // before render
+  const [starts, setStarts] = useState(null);
+  // after render
   useEffect(() => {
-    // if the package or version doesnt exists, act accordingly
-    searchForPackage(params?.package, params?.version)
-      .then(r => {
-        // check if thoth is up to data for package
-        thothCompareLatestVersion(r.data.info.name).then(v => {
-          if (v === null || compareVersions(r.data.info.version, v) > 0) {
-            dispatch({
-              type: "warning",
-              payload: v
-                ? "Thoth currently supports up to version " +
-                  v +
-                  ", while the most recent version is " +
-                  r.data.info.version +
-                  "."
-                : "Thoth currently does not support this package."
-            });
-          }
-        });
+    const query = new URLSearchParams(search);
 
-        // set root/parent package metdata for shallow analyis
-        dispatch({ type: "metadata", payload: r.data });
-        applyMetrics(produceShallowMetrics(r.data).metrics);
+    const packages = query.get("packages")?.split(",");
 
-        // preform deep analysis in the background, update state when finished
-        produceDeepMetrics(r.data, 3)
-          .then(deepMetrics => {
-            // set graph data and metrics to state
-            dispatch({ type: "graph", payload: deepMetrics.graph });
-            applyMetrics(deepMetrics.metrics);
-          })
-          .catch(e => {
-            dispatch({
-              type: "error",
-              who: "graph",
-              payload: true
-            });
-          });
-      })
-      .catch(e => {
-        // does not exist
-        dispatch({ type: "error", who: "metadata", payload: true });
-      });
-  }, [params]);
+    // parse packages into object list
+    let s = packages?.map(p => {
+      return {
+        name: p,
+        version: undefined
+      };
+    });
 
-  // component specific functions //
-
-  // applsy all metrics to state q
-  const applyMetrics = metrics => {
-    for (const metricName of Object.keys(metrics)) {
-      // for each field on metric
-      for (const [field, payload] of Object.entries(metrics[metricName])) {
-        // add metrics to state.
-        dispatch({
-          type: "metric-field",
-          fieldName: field,
-          metricName: metricName,
-          payload: payload
-        });
+    // if not muliple packages, then reset to the params
+    s = s ?? [
+      {
+        name: params.package,
+        version: params?.version
       }
-    }
-  };
+    ];
 
-  // handle tab chnage
+    setStarts(s);
+  }, [params.package, params.version, search]);
+
+  // custom hooks
+  useSetRoots(starts);
+  useCreateGraph(state.roots, 2);
+  useComputeMetrics(state.roots, state.graph);
+
+  // handle tab change
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   return (
     <LoadingErrorTemplate
-      state={state.error.metadata ? "error" : state.metadata}
+      state={state.packageError ? "error" : state.roots}
       show404={"Package"}
     >
       <div className={classes.root}>
-        <PackageHeader data={state.metadata} warning={state.warning} />
+        {state?.roots?.length === 1 ? <PackageHeader /> : null}
+        {state?.roots?.map(r => {
+          if (r.error) {
+            return (
+              <Typography color="error" gutterBottom variant="body2">
+                {r.error}
+              </Typography>
+            );
+          }
+          return null;
+        })}
         <Tabs
           value={value}
           onChange={handleChange}
@@ -182,10 +109,10 @@ export const Dashboard = ({ location }) => {
           <Tab label="Dependencies" />
         </Tabs>
         <TabPanel value={value} index={0}>
-          <PackageMetrics state={state} />
+          <PackageMetrics />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <PackageDependencies state={state} />
+          <PackageDependencies />
         </TabPanel>
       </div>
     </LoadingErrorTemplate>
