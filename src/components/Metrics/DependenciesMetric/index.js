@@ -15,12 +15,8 @@ const DependenciesMetric = () => {
   const state = useContext(StateContext);
 
   return (
-    <LoadingErrorTemplate
-      state={state.error ? "error" : state.metrics.dependencies.all.roots}
-      amount={state?.loading?.init?.amount}
-      note={state?.loading?.init?.note}
-    >
-      {state.roots.length === 1 ? (
+    <LoadingErrorTemplate isLoading={state.metrics?.licences}>
+      {state?.focus ? (
         <SingleDependenciesMetric metric={state.metrics.dependencies} />
       ) : (
         <MultipleDependenciesMetric metric={state.metrics.dependencies} />

@@ -2,18 +2,17 @@ import React from "react";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 
-const TabPanel = props => {
-  const { children, value, index, ...other } = props;
-
+const TabPanel = ({ children, value, index, ...props }) => {
   return (
     <div
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      {...other}
+      className={`${props.className}`}
+      {...props}
     >
-      {value === index && <Box>{children}</Box>}
+      {value === index && children}
     </div>
   );
 };

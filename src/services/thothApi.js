@@ -2,17 +2,20 @@ import axios from "axios";
 import { PYPI, THOTH } from "./CONSTANTS";
 import compareVersions from "tiny-version-compare";
 
-// interceptors
-// axios.interceptors.response.use(null, (error) => {
-//   if (error.config && error.response && error.response.status === 401) {
-//     return updateToken().then((token) => {
-//       error.config.headers.xxxx <= set the token
-//       return axios.request(config);
-//     });
-//   }
-//
-//   return Promise.reject(error);
-// });
+// GitHub
+export function getGitHubFileText(githubRepo, fileName) {
+  const url = new URL(githubRepo);
+
+  if (url.hostname === "github.com") {
+    return fetch(
+      "https://raw.githubusercontent.com" + url.pathname + "/master/" + fileName
+    )
+      .then(response => response.text())
+      .then(response => {
+        return response;
+      });
+  } else return Promise.reject();
+}
 
 // pypi
 export const searchForPackage = (name, version) => {
@@ -22,6 +25,57 @@ export const searchForPackage = (name, version) => {
 };
 
 // thoth
+export const thothAdvise = (pipfile, pipfileLock) => {
+  const data = {
+    application_stack: {
+      requirements: pipfile,
+      requirements_format: "pipenv",
+      requirements_lock: pipfileLock
+    },
+    runtime_environment: {
+      base_image:
+        "https://quay.io/repository/thoth-station/s2i-thoth-ubi8-py38:v0.23.1",
+      cuda_version: "9.0",
+      cudnn_version: "8",
+      hardware: {},
+      ipython: {},
+      mkl_version: "2021.1.1",
+      name: "ubi:8-prod",
+      openblas_version: "0.3.13",
+      openmpi_version: "4.1",
+      operating_system: {},
+      platform: "linux-x86_64",
+      python_version: "3.6",
+      additionalProp1: {}
+    }
+  };
+
+  return axios.post(THOTH + "/advise/python", data, {
+    params: {
+      recommendation_type: "stable"
+    },
+    headers: {
+      accept: "application/json"
+    }
+  });
+};
+
+export const thothAdviseResult = analysis_id => {
+  return axios.get(THOTH + "/advise/python/" + analysis_id, {
+    headers: {
+      accept: "application/json"
+    }
+  });
+};
+
+export const thothAdviseStatus = analysis_id => {
+  return axios.get(THOTH + "/advise/python/" + analysis_id + "/status", {
+    headers: {
+      accept: "application/json"
+    }
+  });
+};
+
 export const thothGetDependencies = (
   name,
   version,

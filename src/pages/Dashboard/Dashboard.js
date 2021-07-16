@@ -1,23 +1,25 @@
 // React
-import React, { useEffect, useState, useContext } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useParams } from "react-router-dom";
 
 // local
 import PackageMetrics from "components/Dashboard/PackageMetrics";
 import PackageHeader from "components/Dashboard/PackageHeader";
+import AdviseHeader from "components/Dashboard/AdviseHeader";
+
 import TabPanel from "components/Shared/TabPanel";
 import PackageDependencies from "components/Dashboard/PackageDependencies";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
 // utils
-import {
-  useCreateGraph,
-  useComputeMetrics,
-  useSetRoots
-} from "utils/produceMetrics";
+import { useComputeMetrics, useLockFileToGraph } from "utils/produceMetrics";
+import { useInterval } from "utils/useInterval";
+
+// api
+import { thothAdviseResult } from "services/thothApi";
 
 // redux
-import { StateContext } from "App";
+import { StateContext, DispatchContext } from "App";
 
 // material-ui
 import { makeStyles } from "@material-ui/core/styles";
@@ -41,54 +43,115 @@ export const Dashboard = ({ location }) => {
   const classes = useStyles();
   const params = useParams();
   const state = useContext(StateContext);
-  const search = useLocation().search;
+  const dispatch = useContext(DispatchContext);
 
   // for tab control
   const [value, setValue] = useState(0);
 
-  const [starts, setStarts] = useState(null);
-  // after render
-  useEffect(() => {
-    const query = new URLSearchParams(search);
+  const [pollingTime, setPollingTime] = useState(500);
 
-    const packages = query.get("packages")?.split(",");
+  useInterval(() => {
+    thothAdviseResult(params.analysis_id).then(response => {
+      // set next polling delay
+      setPollingTime(
+        pollingTime !== null ? Math.min(pollingTime * 2, 8000) : null
+      );
 
-    // parse packages into object list
-    let s = packages?.map(p => {
-      return {
-        name: p,
-        version: undefined
-      };
-    });
+      const data = response.data;
+      console.log(data);
 
-    // if not muliple packages, then reset to the params
-    s = s ?? [
-      {
-        name: params.package,
-        version: params?.version
+      // if cant run advise error
+      if (data.error) {
+        // set error and stop polling
+        dispatch({
+          type: "advise",
+          param: "error",
+          payload: data.error
+        });
+        dispatch({
+          type: "advise",
+          param: "failed",
+          payload: response.status
+        });
+        setPollingTime(null);
       }
-    ];
+      // if advise report not ready
+      else if (data.status) {
+        dispatch({
+          type: "advise",
+          param: "status",
+          payload: data.status
+        });
+      }
+      // if done then set results and stop polling
+      // note this could also have an error but should of been stopped above
+      else if (data.result) {
+        if (data.result?.error) {
+          dispatch({
+            type: "advise",
+            param: "error",
+            payload: data.result.error_msg
+          });
+        }
+        dispatch({
+          type: "advise",
+          param: "pipfile",
+          payload: Object.keys(
+            data.result.parameters.project.requirements.packages
+          )
+        });
+        dispatch({
+          type: "advise",
+          param: "pipfileLock",
+          payload: data.result.parameters.project.requirements_locked.default
+        });
+        dispatch({
+          type: "advise",
+          param: "report",
+          payload: data.result.report
+        });
+        dispatch({
+          type: "advise",
+          param: "metadata",
+          payload: data.metadata
+        });
 
-    setStarts(s);
-  }, [params.package, params.version, search]);
+        setPollingTime(null);
+      }
+      // if an unknown response occured
+      else {
+        dispatch({
+          type: "advise",
+          param: "error",
+          payload: "Unknown Error: Aborting"
+        });
+        setPollingTime(null);
+      }
+    });
+  }, pollingTime);
+  useLockFileToGraph(state?.advise?.pipfile, state?.advise?.pipfileLock);
+  useComputeMetrics(state?.advise?.pipfile, state.graph);
 
-  // custom hooks
-  useSetRoots(starts);
-  useCreateGraph(state.roots, 2);
-  useComputeMetrics(state.roots, state.graph);
+  console.log(state);
 
   // handle tab change
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  //       isError={state?.advise?.error !== undefined}
+
   return (
     <LoadingErrorTemplate
-      state={state.packageError ? "error" : state.roots}
-      show404={"Package"}
+      isLoading={state?.advise?.report === undefined}
+      errorText={state?.advise?.error}
     >
       <div className={classes.root}>
-        {state?.roots?.length === 1 ? <PackageHeader /> : null}
+        {state?.focus ? (
+          <PackageHeader />
+        ) : (
+          <AdviseHeader adviseID={params.analysis_id} />
+        )}
         {state?.roots?.map(r => {
           if (r.error) {
             return (

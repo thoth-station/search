@@ -1,5 +1,5 @@
 // material ui
-import TextField from "@material-ui/core/TextField";
+import { TextField, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 // react
@@ -14,21 +14,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SearchBar = ({ onChange, label, helperText, error = false }) => {
+const SearchBar = props => {
+  const { onChange, label, helperText, boxprops, error = false } = props;
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <Box className={classes.root} {...boxprops}>
       <TextField
-        type="search"
         variant="outlined"
         label={label}
-        className={classes.bar}
         onChange={e => onChange(e.target.value)}
         helperText={helperText}
         error={error}
+        {...props}
       />
-    </div>
+    </Box>
   );
 };
 

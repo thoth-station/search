@@ -27,18 +27,12 @@ const useStyles = makeStyles(theme => ({
 const PackageDependencies = () => {
   const classes = useStyles();
   const state = useContext(StateContext);
-  const root =
-    state.roots.length > 1
-      ? "*App"
-      : state.roots[0]?.metadata?.info?.name +
-        state.roots[0]?.metadata?.info?.version;
+  const root = state.focus ?? "*App";
+
   const visGraph = useFormatVisGraph(root, state.graph);
 
   return (
-    <LoadingErrorTemplate
-      state={state.thothError ? "error" : visGraph}
-      errorText="Could not load in dependency graph."
-    >
+    <LoadingErrorTemplate isLoading={visGraph === undefined}>
       <Paper>
         <NetworkGraph
           data={{
