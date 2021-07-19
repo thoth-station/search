@@ -1,5 +1,5 @@
 // React
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 // local
@@ -16,13 +16,13 @@ import { useComputeMetrics, useLockFileToGraph } from "utils/produceMetrics";
 import { useInterval } from "utils/useInterval";
 
 // api
-import { thothAdviseResult } from "services/thothApi";
+import { thothAdviseResult, thothAdviseStatus } from "services/thothApi";
 
 // redux
 import { StateContext, DispatchContext } from "App";
 
 // material-ui
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 import { Tab, Tabs, Typography } from "@material-ui/core";
 
 // component styling
@@ -48,44 +48,35 @@ export const Dashboard = ({ location }) => {
   // for tab control
   const [value, setValue] = useState(0);
 
-  const [pollingTime, setPollingTime] = useState(500);
+  // delay for each status api call
+  const [pollingTime, setPollingTime] = useState(null);
 
-  useInterval(() => {
+  useEffect(() => {
+    // only run if polling is turned off (meaning the result is ready)
+    if (pollingTime !== null) {
+      return;
+    }
+
+    // get results of advise request
     thothAdviseResult(params.analysis_id).then(response => {
-      // set next polling delay
-      setPollingTime(
-        pollingTime !== null ? Math.min(pollingTime * 2, 8000) : null
-      );
-
       const data = response.data;
-      console.log(data);
 
       // if cant run advise error
-      if (data.error) {
+      if (response.status === 400 || response.status === 404) {
         // set error and stop polling
         dispatch({
           type: "advise",
           param: "error",
           payload: data.error
         });
-        dispatch({
-          type: "advise",
-          param: "failed",
-          payload: response.status
-        });
-        setPollingTime(null);
       }
       // if advise report not ready
-      else if (data.status) {
-        dispatch({
-          type: "advise",
-          param: "status",
-          payload: data.status
-        });
+      else if (response.status === 202) {
+        setPollingTime(500);
       }
       // if done then set results and stop polling
       // note this could also have an error but should of been stopped above
-      else if (data.result) {
+      else if (response.status === 200) {
         if (data.result?.error) {
           dispatch({
             type: "advise",
@@ -115,8 +106,6 @@ export const Dashboard = ({ location }) => {
           param: "metadata",
           payload: data.metadata
         });
-
-        setPollingTime(null);
       }
       // if an unknown response occured
       else {
@@ -125,10 +114,33 @@ export const Dashboard = ({ location }) => {
           param: "error",
           payload: "Unknown Error: Aborting"
         });
+      }
+    });
+  }, [params.analysis_id, dispatch, pollingTime]);
+
+  useInterval(() => {
+    thothAdviseStatus(params.analysis_id).then(response => {
+      // set next polling delay
+      const status = response.data;
+
+      dispatch({
+        type: "advise",
+        param: "status",
+        payload: status
+      });
+
+      // check if advise is done
+      // if done then turn off polling whcih triggers another call for results
+      if (status.finished_at === null) {
         setPollingTime(null);
+      } else {
+        setPollingTime(
+          pollingTime !== null ? Math.min(pollingTime * 2, 8000) : null
+        );
       }
     });
   }, pollingTime);
+
   useLockFileToGraph(state?.advise?.pipfile, state?.advise?.pipfileLock);
   useComputeMetrics(state?.advise?.pipfile, state.graph);
 

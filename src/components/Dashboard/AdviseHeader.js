@@ -2,9 +2,8 @@
 import React, { useContext } from "react";
 
 // material-ui
-import { Typography, Chip, Button, Collapse } from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
-import { makeStyles } from "@material-ui/core/styles";
+import { Typography, Chip, Button, Collapse, Alert } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 // local
 import IconText from "components/Shared/IconText";

@@ -1,20 +1,18 @@
 // react
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
 // material-ui
 import { Typography, Button, Box, Collapse } from "@material-ui/core";
+import LoadingButton from "@material-ui/lab/LoadingButton";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 
 // local
 import { DASHBOARD } from "navigation/CONSTANTS";
 import SearchBar from "components/Shared/SearchBar";
 import TabPanel from "components/Shared/TabPanel";
-
-// redux
-import { DispatchContext } from "App";
 
 // utils
 import { validatePackage } from "utils/validatePackage";
@@ -62,7 +60,6 @@ const useStyles = makeStyles(theme => ({
 const Home = () => {
   const history = useHistory();
   const classes = useStyles();
-  const dispatch = useContext(DispatchContext);
 
   // textbox states
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,6 +74,8 @@ const Home = () => {
   // utlity states
   const [mode, setMode] = useState("single");
   const [expandOptions, setExpandOptions] = useState(false);
+
+  const [queryLoading, setQueryLoading] = useState(false);
 
   // handle textbox state change
   const handleChange = (e, box) => {
@@ -105,7 +104,9 @@ const Home = () => {
 
   // change mode view
   const handleMode = (event, newMode) => {
-    setMode(newMode);
+    if (newMode) {
+      setMode(newMode);
+    }
   };
 
   // handle the input
@@ -148,20 +149,23 @@ const Home = () => {
       let fail = false;
       if (!pipfile) {
         fail = true;
-        setPipfileError("Could not parse Pipfile");
+        setPipfileError("Please provide a Pipfile");
       }
       if (!pipfileLock) {
         fail = true;
-        setPipfileLockError("Could not parse Pipfile.lock");
+        setPipfileLockError("Please provide a Pipfile.lock");
       }
 
       // if able to parse both
       if (!fail) {
+        setQueryLoading(true);
         thothAdvise(pipfileQuery, pipfileLockQuery)
           .then(response => {
+            setQueryLoading(false);
             history.push(DASHBOARD + "/" + response.data.analysis_id);
           })
           .catch(error => {
+            setQueryLoading(false);
             if (error.response.status === 400) {
               if (error.response.data.error.includes("Pipfile.lock")) {
                 setPipfileLockError("Failed to parse provided Pipfile.lock");
@@ -265,13 +269,14 @@ const Home = () => {
         </Box>
 
         <Box textAlign="center" mt={2}>
-          <Button
+          <LoadingButton
             variant="contained"
             color="primary"
             onClick={() => handleAnalyze()}
+            loading={queryLoading}
           >
             <b>Analyze</b>
-          </Button>
+          </LoadingButton>
         </Box>
       </TabPanel>
     </div>

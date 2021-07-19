@@ -4,11 +4,10 @@ import PropTypes from "prop-types";
 
 // material ui
 import { CircularProgress, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 
 // local
 import ErrorPage from "components/Shared/ErrorPage";
-import NotFound from "navigation/NotFound";
 
 // component styling
 const useStyles = makeStyles(theme => ({
