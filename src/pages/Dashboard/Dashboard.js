@@ -51,6 +51,44 @@ export const Dashboard = ({ location }) => {
   // delay for each status api call
   const [pollingTime, setPollingTime] = useState(null);
 
+  const getStatus = () => {
+    thothAdviseStatus(params.analysis_id).then(response => {
+      // set next polling delay
+      const status = response.data.status;
+
+      dispatch({
+        type: "advise",
+        param: "status",
+        payload: status
+      });
+
+      // check if advise is done
+      // if done then turn off polling whcih triggers another call for results
+      if (status.finished_at !== null) {
+        setPollingTime(null);
+      } else {
+        setPollingTime(
+          pollingTime !== null ? Math.min(pollingTime * 2, 8000) : null
+        );
+      }
+    });
+  };
+
+  // first reset state if using new anyalysis id
+  useEffect(() => {
+    if (!state?.analysis_id || params.analysis_id !== state?.analysis_id) {
+      dispatch({
+        type: "reset"
+      });
+      dispatch({
+        type: "advise",
+        param: "analysis_id",
+        payload: params.analysis_id
+      });
+    }
+  }, []);
+
+  // fetch results of advise
   useEffect(() => {
     // only run if polling is turned off (meaning the result is ready)
     if (pollingTime !== null) {
@@ -64,19 +102,33 @@ export const Dashboard = ({ location }) => {
       // if cant run advise error
       if (response.status === 400 || response.status === 404) {
         // set error and stop polling
+        setPollingTime(null);
         dispatch({
           type: "advise",
           param: "error",
           payload: data.error
         });
       }
-      // if advise report not ready
+
+      // if not done then start polling
       else if (response.status === 202) {
-        setPollingTime(500);
+        if (response.data.status.state === "error") {
+          dispatch({
+            type: "advise",
+            param: "status",
+            payload: response.data.status
+          });
+        } else {
+          setPollingTime(500);
+        }
       }
+
       // if done then set results and stop polling
       // note this could also have an error but should of been stopped above
       else if (response.status === 200) {
+        // stop polling when done
+        setPollingTime(null);
+
         if (data.result?.error) {
           dispatch({
             type: "advise",
@@ -86,15 +138,8 @@ export const Dashboard = ({ location }) => {
         }
         dispatch({
           type: "advise",
-          param: "pipfile",
-          payload: Object.keys(
-            data.result.parameters.project.requirements.packages
-          )
-        });
-        dispatch({
-          type: "advise",
-          param: "pipfileLock",
-          payload: data.result.parameters.project.requirements_locked.default
+          param: "initProject",
+          payload: data.result.parameters.project
         });
         dispatch({
           type: "advise",
@@ -119,78 +164,57 @@ export const Dashboard = ({ location }) => {
   }, [params.analysis_id, dispatch, pollingTime]);
 
   useInterval(() => {
-    thothAdviseStatus(params.analysis_id).then(response => {
-      // set next polling delay
-      const status = response.data;
-
-      dispatch({
-        type: "advise",
-        param: "status",
-        payload: status
-      });
-
-      // check if advise is done
-      // if done then turn off polling whcih triggers another call for results
-      if (status.finished_at === null) {
-        setPollingTime(null);
-      } else {
-        setPollingTime(
-          pollingTime !== null ? Math.min(pollingTime * 2, 8000) : null
-        );
-      }
-    });
+    getStatus();
   }, pollingTime);
 
-  useLockFileToGraph(state?.advise?.pipfile, state?.advise?.pipfileLock);
-  useComputeMetrics(state?.advise?.pipfile, state.graph);
-
-  console.log(state);
+  // .products[0].project
+  useLockFileToGraph(
+    state?.advise?.initProject?.requirements?.packages,
+    state?.advise?.initProject?.requirements_locked?.default
+  );
+  useComputeMetrics(
+    state.graph,
+    state?.advise?.initProject?.requirements?.packages
+  );
 
   // handle tab change
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  //       isError={state?.advise?.error !== undefined}
-
   return (
-    <LoadingErrorTemplate
-      isLoading={state?.advise?.report === undefined}
-      errorText={state?.advise?.error}
-    >
-      <div className={classes.root}>
-        {state?.focus ? (
-          <PackageHeader />
-        ) : (
-          <AdviseHeader adviseID={params.analysis_id} />
-        )}
-        {state?.roots?.map(r => {
-          if (r.error) {
-            return (
-              <Typography color="error" gutterBottom variant="body2">
-                {r.error}
-              </Typography>
-            );
-          }
-          return null;
-        })}
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label="Overview" />
-          <Tab label="Dependencies" />
-        </Tabs>
-        <TabPanel value={value} index={0}>
-          <PackageMetrics />
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <PackageDependencies />
-        </TabPanel>
-      </div>
-    </LoadingErrorTemplate>
+    <div className={classes.root}>
+      {state?.focus ? (
+        <PackageHeader />
+      ) : (
+        <AdviseHeader adviseID={params.analysis_id} />
+      )}
+      {state?.roots?.map(r => {
+        if (r.error) {
+          return (
+            <Typography color="error" gutterBottom variant="body2">
+              {r.error}
+            </Typography>
+          );
+        }
+        return null;
+      })}
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        indicatorColor="primary"
+        textColor="primary"
+      >
+        <Tab label="Overview" />
+        <Tab label="Dependencies" />
+      </Tabs>
+      <TabPanel value={value} index={0}>
+        <PackageMetrics />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <PackageDependencies />
+      </TabPanel>
+    </div>
   );
 };
 

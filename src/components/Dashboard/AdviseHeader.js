@@ -29,38 +29,88 @@ const useStyles = makeStyles(theme => ({
   },
   linksRow: {
     display: "flex",
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
+    alignItems: "center"
   },
-  alerts: {
+  alert: {
     width: "100%",
-    "& > * + *": {
-      marginTop: theme.spacing(2)
-    }
+    marginTop: theme.spacing(1)
   }
 }));
 
-const PackageHeader = ({ adviseID }) => {
+const CustomAlert = ({ info, ...props }) => {
+  return (
+    <Alert
+      className={props.className}
+      action={
+        <Button color="inherit" size="small" href={info.link}>
+          DETAILS
+        </Button>
+      }
+      severity={info.type.toLowerCase()}
+    >
+      {info.message}
+    </Alert>
+  );
+};
+
+const AdviseHeader = ({ adviseID }) => {
   const classes = useStyles();
   const state = useContext(StateContext);
   const [expandAlerts, setExpandAlerts] = React.useState(false);
 
   const calcTime = () => {
-    if (state?.advise?.metadata) {
+    // if status says finished
+    if (state?.advise?.status?.finished_at) {
       return (
         "Advise finished " +
-        timeSince(new Date(state?.advise?.metadata.datetime)) +
+        timeSince(new Date(state.advise.status.finished_at)) +
         " ago."
       );
-    } else if (state?.advise?.status) {
+    }
+    // if status is pending
+    else if (state?.advise?.status?.started_at) {
       return (
         "Advise started " +
-        timeSince(new Date(state?.advise?.status.started_at)) +
+        timeSince(new Date(state.advise.status.started_at)) +
+        " ago."
+      );
+    }
+    // if status is nulled so use metadata end date
+    else if (state?.advise?.metadata?.datetime) {
+      return (
+        "Advise finished " +
+        timeSince(new Date(state.advise.metadata.datetime + "Z")) +
         " ago."
       );
     } else {
-      return null;
+      return "Time started/finished not available";
     }
   };
+
+  const [statusText, statusColor] = (() => {
+    // if report is done
+    if (state?.advise?.report) {
+      if (state.advise.report.ERROR) {
+        return ["ERROR", "error"];
+      } else {
+        return ["COMPLETE", "success"];
+      }
+    }
+    // if report is not done
+    else if (state?.advise?.status?.state) {
+      return [state.advise.status.state.toUpperCase(), "info"];
+    } else {
+      return ["UNKNOWN", undefined];
+    }
+  })();
+
+  const alerts = state?.advise?.report?.stack_info
+    ? state.advise.report.stack_info.sort((a, b) => {
+        const order = { INFO: 0, WARNING: 1, ERROR: 2 };
+        return order[b.type] - order[a.type];
+      })
+    : null;
 
   return (
     <div>
@@ -68,52 +118,37 @@ const PackageHeader = ({ adviseID }) => {
         <b>{adviseID}</b>
       </Typography>
       <div className={classes.linksRow}>
-        <Chip
-          label={
-            state?.advise?.error
-              ? "ERROR"
-              : state?.advise?.report
-              ? "DONE"
-              : state?.advise?.status.state
-          }
-          color="secondary"
-        />
+        <Chip label={statusText} color={statusColor} />
         <IconText
           className={classes.marginLeft}
           text={calcTime()}
           icon={<AccessTimeIcon />}
         />
       </div>
-      <div className={classes.alerts}>
-        <Collapse in={expandAlerts} timeout="auto" unmountOnExit>
-          {state?.advise?.report.stack_info
-            ? state?.advise?.report.stack_info.map(info => {
-                return (
-                  <Alert
-                    action={
-                      <Button color="inherit" size="small" href={info.link}>
-                        MORE
-                      </Button>
-                    }
-                    severity={info.type.toLowerCase()}
-                  >
-                    {info.message}
-                  </Alert>
-                );
-              })
-            : null}
-        </Collapse>
+      {state?.advise?.report?.stack_info?.length > 0 ? (
+        <div>
+          <CustomAlert info={alerts[0]} />
+          <Collapse in={expandAlerts} timeout="auto" unmountOnExit>
+            {alerts?.slice(1).map(info => {
+              return <CustomAlert info={info} className={classes.alert} />;
+            })}
+          </Collapse>
 
-        <Button
-          color="inherit"
-          size="small"
-          onClick={() => setExpandAlerts(!expandAlerts)}
-        >
-          {expandAlerts ? "LESS" : "MORE"}
-        </Button>
-      </div>
+          <Button
+            color="inherit"
+            size="small"
+            onClick={() => setExpandAlerts(!expandAlerts)}
+          >
+            {state?.advise?.report?.stack_info?.length > 1
+              ? expandAlerts
+                ? "LESS"
+                : "MORE"
+              : null}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 };
 
-export default PackageHeader;
+export default AdviseHeader;

@@ -24,6 +24,36 @@ export const searchForPackage = (name, version) => {
   );
 };
 
+export const thothSearchForPackage = (
+  name,
+  version,
+  index = "https://pypi.org/simple"
+) => {
+  return axios
+    .get(THOTH + "/python/package/metadata", {
+      params: {
+        name: name,
+        version: version,
+        index: index
+      },
+      headers: {
+        accept: "application/json"
+      }
+    })
+    .then(res => {
+      return res.data.metadata;
+    })
+    .catch(e => {
+      if (e?.response?.status === 404) {
+        return axios
+          .get(PYPI + "/" + name + (version ? "/" + version : "") + "/json")
+          .then(res => {
+            return res.data.info;
+          });
+      }
+    });
+};
+
 // thoth
 export const thothAdvise = (pipfile, pipfileLock) => {
   const data = {
@@ -33,26 +63,20 @@ export const thothAdvise = (pipfile, pipfileLock) => {
       requirements_lock: pipfileLock
     },
     runtime_environment: {
-      base_image:
-        "https://quay.io/repository/thoth-station/s2i-thoth-ubi8-py38:v0.23.1",
-      cuda_version: "9.0",
-      cudnn_version: "8",
-      hardware: {},
-      ipython: {},
-      mkl_version: "2021.1.1",
-      name: "ubi:8-prod",
-      openblas_version: "0.3.13",
-      openmpi_version: "4.1",
-      operating_system: {},
+      operating_system: {
+        name: "ubi",
+        version: "8"
+      },
       platform: "linux-x86_64",
-      python_version: "3.6",
-      additionalProp1: {}
+      python_version: "3.6"
     }
   };
 
   return axios.post(THOTH + "/advise/python", data, {
     params: {
-      recommendation_type: "stable"
+      recommendation_type: "stable",
+      force: true,
+      debug: true
     },
     headers: {
       accept: "application/json"

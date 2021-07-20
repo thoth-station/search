@@ -46,19 +46,19 @@ const PackageHeader = () => {
     <div>
       <div className={classes.titleRow}>
         <Typography variant="h4">
-          <b>{roots[0]?.metadata?.info?.name}</b>
+          <b>{roots[0]?.metadata?.name}</b>
         </Typography>
         <Typography className={classes.marginLeft} variant="subtitle1">
-          v{roots[0]?.metadata?.info?.version ?? "NaN"}
+          v{roots[0]?.metadata?.version ?? "NaN"}
         </Typography>
       </div>
 
       <Typography gutterBottom variant="body1">
-        {roots[0]?.metadata?.info?.summary ?? "NaN"}
+        {roots[0]?.metadata?.summary ?? "NaN"}
       </Typography>
       <div className={classes.linksRow}>
         <IconText
-          text={roots[0]?.metadata?.info?.license ?? "NaN"}
+          text={roots[0]?.metadata?.license ?? "NaN"}
           icon={<GavelIcon />}
         />
         <IconText
@@ -68,7 +68,7 @@ const PackageHeader = () => {
             timeSince(
               new Date(
                 roots[0]?.metadata?.releases?.[
-                  roots[0]?.metadata?.info?.version
+                  roots[0]?.metadata?.version
                 ]?.[0]?.upload_time
               )
             ) +
@@ -87,8 +87,8 @@ const PackageHeader = () => {
                 variant="body2"
               >
                 Dependency <i>{packageWarning[0].value.label}</i>{" "}
-                <i>{packageWarning[0].value.metadata.info.version}</i> is
-                currently not supported by Thoth.
+                <i>{packageWarning[0].value.metadata.version}</i> is currently
+                not supported by Thoth.
               </Typography>
             );
           })

@@ -1,5 +1,5 @@
 // react
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 // material-ui
@@ -18,6 +18,9 @@ import TabPanel from "components/Shared/TabPanel";
 import { validatePackage } from "utils/validatePackage";
 
 import { parsePipfile, parsePipfileLock } from "utils/parsePipfile";
+
+// redux
+import { DispatchContext } from "App";
 
 // api
 import { thothAdvise } from "services/thothApi";
@@ -60,6 +63,7 @@ const useStyles = makeStyles(theme => ({
 const Home = () => {
   const history = useHistory();
   const classes = useStyles();
+  const dispatch = useContext(DispatchContext);
 
   // textbox states
   const [searchQuery, setSearchQuery] = useState("");
@@ -162,6 +166,11 @@ const Home = () => {
         thothAdvise(pipfileQuery, pipfileLockQuery)
           .then(response => {
             setQueryLoading(false);
+            dispatch({
+              type: "advise",
+              param: "analysis_id",
+              payload: response.data.analysis_id
+            });
             history.push(DASHBOARD + "/" + response.data.analysis_id);
           })
           .catch(error => {
