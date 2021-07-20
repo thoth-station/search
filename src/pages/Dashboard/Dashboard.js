@@ -9,7 +9,6 @@ import AdviseHeader from "components/Dashboard/AdviseHeader";
 
 import TabPanel from "components/Shared/TabPanel";
 import PackageDependencies from "components/Dashboard/PackageDependencies";
-import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
 // utils
 import { useComputeMetrics, useLockFileToGraph } from "utils/produceMetrics";
@@ -86,7 +85,7 @@ export const Dashboard = ({ location }) => {
         payload: params.analysis_id
       });
     }
-  }, []);
+  }, [params.analysis_id, state?.analysis_id, dispatch]);
 
   // fetch results of advise
   useEffect(() => {

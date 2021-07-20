@@ -40,7 +40,4 @@ export function reducer(state, action) {
   }
 }
 
-export const initState = {
-  graph: undefined, // vis-network
-  metrics: {}
-};
+export const initState = {};

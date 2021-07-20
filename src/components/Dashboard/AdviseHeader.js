@@ -106,9 +106,8 @@ const AdviseHeader = ({ adviseID }) => {
   })();
 
   const alerts = state?.advise?.report?.stack_info
-    ? state.advise.report.stack_info.sort((a, b) => {
-        const order = { INFO: 0, WARNING: 1, ERROR: 2 };
-        return order[b.type] - order[a.type];
+    ? state.advise.report.stack_info.filter(alert => {
+        return alert.type === "ERROR";
       })
     : null;
 
@@ -125,7 +124,7 @@ const AdviseHeader = ({ adviseID }) => {
           icon={<AccessTimeIcon />}
         />
       </div>
-      {state?.advise?.report?.stack_info?.length > 0 ? (
+      {alerts?.length > 0 ? (
         <div>
           <CustomAlert info={alerts[0]} />
           <Collapse in={expandAlerts} timeout="auto" unmountOnExit>
@@ -139,11 +138,7 @@ const AdviseHeader = ({ adviseID }) => {
             size="small"
             onClick={() => setExpandAlerts(!expandAlerts)}
           >
-            {state?.advise?.report?.stack_info?.length > 1
-              ? expandAlerts
-                ? "LESS"
-                : "MORE"
-              : null}
+            {alerts?.length > 1 ? (expandAlerts ? "LESS" : "MORE") : null}
           </Button>
         </div>
       ) : null}
