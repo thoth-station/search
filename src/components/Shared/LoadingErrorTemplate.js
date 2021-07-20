@@ -4,11 +4,10 @@ import PropTypes from "prop-types";
 
 // material ui
 import { CircularProgress, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 
 // local
 import ErrorPage from "components/Shared/ErrorPage";
-import NotFound from "navigation/NotFound";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -37,29 +36,29 @@ const CustomProgress = ({ amount, note }) => {
 };
 
 const LoadingErrorTemplate = ({
-  children,
-  state,
+  isError,
+  isLoading,
   errorText,
-  show404,
   loadingPage,
-  amount,
-  note
+  loadingAmount,
+  loadingText,
+  children
 }) => {
-  return (
-    <>
-      {state === "error" ? (
-        show404 ? (
-          <NotFound text={show404} />
-        ) : (
-          <ErrorPage text={errorText ?? "A unknown error occured"} />
+  const renderChoice = () => {
+    if (isError) {
+      return <ErrorPage text={errorText ?? "A unknown error occured"} />;
+    } else if (isLoading) {
+      return (
+        loadingPage ?? (
+          <CustomProgress amount={loadingAmount} note={loadingText} />
         )
-      ) : state === undefined ? ( // loading if undefined
-        loadingPage ?? <CustomProgress amount={amount} note={note} />
-      ) : (
-        children
-      )}
-    </>
-  );
+      );
+    } else {
+      return children;
+    }
+  };
+
+  return <>{renderChoice()}</>;
 };
 
 LoadingErrorTemplate.propTypes = {

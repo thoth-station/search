@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // material-ui
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/styles";
 import { LinearProgress, Typography, Tooltip } from "@material-ui/core";
 
 const CustomLinearProgress = withStyles(theme => ({

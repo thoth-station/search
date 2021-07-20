@@ -15,12 +15,8 @@ const LicenseMetric = () => {
   const state = useContext(StateContext);
 
   return (
-    <LoadingErrorTemplate
-      state={state.error ? "error" : state.metrics.licenses.total}
-      amount={state?.loading?.init?.amount}
-      note={state?.loading?.init?.note}
-    >
-      {state.roots.length === 1 ? (
+    <LoadingErrorTemplate isLoading={state.metrics?.licences}>
+      {state?.focus ? (
         <SingleLicenseMetric metric={state.metrics.licenses} />
       ) : (
         <MultipleLicenseMetric metric={state.metrics.licenses} />

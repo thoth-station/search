@@ -1,9 +1,7 @@
-import { thothGetDependencies, searchForPackage } from "services/thothApi";
-import compareVersions from "tiny-version-compare";
+import { thothSearchForPackage } from "services/thothApi";
 
 // utils
 import { Graph } from "utils/Graph";
-import { validatePackage } from "utils/validatePackage";
 
 // redux
 import { DispatchContext } from "App";
@@ -11,11 +9,11 @@ import { DispatchContext } from "App";
 import { useContext, useEffect, useState } from "react";
 
 // React hook for computing metrics and applying to state
-export function useComputeMetrics(roots, graph) {
+export function useComputeMetrics(graph, roots) {
   const dispatch = useContext(DispatchContext);
 
   useEffect(() => {
-    if (!roots || !graph) {
+    if (!graph || !roots) {
       return;
     }
 
@@ -26,38 +24,19 @@ export function useComputeMetrics(roots, graph) {
 
     let licenses = { total: undefined, all: {} };
 
-    let packageWarning = [];
-
-    let starts = roots;
-    if (typeof starts === "string") {
-      starts = [roots];
-    }
-
     // for each starting node
-    starts.forEach(root => {
-      // if the root has an error then skip it
-      if (root.error) {
-        return;
-      }
-
-      const bfs = graph.graphSearch(
-        graph.nodes.get(root.metadata.info.name + root.metadata.info.version)
-      );
+    Object.keys(roots).forEach(root => {
+      const bfs = graph.graphSearch(graph.nodes.get(root));
       const visitedOrder = Array.from(bfs);
 
       // depth to type of dependency
       visitedOrder.forEach(node => {
         const depth =
-          node.value.depth === 0
+          node.value.depth === 0 || root === node.value.id
             ? "roots"
             : node.value.depth === 1
             ? "direct"
             : "indirect";
-
-        // is not in thoth
-        if (node.value.thoth === false) {
-          packageWarning.push(node);
-        }
 
         // dependency metric
         dependencies = {
@@ -67,14 +46,9 @@ export function useComputeMetrics(roots, graph) {
           },
           roots: {
             ...dependencies.roots,
-            [root.metadata.info.name + root.metadata.info.version]: {
-              ...(dependencies.roots[
-                root.metadata.info.name + root.metadata.info.version
-              ] ?? null),
-              [depth]:
-                (dependencies.roots?.[
-                  root.metadata.info.name + root.metadata.info.version
-                ]?.[depth] ?? 0) + 1
+            [root]: {
+              ...(dependencies.roots[root] ?? null),
+              [depth]: (dependencies.roots?.[root]?.[depth] ?? 0) + 1
             }
           }
         };
@@ -82,11 +56,11 @@ export function useComputeMetrics(roots, graph) {
         // licence metric
         licenses = {
           total: (licenses.total ?? 0) + 1,
-          root: licenses.root ?? node.value.metadata.info.license,
+          root: licenses.root ?? node.value.metadata.license,
           all: {
             ...licenses.all,
-            [node.value.metadata.info.license]: {
-              ...(licenses.all[node.value.metadata.info.license] ?? null),
+            [node.value.metadata.license]: {
+              ...(licenses.all[node.value.metadata.license] ?? null),
               [node.value.label]: node.value.depth
             }
           }
@@ -105,11 +79,7 @@ export function useComputeMetrics(roots, graph) {
       metric: "licenses",
       payload: licenses
     });
-    dispatch({
-      type: "packageWarning",
-      payload: packageWarning
-    });
-  }, [graph, roots, dispatch]);
+  }, [graph, dispatch, roots]);
 }
 
 export function useFormatVisGraph(root, graph) {
@@ -125,10 +95,8 @@ export function useFormatVisGraph(root, graph) {
       edges: []
     };
 
-    const bfs = graph.graphSearch(graph.nodes.get(root));
-    const visitedOrder = Array.from(bfs);
-
-    visitedOrder.forEach(node => {
+    graph.nodes.forEach((value, key, map) => {
+      const node = map.get(key);
       data.nodes.push({
         id: node.value.id,
         label: node.value.label
@@ -148,62 +116,105 @@ export function useFormatVisGraph(root, graph) {
   return visGraph;
 }
 
-// takes a list of start node(s) in form { name: string, *version: string } and
-// sets the the new roots
-export function useSetRoots(startNodes) {
+export function useLockFileToGraph(pipfile, pipfileLock) {
   const dispatch = useContext(DispatchContext);
 
   useEffect(() => {
-    if (!startNodes) {
+    if (!pipfile || !pipfileLock) {
       return;
     }
-
-    // for each package (could be one) validate
-    const roots = startNodes.map(async start => {
-      return validatePackage(start.name, start?.version);
-    });
-
-    Promise.all(roots).then(roots => {
-      if (roots.length === 1 && roots[0] === null) {
-        dispatch({
-          type: "packageError",
-          payload: "Package does not exist"
-        });
-      } else {
-        dispatch({
-          type: "roots",
-          payload: roots
-        });
-      }
-    });
-  }, [startNodes, dispatch]);
-}
-
-export function useCreateGraph(roots, depth = -1) {
-  const dispatch = useContext(DispatchContext);
-
-  useEffect(() => {
-    if (!roots || roots.length === 0) {
-      return;
-    }
-
-    // set loading
-    dispatch({
-      type: "loading",
-      payload: { init: { amount: 0, note: "Building dependency graph." } }
-    });
-    let directDependencies = 0;
-    let visitedDirectDependencies = 0;
 
     const graph = new Graph();
 
-    // helper vars for dfs
-    const visited = new Map();
-    const visitList = [];
+    (async () => {
+      const cantBeRoots = [];
 
-    // if more than one starting package
-    if (roots.length > 1) {
-      // starting app node (true root)
+      await Promise.all(
+        // create nodes
+        Object.entries(pipfileLock).map(async ([key, value]) => {
+          // if package in pipfile has a match in the pipfile.lock
+          await thothSearchForPackage(
+            key,
+            value.version.replace("==", "")
+          ).then(metadata => {
+            const value = {
+              id: metadata.name.toLowerCase(),
+              label: metadata.name,
+              depth: null,
+              metadata: metadata
+            };
+
+            // add root to graph
+            graph.addVertex(value.id, value);
+
+            // add to cantBeRoots list
+            metadata.requires_dist?.forEach(adj => {
+              const adjacentName = adj.split(" ", 1)[0];
+              const adjacentData = pipfileLock[adjacentName];
+
+              // if package exists in lockfile
+              if (adjacentData) {
+                cantBeRoots.push(adjacentName);
+              }
+            });
+          });
+        })
+      );
+
+      // get roots
+      const visited = new Map();
+      const visitList = [];
+      graph.nodes.forEach((value, key, map) => {
+        if (!cantBeRoots.includes(key) || Object.keys(pipfile).includes(key)) {
+          const node = map.get(key);
+          node.value.depth = 0;
+          visitList.push(node);
+        }
+      });
+
+      // run dfs to connect nodes
+
+      const promiseWhile = (data, condition, action) => {
+        var whilst = data => {
+          return condition(data)
+            ? action().then(whilst)
+            : Promise.resolve(data);
+        };
+        return whilst(data);
+      };
+
+      await promiseWhile(
+        visitList,
+        i => i.length > 0,
+        () => {
+          const node = visitList.pop();
+          if (node && !visited.has(node)) {
+            visited.set(node);
+
+            // get dependencies
+            if (node?.value?.metadata?.requires_dist) {
+              // for each dependency, parse to get name
+              node.value.metadata.requires_dist.map(async adj => {
+                const adjacentNode = graph.nodes.get(adj.split(" ", 1)[0]);
+
+                // if package exists in lockfile
+                if (adjacentNode) {
+                  // update depth
+                  adjacentNode.value.depth = node.value.depth + 1;
+
+                  // add edge connecting parent and dependency
+                  graph.addEdge(node.key, adjacentNode.value.id);
+                  await visitList.push(adjacentNode);
+                }
+              });
+            }
+          }
+          return new Promise((resolve, reject) => {
+            resolve(visitList);
+          });
+        }
+      );
+
       const value = {
         id: "*App",
         label: "App",
@@ -211,134 +222,18 @@ export function useCreateGraph(roots, depth = -1) {
       };
 
       // add app to graph
-      const root = graph.addVertex(value.id, value);
+      const app = graph.addVertex(value.id, value);
 
-      // for each package
-      roots.forEach(r => {
-        // if root package (not app) has an error
-        if (r.error) {
-          return;
+      Object.keys(pipfile).forEach(root => {
+        if (graph.nodes.get(root)) {
+          graph.addEdge(app.key, root);
         }
-
-        directDependencies += r.metadata.info?.requires_dist?.length ?? 0;
-
-        const v = {
-          id: r.metadata.info.name + r.metadata.info.version,
-          label: r.metadata.info.name,
-          depth: 0,
-          metadata: r.metadata
-        };
-
-        // add package to graph
-        const adjacent = graph.addVertex(v.id, v);
-
-        // add an edge between app and package
-        graph.addEdge(root.key, adjacent.key);
-        visitList.push(adjacent);
       });
-    } else {
-      // if root has an error
-      if (roots[0].error) {
-        return;
-      }
-
-      // set loading data
-      directDependencies = roots[0].metadata.info?.requires_dist?.length ?? 0;
-
-      // if only one package
-      const value = {
-        id: roots[0].metadata.info.name + roots[0].metadata.info.version,
-        label: roots[0].metadata.info.name,
-        depth: 0,
-        metadata: roots[0].metadata
-      };
-
-      const root = graph.addVertex(value.id, value);
-      visitList.push(root);
-    }
-
-    (async () => {
-      while (visitList.length !== 0) {
-        const node = visitList.pop();
-        if (node && !visited.has(node)) {
-          visited.set(node);
-
-          // loading
-          if (node.value.depth === 1) {
-            visitedDirectDependencies += 1;
-            // set loading
-            dispatch({
-              type: "loading",
-              payload: {
-                init: {
-                  amount:
-                    (visitedDirectDependencies / directDependencies) * 100,
-                  note: "Building dependency graph :: " + node.value.label
-                }
-              }
-            });
-          }
-
-          if (node.value.depth !== depth) {
-            // get dependencies
-            await thothGetDependencies(
-              node.value.metadata.info.name,
-              node.value.metadata.info.version
-            )
-              .then(async r => {
-                // sort the direct dependencies by version
-                const directDependencies = r.data.dependencies.sort(function(
-                  a,
-                  b
-                ) {
-                  return compareVersions(a.version, b.version);
-                });
-
-                // this will prevent duplicate direct dependencies
-                const directHaveVisited = [];
-
-                // for each direct dependency (start at bottom to get the latest versions first)
-                for (let i = directDependencies.length - 1; i >= 0; i--) {
-                  // only include one version of a dependency (latest)
-                  if (!directHaveVisited.includes(directDependencies[i].name)) {
-                    // add dependency to have direct visited lookup table
-                    directHaveVisited.push(directDependencies[i].name);
-
-                    // make new node and add the edge between
-                    // get metadata of  package
-                    await searchForPackage(
-                      directDependencies[i].name,
-                      directDependencies[i].version
-                    ).then(res => {
-                      const v = {
-                        id: res.data.info.name + res.data.info.version,
-                        label: res.data.info.name,
-                        depth: node.value.depth + 1,
-                        metadata: res.data
-                      };
-                      const adjacent = graph.addVertex(v.id, v);
-
-                      // add an edge between them
-                      graph.addEdge(node.key, adjacent.key);
-                      visitList.push(adjacent);
-                    });
-                  }
-                }
-              })
-              .catch(e => {
-                if (e?.response?.status === 404) {
-                  node.value.thoth = false;
-                  return;
-                }
-              });
-          }
-        }
-      }
     })().then(() => {
       dispatch({
         type: "graph",
         payload: graph
       });
     });
-  }, [roots, dispatch, depth]);
+  }, [pipfile, pipfileLock, dispatch]);
 }

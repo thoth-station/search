@@ -10,7 +10,7 @@ import { Network } from "vis-network/standalone/esm/vis-network";
 
 // material ui
 import SearchBar from "components/Shared/SearchBar";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";;
 
 // styling
 const useStyles = makeStyles(theme => ({

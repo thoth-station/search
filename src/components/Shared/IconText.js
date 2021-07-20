@@ -1,13 +1,14 @@
 // material-ui
 import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 
 // react
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex"
+    display: "flex",
+    alignItems: "center"
   }
 }));
 
@@ -16,7 +17,7 @@ const IconText = ({ text, icon, link, ...props }) => {
   return (
     <div className={`${classes.root} ${props.className}`}>
       {icon}
-      <Typography href={link ? link : null} variant="body2" align="center">
+      <Typography href={link ? link : null} variant="body2" marginLeft>
         {text}
       </Typography>
     </div>

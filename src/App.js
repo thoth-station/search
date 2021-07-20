@@ -7,7 +7,7 @@ import { RouterConfig } from "navigation/RouterConfig";
 import { REPONAME } from "navigation/CONSTANTS";
 
 // material ui
-import { MuiThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 // react
@@ -24,7 +24,7 @@ function App() {
   // for state control
   const [state, dispatch] = useReducer(reducer, initState);
   return (
-    <MuiThemeProvider theme={themeLight}>
+    <ThemeProvider theme={themeLight}>
       <CssBaseline />
       <BrowserRouter basename={REPONAME}>
         <StateContext.Provider value={state}>
@@ -33,7 +33,7 @@ function App() {
           </DispatchContext.Provider>
         </StateContext.Provider>
       </BrowserRouter>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 }
 

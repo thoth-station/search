@@ -1,26 +1,27 @@
 // React
-import React, { useEffect, useState, useContext } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 // local
 import PackageMetrics from "components/Dashboard/PackageMetrics";
 import PackageHeader from "components/Dashboard/PackageHeader";
+import AdviseHeader from "components/Dashboard/AdviseHeader";
+
 import TabPanel from "components/Shared/TabPanel";
 import PackageDependencies from "components/Dashboard/PackageDependencies";
-import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
 // utils
-import {
-  useCreateGraph,
-  useComputeMetrics,
-  useSetRoots
-} from "utils/produceMetrics";
+import { useComputeMetrics, useLockFileToGraph } from "utils/produceMetrics";
+import { useInterval } from "utils/useInterval";
+
+// api
+import { thothAdviseResult, thothAdviseStatus } from "services/thothApi";
 
 // redux
-import { StateContext } from "App";
+import { StateContext, DispatchContext } from "App";
 
 // material-ui
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 import { Tab, Tabs, Typography } from "@material-ui/core";
 
 // component styling
@@ -41,41 +42,139 @@ export const Dashboard = ({ location }) => {
   const classes = useStyles();
   const params = useParams();
   const state = useContext(StateContext);
-  const search = useLocation().search;
+  const dispatch = useContext(DispatchContext);
 
   // for tab control
   const [value, setValue] = useState(0);
 
-  const [starts, setStarts] = useState(null);
-  // after render
-  useEffect(() => {
-    const query = new URLSearchParams(search);
+  // delay for each status api call
+  const [pollingTime, setPollingTime] = useState(null);
 
-    const packages = query.get("packages")?.split(",");
+  const getStatus = () => {
+    thothAdviseStatus(params.analysis_id).then(response => {
+      // set next polling delay
+      const status = response.data.status;
 
-    // parse packages into object list
-    let s = packages?.map(p => {
-      return {
-        name: p,
-        version: undefined
-      };
-    });
+      dispatch({
+        type: "advise",
+        param: "status",
+        payload: status
+      });
 
-    // if not muliple packages, then reset to the params
-    s = s ?? [
-      {
-        name: params.package,
-        version: params?.version
+      // check if advise is done
+      // if done then turn off polling whcih triggers another call for results
+      if (status.finished_at !== null) {
+        setPollingTime(null);
+      } else {
+        setPollingTime(
+          pollingTime !== null ? Math.min(pollingTime * 2, 8000) : null
+        );
       }
-    ];
+    });
+  };
 
-    setStarts(s);
-  }, [params.package, params.version, search]);
+  // first reset state if using new anyalysis id
+  useEffect(() => {
+    if (!state?.analysis_id || params.analysis_id !== state?.analysis_id) {
+      dispatch({
+        type: "reset"
+      });
+      dispatch({
+        type: "advise",
+        param: "analysis_id",
+        payload: params.analysis_id
+      });
+    }
+  }, [params.analysis_id, state?.analysis_id, dispatch]);
 
-  // custom hooks
-  useSetRoots(starts);
-  useCreateGraph(state.roots, 2);
-  useComputeMetrics(state.roots, state.graph);
+  // fetch results of advise
+  useEffect(() => {
+    // only run if polling is turned off (meaning the result is ready)
+    if (pollingTime !== null) {
+      return;
+    }
+
+    // get results of advise request
+    thothAdviseResult(params.analysis_id).then(response => {
+      const data = response.data;
+
+      // if cant run advise error
+      if (response.status === 400 || response.status === 404) {
+        // set error and stop polling
+        setPollingTime(null);
+        dispatch({
+          type: "advise",
+          param: "error",
+          payload: data.error
+        });
+      }
+
+      // if not done then start polling
+      else if (response.status === 202) {
+        if (response.data.status.state === "error") {
+          dispatch({
+            type: "advise",
+            param: "status",
+            payload: response.data.status
+          });
+        } else {
+          setPollingTime(500);
+        }
+      }
+
+      // if done then set results and stop polling
+      // note this could also have an error but should of been stopped above
+      else if (response.status === 200) {
+        // stop polling when done
+        setPollingTime(null);
+
+        if (data.result?.error) {
+          dispatch({
+            type: "advise",
+            param: "error",
+            payload: data.result.error_msg
+          });
+        }
+        dispatch({
+          type: "advise",
+          param: "initProject",
+          payload: data.result.parameters.project
+        });
+        dispatch({
+          type: "advise",
+          param: "report",
+          payload: data.result.report
+        });
+        dispatch({
+          type: "advise",
+          param: "metadata",
+          payload: data.metadata
+        });
+      }
+      // if an unknown response occured
+      else {
+        dispatch({
+          type: "advise",
+          param: "error",
+          payload: "Unknown Error: Aborting"
+        });
+      }
+    });
+  }, [params.analysis_id, dispatch, pollingTime]);
+
+  useInterval(() => {
+    getStatus();
+  }, pollingTime);
+
+  // .products[0].project
+  useLockFileToGraph(
+    state?.advise?.initProject?.requirements?.packages,
+    state?.advise?.initProject?.requirements_locked?.default
+  );
+  useComputeMetrics(
+    state.graph,
+    state?.advise?.initProject?.requirements?.packages
+  );
 
   // handle tab change
   const handleChange = (event, newValue) => {
@@ -83,39 +182,38 @@ export const Dashboard = ({ location }) => {
   };
 
   return (
-    <LoadingErrorTemplate
-      state={state.packageError ? "error" : state.roots}
-      show404={"Package"}
-    >
-      <div className={classes.root}>
-        {state?.roots?.length === 1 ? <PackageHeader /> : null}
-        {state?.roots?.map(r => {
-          if (r.error) {
-            return (
-              <Typography color="error" gutterBottom variant="body2">
-                {r.error}
-              </Typography>
-            );
-          }
-          return null;
-        })}
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label="Overview" />
-          <Tab label="Dependencies" />
-        </Tabs>
-        <TabPanel value={value} index={0}>
-          <PackageMetrics />
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <PackageDependencies />
-        </TabPanel>
-      </div>
-    </LoadingErrorTemplate>
+    <div className={classes.root}>
+      {state?.focus ? (
+        <PackageHeader />
+      ) : (
+        <AdviseHeader adviseID={params.analysis_id} />
+      )}
+      {state?.roots?.map(r => {
+        if (r.error) {
+          return (
+            <Typography color="error" gutterBottom variant="body2">
+              {r.error}
+            </Typography>
+          );
+        }
+        return null;
+      })}
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        indicatorColor="primary"
+        textColor="primary"
+      >
+        <Tab label="Overview" />
+        <Tab label="Dependencies" />
+      </Tabs>
+      <TabPanel value={value} index={0}>
+        <PackageMetrics />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <PackageDependencies />
+      </TabPanel>
+    </div>
   );
 };
 

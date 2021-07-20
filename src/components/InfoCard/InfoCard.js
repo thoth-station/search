@@ -3,10 +3,8 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // material-ui
-import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
+import { makeStyles } from "@material-ui/styles";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
