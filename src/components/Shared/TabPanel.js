@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Box from "@material-ui/core/Box";
 
 const TabPanel = ({ children, value, index, ...props }) => {
   return (
