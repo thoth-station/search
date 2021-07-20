@@ -74,9 +74,7 @@ export const thothAdvise = (pipfile, pipfileLock) => {
 
   return axios.post(THOTH + "/advise/python", data, {
     params: {
-      recommendation_type: "stable",
-      force: true,
-      debug: true
+      recommendation_type: "stable"
     },
     headers: {
       accept: "application/json"
