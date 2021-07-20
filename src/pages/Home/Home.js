@@ -17,8 +17,6 @@ import TabPanel from "components/Shared/TabPanel";
 // utils
 import { validatePackage } from "utils/validatePackage";
 
-import { parsePipfile, parsePipfileLock } from "utils/parsePipfile";
-
 // redux
 import { DispatchContext } from "App";
 
@@ -76,7 +74,7 @@ const Home = () => {
   const [pipfileLockError, setPipfileLockError] = useState("");
 
   // utlity states
-  const [mode, setMode] = useState("single");
+  const [mode, setMode] = useState("multiple");
   const [expandOptions, setExpandOptions] = useState(false);
 
   const [queryLoading, setQueryLoading] = useState(false);
@@ -147,15 +145,13 @@ const Home = () => {
       ) {
         return;
       }
-      const pipfile = parsePipfile(pipfileQuery);
-      const pipfileLock = parsePipfileLock(pipfileLockQuery);
 
       let fail = false;
-      if (!pipfile) {
+      if (!pipfileQuery) {
         fail = true;
         setPipfileError("Please provide a Pipfile");
       }
-      if (!pipfileLock) {
+      if (!pipfileLockQuery) {
         fail = true;
         setPipfileLockError("Please provide a Pipfile.lock");
       }
@@ -207,7 +203,7 @@ const Home = () => {
         size={"small"}
         className={classes.mode}
       >
-        <ToggleButton value="single" aria-label="left aligned">
+        <ToggleButton value="single" aria-label="left aligned" disabled>
           <b>Single Package</b>
         </ToggleButton>
         <ToggleButton value="multiple" aria-label="centered">
