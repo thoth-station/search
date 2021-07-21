@@ -1,5 +1,5 @@
 // React
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 // local components
 import NetworkGraph from "components/Dashboard/Advise/NetworkGraph.js";
@@ -39,9 +39,25 @@ const PackageDependencies = () => {
   const classes = useStyles();
   const state = useContext(StateContext);
   const root = state.focus ?? "*App";
+  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [expanded, setExpanded] = useState(false);
 
   const visGraph = useFormatVisGraph(root, state.graph);
+
   console.log(state);
+
+  const handleJustificationSelect = (package_name, i) => (
+    event,
+    isExpanded
+  ) => {
+    setExpanded(isExpanded ? i : false);
+
+    if (isExpanded) {
+      setSelectedPackage(package_name);
+    } else {
+      setSelectedPackage(null);
+    }
+  };
 
   return (
     <LoadingErrorTemplate isLoading={visGraph === undefined}>
@@ -60,6 +76,7 @@ const PackageDependencies = () => {
               }}
               className={classes.graph}
               root={root}
+              selectedPackage={selectedPackage}
             />
           </Paper>
         </Grid>
@@ -69,7 +86,14 @@ const PackageDependencies = () => {
               (justification, i) => {
                 if (justification.type !== "INFO") {
                   return (
-                    <Accordion key={i}>
+                    <Accordion
+                      key={i}
+                      onChange={handleJustificationSelect(
+                        justification.package_name,
+                        i
+                      )}
+                      expanded={expanded === i}
+                    >
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"

@@ -8,7 +8,6 @@ import LoadingButton from "@material-ui/lab/LoadingButton";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import { makeStyles } from "@material-ui/styles";
-import { createTheme } from "@material-ui/core/styles";
 
 // local
 import { DASHBOARD } from "navigation/CONSTANTS";

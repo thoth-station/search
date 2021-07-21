@@ -31,9 +31,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NetworkGraph = ({ data, searchText, root, ...props }) => {
+const NetworkGraph = ({
+  data,
+  searchText,
+  root,
+  selectedPackage,
+  ...props
+}) => {
   const classes = useStyles();
   const [selected, setSelected] = useState(data);
+  const visJsRef = useRef(null);
 
   useEffect(() => {
     const network =
@@ -91,12 +98,10 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
         network.editNode(params.nodes[0]);
       }
     });
-  }, [root, selected]);
-
-  const visJsRef = useRef(null);
+  }, [root, selected, data.nodes]);
 
   // recursivly finds all paths from search result to root
-  const handleSearch = (query, data) => {
+  useEffect(() => {
     // clear selection
     data.nodes.updateOnly(
       data.nodes.get().map(e => {
@@ -108,22 +113,18 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
       })
     );
 
-    if (query.target.value === "") {
+    if (selectedPackage === null) {
       // reset node colors
       setSelected(data);
       return;
     }
 
     // use input text to find possible results
-    let possible_results = data.nodes.get({
-      filter: function(node) {
-        return node.label.includes(query.target.value);
-      }
-    });
+    const result = data.nodes.get(selectedPackage);
 
     // recurse through possible results
     const recurse = recurseToRoot(
-      possible_results.map(node => node.id),
+      [selectedPackage],
       root,
       data.edges.map(e => e)
     );
@@ -133,23 +134,16 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
     });
 
     // set searched nodes to a different color
-    possible_results = possible_results.map(e => {
-      if (e.id !== root) {
-        e["color"] = { background: "#f39200" };
-      }
-      return e;
-    });
+    if (result.id !== root) {
+      result["color"] = { background: "#f39200" };
+    }
 
     // update nodes and edges in the dataset
-    data.nodes.updateOnly(possible_results);
-  };
+    data.nodes.updateOnly(result);
+  }, [selectedPackage, root, data]);
 
   return (
     <div className={`${classes.root} ${props.className}`}>
-      <SearchBar
-        label="Filter packages"
-        onChange={text => handleSearch(text, data)}
-      />
       <div ref={visJsRef} id="mynetwork" className={classes.canvas} />
     </div>
   );
