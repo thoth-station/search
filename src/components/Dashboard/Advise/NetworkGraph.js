@@ -19,6 +19,7 @@ import SearchBar from "components/Shared/SearchBar";
 import { makeStyles } from "@material-ui/styles";
 
 // styling
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -30,25 +31,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const useNetwork = (nodes, edges, root, visJsRef) => {
-  const [hasRendered, setHasRendered] = useState(false);
+const NetworkGraph = ({ data, searchText, root, ...props }) => {
+  const classes = useStyles();
+  const [selected, setSelected] = useState(data);
 
   useEffect(() => {
-    if (!root || !nodes || !edges) {
-      return;
-    }
-
     const network =
-      visJsRef.current &&
-      new Network(visJsRef.current, { nodes: nodes, edges: edges }, options);
-
-    setHasRendered(true);
+      visJsRef.current && new Network(visJsRef.current, selected, options);
 
     // set root node to have specific color
-    // const rootNode = data.get(root);
-    // rootNode.color = "#4fc1ea";
-    // rootNode.font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
-    // data.nodes.updateOnly(rootNode);
+    const rootNode = data.nodes.get(root);
+    rootNode.color = "#4fc1ea";
+    rootNode.font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
+    data.nodes.updateOnly(rootNode);
 
     // change curser when hovering and grabbing
     // Get the canvas HTML element
@@ -96,60 +91,26 @@ const useNetwork = (nodes, edges, root, visJsRef) => {
         network.editNode(params.nodes[0]);
       }
     });
-  }, [root, nodes, edges, visJsRef]);
-};
-
-const NetworkGraph = ({ data, searchText, root, ...props }) => {
-  const classes = useStyles();
-  const [selected, setSelected] = useState(null);
-
-  const nodesView = new DataView(data.nodes, {
-    filter: node => {
-      if (selected) {
-        return selected.nodes.includes(node.id);
-      } else return true;
-    }
-  });
-
-  const edgesView = new DataView(data.edges, {
-    filter: edge => {
-      if (selected) {
-        return selected.edges.includes(edge.id);
-      } else return true;
-    }
-  });
+  }, [root, selected]);
 
   const visJsRef = useRef(null);
-
-  useNetwork(nodesView, edgesView, root, visJsRef);
 
   // recursivly finds all paths from search result to root
   const handleSearch = (query, data) => {
     // clear selection
-    // data.nodes.updateOnly(
-    //   data.nodes.get().map(e => {
-    //     if (e.id !== root) {
-    //       e["color"] = options.nodes.color;
-    //       e["font"] = options.nodes.font;
-    //     }
-    //     return e;
-    //   })
-    // );
-    //
-    // // reset edge colors
-    // data.edges.updateOnly(
-    //   data.edges.get().map(e => {
-    //     e["color"] = options.edges.color;
-    //     return e;
-    //   })
-    // );
+    data.nodes.updateOnly(
+      data.nodes.get().map(e => {
+        if (e.id !== root) {
+          e["color"] = options.nodes.color;
+          e["font"] = options.nodes.font;
+        }
+        return e;
+      })
+    );
 
     if (query.target.value === "") {
       // reset node colors
-      //setGraph(data);
-      setSelected(null);
-      nodesView.refresh();
-      edgesView.refresh();
+      setSelected(data);
       return;
     }
 
@@ -166,48 +127,21 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
       root,
       data.edges.map(e => e)
     );
-    setSelected(recurse);
-    nodesView.refresh();
-    edgesView.refresh();
+    setSelected({
+      nodes: new DataSet(data.nodes.get(recurse.nodes)),
+      edges: new DataSet(data.edges.get(recurse.esges))
+    });
 
-    // setGraph({
-    //   nodes: new DataSet(graph.nodes.get(selected.nodes)),
-    //   edges: new DataSet(graph.edges.get(selected.edges))
-    // });
-
-    // grey out non search results
-    // nodes that are not in search results
-    // const unselected_edges = data.edges
-    //   .get()
-    //   .filter(edge => !selected.edges.includes(edge.id))
-    //   .map(e => {
-    //     e["color"] = { color: "#e3e5e8" };
-    //     return e;
-    //   });
-    //
-    // // edges that are not in search results
-    // const unselected_nodes = data.nodes
-    //   .get()
-    //   .filter(node => !selected.nodes.includes(node.id))
-    //   .map(e => {
-    //     if (e.id !== root) {
-    //       e["color"] = { background: "#e3e5e8" };
-    //       e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
-    //     }
-    //     return e;
-    //   });
-    //
-    // // set searched nodes to a different color
-    // possible_results = possible_results.map(e => {
-    //   if (e.id !== root) {
-    //     e["color"] = { background: "#f39200" };
-    //   }
-    //   return e;
-    // });
+    // set searched nodes to a different color
+    possible_results = possible_results.map(e => {
+      if (e.id !== root) {
+        e["color"] = { background: "#f39200" };
+      }
+      return e;
+    });
 
     // update nodes and edges in the dataset
-    // data.nodes.updateOnly(unselected_nodes.concat(possible_results));
-    // data.edges.updateOnly(unselected_edges);
+    data.nodes.updateOnly(possible_results);
   };
 
   return (
@@ -216,16 +150,7 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
         label="Filter packages"
         onChange={text => handleSearch(text, data)}
       />
-      //
       <div ref={visJsRef} id="mynetwork" className={classes.canvas} />
-      <Graph
-        graph={graph}
-        options={options}
-        events={events}
-        getNetwork={network => {
-          //  if you want access to vis.js network api you can set the state in a parent component using this property
-        }}
-      />
     </div>
   );
 };

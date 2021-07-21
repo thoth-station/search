@@ -7,7 +7,7 @@ import { RouterConfig } from "navigation/RouterConfig";
 import { REPONAME } from "navigation/CONSTANTS";
 
 // material ui
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 // react

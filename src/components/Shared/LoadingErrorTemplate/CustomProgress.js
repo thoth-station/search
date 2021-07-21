@@ -6,6 +6,7 @@ import { CircularProgress, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
 // component styling
+
 const useStyles = makeStyles(theme => ({
   customProgressRoot: {
     display: "flex",

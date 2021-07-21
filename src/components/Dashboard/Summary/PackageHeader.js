@@ -17,6 +17,7 @@ import { timeSince } from "utils/timeSince";
 import { StateContext } from "App";
 
 // component styling
+
 const useStyles = makeStyles(theme => ({
   titleRow: {
     display: "flex",
