@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 
 // local components
-import NetworkGraph from "components/Metrics/NetworkGraph.js";
+import NetworkGraph from "components/Dashboard/Advise/NetworkGraph.js";
 
 // utils
 import { useFormatVisGraph } from "utils/produceMetrics";
@@ -33,6 +33,7 @@ const PackageDependencies = () => {
 
   return (
     <LoadingErrorTemplate isLoading={visGraph === undefined}>
+      <Paper></Paper>
       <Paper>
         <NetworkGraph
           data={{

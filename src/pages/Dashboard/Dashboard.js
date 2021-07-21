@@ -3,12 +3,12 @@ import React, { useState, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 // local
-import PackageMetrics from "components/Dashboard/PackageMetrics";
-import PackageHeader from "components/Dashboard/PackageHeader";
-import AdviseHeader from "components/Dashboard/AdviseHeader";
+import MetricLayout from "components/Dashboard/Summary/MetricLayout";
+import PackageHeader from "components/Dashboard/Summary/PackageHeader";
+import AdviseHeader from "components/Dashboard/Summary/AdviseHeader";
 
 import TabPanel from "components/Shared/TabPanel";
-import PackageDependencies from "components/Dashboard/PackageDependencies";
+import AdvisePage from "components/Dashboard/Advise/AdvisePage";
 
 // utils
 import { useComputeMetrics, useLockFileToGraph } from "utils/produceMetrics";
@@ -208,10 +208,10 @@ export const Dashboard = ({ location }) => {
         <Tab label="Dependencies" />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <PackageMetrics />
+        <MetricLayout />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <PackageDependencies />
+        <AdvisePage />
       </TabPanel>
     </div>
   );

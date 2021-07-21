@@ -133,11 +133,11 @@ export function useLockFileToGraph(pipfile, pipfileLock) {
         // create nodes
         Object.entries(pipfileLock).map(async ([key, value]) => {
           // if package in pipfile has a match in the pipfile.lock
-          await thothSearchForPackage(
-            key,
-            value.version.replace("==", "")
-          ).then(metadata => {
-            const value = {
+          if (localStorage.getItem(key + value.version.replace("==", ""))) {
+            const metadata = JSON.parse(
+              localStorage.getItem(key + value.version.replace("==", ""))
+            );
+            const v = {
               id: metadata.name.toLowerCase(),
               label: metadata.name,
               depth: null,
@@ -145,7 +145,7 @@ export function useLockFileToGraph(pipfile, pipfileLock) {
             };
 
             // add root to graph
-            graph.addVertex(value.id, value);
+            graph.addVertex(v.id, v);
 
             // add to cantBeRoots list
             metadata.requires_dist?.forEach(adj => {
@@ -157,7 +157,38 @@ export function useLockFileToGraph(pipfile, pipfileLock) {
                 cantBeRoots.push(adjacentName);
               }
             });
-          });
+          } else {
+            await thothSearchForPackage(
+              key,
+              value.version.replace("==", "")
+            ).then(metadata => {
+              const v = {
+                id: metadata.name.toLowerCase(),
+                label: metadata.name,
+                depth: null,
+                metadata: metadata
+              };
+
+              localStorage.setItem(
+                key + value.version.replace("==", ""),
+                JSON.stringify(metadata)
+              );
+
+              // add root to graph
+              graph.addVertex(v.id, v);
+
+              // add to cantBeRoots list
+              metadata.requires_dist?.forEach(adj => {
+                const adjacentName = adj.split(" ", 1)[0];
+                const adjacentData = pipfileLock[adjacentName];
+
+                // if package exists in lockfile
+                if (adjacentData) {
+                  cantBeRoots.push(adjacentName);
+                }
+              });
+            });
+          }
         })
       );
 

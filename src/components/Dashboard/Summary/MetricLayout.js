@@ -2,9 +2,9 @@
 import React, { useContext } from "react";
 
 // local components
-import InfoCard from "components/InfoCard/InfoCard";
-import DependenciesMetric from "components/Metrics/DependenciesMetric";
-import LicenseMetric from "components/Metrics/LicenseMetric";
+import InfoCard from "./InfoCard";
+import DependenciesMetric from "components/Dashboard/Summary/Metrics/DependenciesMetric";
+import LicenseMetric from "components/Dashboard/Summary/Metrics/LicenseMetric";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
 // material-ui

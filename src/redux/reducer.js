@@ -34,6 +34,9 @@ export function reducer(state, action) {
     case "reset": {
       return initState;
     }
+    case "localStorage": {
+      return action.payload;
+    }
 
     default:
       return state;
