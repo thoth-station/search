@@ -166,15 +166,23 @@ export const Dashboard = ({ location }) => {
     getStatus();
   }, pollingTime);
 
-  // .products[0].project
+  // create graphs
+  useLockFileToGraph(
+    state?.advise?.report?.products?.[0]?.project?.requirements?.packages,
+    state?.advise?.report?.products?.[0]?.project?.requirements_locked?.default,
+    "adviseGraph"
+  );
   useLockFileToGraph(
     state?.advise?.initProject?.requirements?.packages,
-    state?.advise?.initProject?.requirements_locked?.default
+    state?.advise?.initProject?.requirements_locked?.default,
+    "initGraph"
   );
   useComputeMetrics(
-    state.graph,
-    state?.advise?.initProject?.requirements?.packages
+    state.adviseGraph,
+    state?.advise?.report?.products?.[0]?.project?.requirements?.packages
   );
+
+  console.log(state);
 
   // handle tab change
   const handleChange = (event, newValue) => {
@@ -198,6 +206,7 @@ export const Dashboard = ({ location }) => {
         }
         return null;
       })}
+      <Typography color="error">{state?.error}</Typography>
       <Tabs
         value={value}
         onChange={handleChange}

@@ -50,6 +50,8 @@ export const thothSearchForPackage = (
           .then(res => {
             return res.data.info;
           });
+      } else {
+        throw e;
       }
     });
 };

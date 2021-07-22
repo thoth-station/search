@@ -8,6 +8,9 @@ import { DispatchContext } from "App";
 
 import { useContext, useEffect, useState } from "react";
 
+//vis-dataset
+import { DataSet } from "vis-network/standalone/esm/vis-network";
+
 // React hook for computing metrics and applying to state
 export function useComputeMetrics(graph, roots) {
   const dispatch = useContext(DispatchContext);
@@ -110,17 +113,20 @@ export function useFormatVisGraph(root, graph) {
       });
     });
 
-    setVisGraph(data);
+    setVisGraph({
+      nodes: new DataSet(data.nodes),
+      edges: new DataSet(data.edges)
+    });
   }, [root, graph]);
 
-  return visGraph;
+  return { visGraph };
 }
 
-export function useLockFileToGraph(pipfile, pipfileLock) {
+export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
   const dispatch = useContext(DispatchContext);
 
   useEffect(() => {
-    if (!pipfile || !pipfileLock) {
+    if (!pipfile || !pipfileLock || !stateName) {
       return;
     }
 
@@ -158,7 +164,7 @@ export function useLockFileToGraph(pipfile, pipfileLock) {
               }
             });
           } else {
-            await thothSearchForPackage(
+            return await thothSearchForPackage(
               key,
               value.version.replace("==", "")
             ).then(metadata => {
@@ -190,7 +196,14 @@ export function useLockFileToGraph(pipfile, pipfileLock) {
             });
           }
         })
-      );
+      ).catch(e => {
+        dispatch({
+          type: "error",
+          payload:
+            (e.response.statusText ?? "") +
+            ": an error occured while fetching package data."
+        });
+      });
 
       // get roots
       const visited = new Map();
@@ -263,8 +276,9 @@ export function useLockFileToGraph(pipfile, pipfileLock) {
     })().then(() => {
       dispatch({
         type: "graph",
+        name: stateName,
         payload: graph
       });
     });
-  }, [pipfile, pipfileLock, dispatch]);
+  }, [pipfile, pipfileLock, dispatch, stateName]);
 }
