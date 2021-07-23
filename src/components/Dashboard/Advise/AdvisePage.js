@@ -53,7 +53,11 @@ const PackageDependencies = () => {
   const [tab, setTab] = useState(0);
   const [display, setDisplay] = React.useState("graph");
 
-  const { visGraph } = useFormatVisGraph(root, state.adviseGraph);
+  const { visGraph } = useFormatVisGraph(
+    state.initGraph,
+    state.adviseGraph,
+    root
+  );
 
   const handleJustificationSelect = (package_name, i) => (
     event,

@@ -103,15 +103,15 @@ const NetworkGraph = ({
   // recursivly finds all paths from search result to root
   useEffect(() => {
     // clear selection
-    data.nodes.updateOnly(
-      data.nodes.get().map(e => {
-        if (e.id !== root) {
-          e["color"] = options.nodes.color;
-          e["font"] = options.nodes.font;
-        }
-        return e;
-      })
-    );
+    // data.nodes.updateOnly(
+    //   data.nodes.get().map(e => {
+    //     if (e.id !== root) {
+    //       e["color"] = options.nodes.color;
+    //       e["font"] = options.nodes.font;
+    //     }
+    //     return e;
+    //   })
+    // );
 
     if (selectedPackage === null) {
       // reset node colors
@@ -135,7 +135,7 @@ const NetworkGraph = ({
 
     // set searched nodes to a different color
     if (result.id !== root) {
-      result["color"] = { background: "#f39200" };
+      result["color"] = "#f39200";
     }
 
     // update nodes and edges in the dataset
@@ -144,12 +144,14 @@ const NetworkGraph = ({
 
   // recursivly finds all paths from search result to root
   const handleSearch = (query, data) => {
-    // clear selection if empty search bar
+    // clear selection
     data.nodes.updateOnly(
       data.nodes.get().map(e => {
         if (e.id !== root) {
-          e["color"] = options.nodes.color;
-          e["font"] = options.nodes.font;
+          //e["color"] = options.nodes.color;
+          //e["font"] = options.nodes.font;
+          e["opacity"] = 1;
+          e["font"] = { size: options.nodes.font.size };
         }
         return e;
       })
@@ -158,7 +160,8 @@ const NetworkGraph = ({
     // reset edge colors
     data.edges.updateOnly(
       data.edges.get().map(e => {
-        e["color"] = options.edges.color;
+        //e["color"] = options.edges.color;
+        e["color"] = { opacity: 1 };
         return e;
       })
     );
@@ -188,7 +191,8 @@ const NetworkGraph = ({
       .get()
       .filter(edge => !selected.edges.includes(edge.id))
       .map(e => {
-        e["color"] = { color: "#e3e5e8" };
+        //e["color"] = { color: "#e3e5e8" };
+        e["color"] = { opacity: 0.05 };
         return e;
       });
 
@@ -198,8 +202,10 @@ const NetworkGraph = ({
       .filter(node => !selected.nodes.includes(node.id))
       .map(e => {
         if (e.id !== root) {
-          e["color"] = { background: "#e3e5e8" };
-          e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
+          //e["color"] = { background: "#e3e5e8" };
+          //e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
+          e["font"] = { size: 0 };
+          e["opacity"] = 0.05;
         }
         return e;
       });
@@ -207,7 +213,7 @@ const NetworkGraph = ({
     // set searched nodes to a different color
     possible_results = possible_results.map(e => {
       if (e.id !== root) {
-        e["color"] = { background: "#f39200" };
+        //e["color"] = { background: "#f39200" };
       }
       return e;
     });

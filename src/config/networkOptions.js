@@ -45,13 +45,19 @@ export const options = {
       strokeWidth: 2,
       size: 15
     }
-  },
-  physics: {
-    hierarchicalRepulsion: {
-      damping: 0.1,
-      springLength: 200
-    },
-    solver: "hierarchicalRepulsion",
-    minVelocity: 0.15
   }
+  // layout: {
+  //   hierarchical: {
+  //     enabled: true,
+  //     sortMethod: "directed"
+  //   }
+  // },
+  // physics: {
+  //   hierarchicalRepulsion: {
+  //     damping: 0.1,
+  //     springLength: 200
+  //   },
+  //   solver: "hierarchicalRepulsion",
+  //   minVelocity: 0.15
+  // }
 };

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { PYPI, THOTH } from "./CONSTANTS";
 import compareVersions from "tiny-version-compare";
+import { data } from "./adviseResponseDev";
 
 // GitHub
 export function getGitHubFileText(githubRepo, fileName) {
@@ -58,7 +59,7 @@ export const thothSearchForPackage = (
 
 // thoth
 export const thothAdvise = (pipfile, pipfileLock) => {
-  const data = {
+  const d = {
     application_stack: {
       requirements: pipfile,
       requirements_format: "pipenv",
@@ -74,7 +75,7 @@ export const thothAdvise = (pipfile, pipfileLock) => {
     }
   };
 
-  return axios.post(THOTH + "/advise/python", data, {
+  return axios.post(THOTH + "/advise/python", d, {
     params: {
       recommendation_type: "stable"
     },
@@ -85,6 +86,7 @@ export const thothAdvise = (pipfile, pipfileLock) => {
 };
 
 export const thothAdviseResult = analysis_id => {
+  //return Promise.resolve(data);
   return axios.get(THOTH + "/advise/python/" + analysis_id, {
     headers: {
       accept: "application/json"

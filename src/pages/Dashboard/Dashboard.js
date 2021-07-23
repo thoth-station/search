@@ -51,26 +51,35 @@ export const Dashboard = ({ location }) => {
   const [pollingTime, setPollingTime] = useState(null);
 
   const getStatus = () => {
-    thothAdviseStatus(params.analysis_id).then(response => {
-      // set next polling delay
-      const status = response.data.status;
+    thothAdviseStatus(params.analysis_id)
+      .then(response => {
+        // set next polling delay
+        const status = response.data.status;
 
-      dispatch({
-        type: "advise",
-        param: "status",
-        payload: status
+        dispatch({
+          type: "advise",
+          param: "status",
+          payload: status
+        });
+
+        // check if advise is done
+        // if done then turn off polling whcih triggers another call for results
+        if (status.finished_at !== null) {
+          setPollingTime(null);
+        } else {
+          setPollingTime(
+            pollingTime !== null ? Math.min(pollingTime * 2, 8000) : null
+          );
+        }
+      })
+      .catch(e => {
+        dispatch({
+          type: "error",
+          payload:
+            (e?.response?.statusText ?? "Unknown Error") +
+            ": an error occured while fetching Thoth advise status."
+        });
       });
-
-      // check if advise is done
-      // if done then turn off polling whcih triggers another call for results
-      if (status.finished_at !== null) {
-        setPollingTime(null);
-      } else {
-        setPollingTime(
-          pollingTime !== null ? Math.min(pollingTime * 2, 8000) : null
-        );
-      }
-    });
   };
 
   // first reset state if using new anyalysis id
@@ -95,71 +104,80 @@ export const Dashboard = ({ location }) => {
     }
 
     // get results of advise request
-    thothAdviseResult(params.analysis_id).then(response => {
-      const data = response.data;
+    thothAdviseResult(params.analysis_id)
+      .then(response => {
+        const data = response?.data ?? response;
 
-      // if cant run advise error
-      if (response.status === 400 || response.status === 404) {
-        // set error and stop polling
-        setPollingTime(null);
-        dispatch({
-          type: "advise",
-          param: "error",
-          payload: data.error
-        });
-      }
-
-      // if not done then start polling
-      else if (response.status === 202) {
-        if (response.data.status.state === "error") {
-          dispatch({
-            type: "advise",
-            param: "status",
-            payload: response.data.status
-          });
-        } else {
-          setPollingTime(500);
-        }
-      }
-
-      // if done then set results and stop polling
-      // note this could also have an error but should of been stopped above
-      else if (response.status === 200) {
-        // stop polling when done
-        setPollingTime(null);
-
-        if (data.result?.error) {
+        // if cant run advise error
+        if (response.status === 400 || response.status === 404) {
+          // set error and stop polling
+          setPollingTime(null);
           dispatch({
             type: "advise",
             param: "error",
-            payload: data.result.error_msg
+            payload: data.error
           });
         }
+
+        // if not done then start polling
+        else if (response.status === 202) {
+          if (response.data.status.state === "error") {
+            dispatch({
+              type: "advise",
+              param: "status",
+              payload: response.data.status
+            });
+          } else {
+            setPollingTime(500);
+          }
+        }
+
+        // if done then set results and stop polling
+        // note this could also have an error but should of been stopped above
+        else if (response.status === 200) {
+          // stop polling when done
+          setPollingTime(null);
+
+          if (data.result?.error) {
+            dispatch({
+              type: "advise",
+              param: "error",
+              payload: data.result.error_msg
+            });
+          }
+          dispatch({
+            type: "advise",
+            param: "initProject",
+            payload: data.result.parameters.project
+          });
+          dispatch({
+            type: "advise",
+            param: "report",
+            payload: data.result.report
+          });
+          dispatch({
+            type: "advise",
+            param: "metadata",
+            payload: data.metadata
+          });
+        }
+        // if an unknown response occured
+        else {
+          dispatch({
+            type: "advise",
+            param: "error",
+            payload: "Unknown Error: Aborting"
+          });
+        }
+      })
+      .catch(e => {
         dispatch({
-          type: "advise",
-          param: "initProject",
-          payload: data.result.parameters.project
+          type: "error",
+          payload:
+            (e?.response?.statusText ?? "Unknown Error") +
+            ": an error occured while fetching Thoth advise results."
         });
-        dispatch({
-          type: "advise",
-          param: "report",
-          payload: data.result.report
-        });
-        dispatch({
-          type: "advise",
-          param: "metadata",
-          payload: data.metadata
-        });
-      }
-      // if an unknown response occured
-      else {
-        dispatch({
-          type: "advise",
-          param: "error",
-          payload: "Unknown Error: Aborting"
-        });
-      }
-    });
+      });
   }, [params.analysis_id, dispatch, pollingTime]);
 
   useInterval(() => {

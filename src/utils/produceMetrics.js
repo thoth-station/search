@@ -11,6 +11,8 @@ import { useContext, useEffect, useState } from "react";
 //vis-dataset
 import { DataSet } from "vis-network/standalone/esm/vis-network";
 
+import { useTheme } from "@material-ui/core/styles";
+
 // React hook for computing metrics and applying to state
 export function useComputeMetrics(graph, roots) {
   const dispatch = useContext(DispatchContext);
@@ -35,7 +37,7 @@ export function useComputeMetrics(graph, roots) {
       // depth to type of dependency
       visitedOrder.forEach(node => {
         const depth =
-          node.value.depth === 0 || root === node.value.id
+          node.value.depth === 0 || roots[node.value.id]
             ? "roots"
             : node.value.depth === 1
             ? "direct"
@@ -85,11 +87,12 @@ export function useComputeMetrics(graph, roots) {
   }, [graph, dispatch, roots]);
 }
 
-export function useFormatVisGraph(root, graph) {
+export function useFormatVisGraph(oldGraph, newGraph, root) {
   const [visGraph, setVisGraph] = useState(undefined);
+  const theme = useTheme();
 
   useEffect(() => {
-    if (!root || !graph) {
+    if (!oldGraph || !newGraph || !root) {
       return;
     }
 
@@ -98,26 +101,96 @@ export function useFormatVisGraph(root, graph) {
       edges: []
     };
 
-    graph.nodes.forEach((value, key, map) => {
-      const node = map.get(key);
-      data.nodes.push({
-        id: node.value.id,
-        label: node.value.label
-      });
+    const edgeColors = new Map();
 
-      node.adjacents.forEach(adj => {
+    oldGraph.nodes.forEach((value, key) => {
+      // if the new and old graph have the same package
+      if (newGraph.nodes.has(key)) {
+        // if the versions match
+        const newNode = newGraph.nodes.get(key);
+
+        if (
+          key === root ||
+          value.value.metadata.version === newNode.value.metadata.version
+        ) {
+          data.nodes.push({
+            id: newNode.value.id,
+            label:
+              newNode.value.label +
+              " " +
+              (newNode?.value?.metadata?.version ?? "")
+          });
+        }
+        // if the versions are different
+        else {
+          // set package node
+          data.nodes.push({
+            id: newNode.value.id,
+            label: newNode.value.label + " " + newNode.value.metadata.version,
+            font: {
+              color: theme.palette.success.main
+            }
+          });
+        }
+      }
+      // if new graph does not have package then it is removed
+      else {
+        data.nodes.push({
+          id: value.value.id,
+          label: value.value.label + " " + value.value.metadata.version,
+          font: {
+            color: theme.palette.error.main
+          },
+          color: theme.palette.error.main
+        });
+
+        edgeColors.set(value.value.id, theme.palette.error.main);
+      }
+    });
+
+    newGraph.nodes.forEach((value, key) => {
+      if (!oldGraph.nodes.has(key)) {
+        data.nodes.push({
+          id: value.value.id,
+          label: value.value.label + " " + value.value.metadata.version,
+          font: {
+            color: theme.palette.success.main
+          },
+          color: theme.palette.success.main
+        });
+
+        edgeColors.set(value.value.id, theme.palette.success.main);
+      }
+    });
+
+    oldGraph.nodes.forEach((value, key) => {
+      // set package edges
+      value.adjacents.forEach(adj => {
         data.edges.push({
-          to: node.value.id,
-          from: adj.value.id
+          to: value.value.id,
+          from: adj.value.id,
+          color: edgeColors.get(adj.value.id) ?? undefined
         });
       });
     });
+
+    newGraph.nodes.forEach((value, key) => {
+      // set package edges
+      value.adjacents.forEach(adj => {
+        data.edges.push({
+          to: value.value.id,
+          from: adj.value.id,
+          color: edgeColors.get(adj.value.id) ?? undefined
+        });
+      });
+    });
+    console.log(data);
 
     setVisGraph({
       nodes: new DataSet(data.nodes),
       edges: new DataSet(data.edges)
     });
-  }, [root, graph]);
+  }, [oldGraph, newGraph, theme, root]);
 
   return { visGraph };
 }
@@ -144,7 +217,7 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
               localStorage.getItem(key + value.version.replace("==", ""))
             );
             const v = {
-              id: metadata.name.toLowerCase(),
+              id: metadata.name.toLowerCase().replace(".", "-"),
               label: metadata.name,
               depth: null,
               metadata: metadata
@@ -154,8 +227,12 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
             graph.addVertex(v.id, v);
 
             // add to cantBeRoots list
+
             metadata.requires_dist?.forEach(adj => {
-              const adjacentName = adj.split(" ", 1)[0];
+              const adjacentName = adj
+                .split(" ", 1)[0]
+                .toLowerCase()
+                .replace(".", "-");
               const adjacentData = pipfileLock[adjacentName];
 
               // if package exists in lockfile
@@ -169,7 +246,7 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
               value.version.replace("==", "")
             ).then(metadata => {
               const v = {
-                id: metadata.name.toLowerCase(),
+                id: metadata.name.toLowerCase().replace(".", "-"),
                 label: metadata.name,
                 depth: null,
                 metadata: metadata
@@ -185,7 +262,10 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
 
               // add to cantBeRoots list
               metadata.requires_dist?.forEach(adj => {
-                const adjacentName = adj.split(" ", 1)[0];
+                const adjacentName = adj
+                  .split(" ", 1)[0]
+                  .toLowerCase()
+                  .replace(".", "-");
                 const adjacentData = pipfileLock[adjacentName];
 
                 // if package exists in lockfile
@@ -200,10 +280,18 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
         dispatch({
           type: "error",
           payload:
-            (e.response.statusText ?? "") +
+            (e?.response?.statusText ?? "Unknown Error") +
             ": an error occured while fetching package data."
         });
       });
+
+      // add app to graph
+      const app = graph.addVertex("*App", {
+        id: "*App",
+        label: "App",
+        depth: -1
+      });
+      cantBeRoots.push("*App");
 
       // get roots
       const visited = new Map();
@@ -213,6 +301,8 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
           const node = map.get(key);
           node.value.depth = 0;
           visitList.push(node);
+
+          graph.addEdge(app.key, node.key);
         }
       });
 
@@ -239,7 +329,12 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
             if (node?.value?.metadata?.requires_dist) {
               // for each dependency, parse to get name
               node.value.metadata.requires_dist.map(async adj => {
-                const adjacentNode = graph.nodes.get(adj.split(" ", 1)[0]);
+                const adjacentNode = graph.nodes.get(
+                  adj
+                    .split(" ", 1)[0]
+                    .toLowerCase()
+                    .replace(".", "-")
+                );
 
                 // if package exists in lockfile
                 if (adjacentNode) {
@@ -258,21 +353,6 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
           });
         }
       );
-
-      const value = {
-        id: "*App",
-        label: "App",
-        depth: -1
-      };
-
-      // add app to graph
-      const app = graph.addVertex(value.id, value);
-
-      Object.keys(pipfile).forEach(root => {
-        if (graph.nodes.get(root)) {
-          graph.addEdge(app.key, root);
-        }
-      });
     })().then(() => {
       dispatch({
         type: "graph",
