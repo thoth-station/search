@@ -11,8 +11,6 @@ import { Network, DataSet } from "vis-network/standalone/esm/vis-network";
 // material ui
 import { makeStyles } from "@material-ui/styles";
 
-// styling
-
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",

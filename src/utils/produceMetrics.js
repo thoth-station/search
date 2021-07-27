@@ -1,4 +1,5 @@
-import { thothSearchForPackage } from "services/thothApi";
+// api
+import { thothSearchForPackage, getLicenses } from "services/thothApi";
 
 // utils
 import { Graph } from "utils/Graph";
@@ -72,8 +73,18 @@ export function useComputeMetrics(graph, roots) {
     });
   }, [state.mergedGraph, state.advise, dispatch]);
 
+  // get license info
+  const [licenseData, setLicenseData] = useState();
   useEffect(() => {
-    if (!graph || !roots) {
+    getLicenses()
+      .then(licenseData => {
+        setLicenseData(licenseData);
+      })
+      .catch(() => setLicenseData({}));
+  }, []);
+
+  useEffect(() => {
+    if (!graph || !roots || !licenseData) {
       return;
     }
 
@@ -114,14 +125,30 @@ export function useComputeMetrics(graph, roots) {
         };
 
         // licence metric
+
+        // find license in dataset
+        let found = undefined;
+        if (licenseData.licenses) {
+          found = licenseData.licenses.find(l => {
+            const lower = node.value.metadata.license.toLowerCase();
+            return (
+              l.name.toLowerCase() === lower ||
+              l.licenseId.toLowerCase() === lower
+            );
+          });
+        }
+
         licenses = {
           total: (licenses.total ?? 0) + 1,
           root: licenses.root ?? node.value.metadata.license,
           all: {
             ...licenses.all,
-            [node.value.metadata.license]: {
+            [found?.licenseId ?? node.value.metadata.license]: {
               ...(licenses.all[node.value.metadata.license] ?? null),
-              [node.value.label]: node.value.depth
+              [node.value.label]: node.value.depth,
+              _found: found !== undefined,
+              _isOsiApproved: found?.isOsiApproved ?? null,
+              _isFsfLibre: found?.isFsfLibre ?? null
             }
           }
         };
@@ -139,7 +166,7 @@ export function useComputeMetrics(graph, roots) {
       metric: "licenses",
       payload: licenses
     });
-  }, [graph, dispatch, roots]);
+  }, [graph, dispatch, roots, licenseData]);
 }
 
 export function useMergeGraphs(

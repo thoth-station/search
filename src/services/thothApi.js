@@ -1,7 +1,6 @@
 import axios from "axios";
-import { PYPI, THOTH } from "./CONSTANTS";
+import { PYPI, THOTH, LICENSES } from "./CONSTANTS";
 import compareVersions from "tiny-version-compare";
-import { data } from "./adviseResponseDev";
 
 // GitHub
 export function getGitHubFileText(githubRepo, fileName) {
@@ -16,6 +15,18 @@ export function getGitHubFileText(githubRepo, fileName) {
         return response;
       });
   } else return Promise.reject();
+}
+
+export function getFile(url) {
+  return fetch(url)
+    .then(response => response.text())
+    .then(response => {
+      return response;
+    });
+}
+
+export function getLicenses() {
+  return getFile(LICENSES).then(text => JSON.parse(text));
 }
 
 // pypi

@@ -19,7 +19,6 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 import ProgressBar from "components/Shared/ProgressBar";
 
-
 const useStyles = makeStyles(theme => ({
   bar: {
     marginBottom: theme.spacing(1)
@@ -45,7 +44,7 @@ const LicenseDisplay = ({ name, value, totalLicenses }) => {
       <div className={classes.flex} onClick={() => setOpen(!open)}>
         <ProgressBar
           key={name}
-          value={Object.keys(value).length ?? 0}
+          value={Object.keys(value).length - 3 ?? 0}
           total={totalLicenses}
           label={name}
           className={classes.bar}
@@ -60,6 +59,9 @@ const LicenseDisplay = ({ name, value, totalLicenses }) => {
               return a[1] - b[1];
             })
             .map(([k, v]) => {
+              if (k[0] === "_") {
+                return null;
+              }
               return (
                 <Chip
                   key={k}

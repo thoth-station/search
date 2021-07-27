@@ -12,6 +12,7 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import { visuallyHidden } from "@material-ui/utils";
 import Typography from "@material-ui/core/Typography";
+import Collapse from "@material-ui/core/Collapse";
 
 import AddRoundedIcon from "@material-ui/icons/AddRounded";
 import RemoveRoundedIcon from "@material-ui/icons/RemoveRounded";
@@ -118,6 +119,7 @@ export default function EnhancedTable({
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
+  const [open, setOpen] = React.useState(null);
 
   useEffect(() => {
     if (!filterdGraph) {
@@ -125,13 +127,17 @@ export default function EnhancedTable({
     }
     const newRows = [];
     filterdGraph.forEach(node => {
+      if (node.depth === -1) {
+        return;
+      }
       newRows.push({
         name: node.label,
         warnings: [],
         depth: node.node.value.depth,
         license: node?.node?.value?.metadata?.license,
         dependencies: node.node.adjacents.size,
-        change: node.change
+        change: node.change,
+        summary: node?.node?.value?.metadata?.summary
       });
     });
     setRows(newRows);
@@ -183,29 +189,55 @@ export default function EnhancedTable({
                       : undefined;
 
                   return (
-                    <TableRow
-                      hover
-                      onClick={() => setSelected(row.name)}
-                      tabIndex={-1}
-                      key={row.name}
-                      selected={selected === row.name}
-                    >
-                      <TableCell component="th" id={labelId} scope="row">
-                        <Box display="flex">
-                          {row.change === "removed" ? (
-                            <RemoveRoundedIcon color={iconColor} />
-                          ) : row.change === "added" ? (
-                            <AddRoundedIcon color={iconColor} />
-                          ) : (
-                            <CircleOutlinedIcon />
-                          )}
-                          <Typography ml={2}>{row.name}</Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell align="right">{row.depth}</TableCell>
-                      <TableCell align="right">{row.license}</TableCell>
-                      <TableCell align="right">{row.dependencies}</TableCell>
-                    </TableRow>
+                    <React.Fragment>
+                      <TableRow
+                        hover
+                        onClick={() => {
+                          setSelected(row.name);
+                          if (open !== row.name) {
+                            setOpen(row.name);
+                          } else {
+                            setOpen(null);
+                          }
+                        }}
+                        tabIndex={-1}
+                        key={row.name}
+                        selected={selected === row.name}
+                      >
+                        <TableCell component="th" id={labelId} scope="row">
+                          <Box display="flex">
+                            {row.change === "removed" ? (
+                              <RemoveRoundedIcon color={iconColor} />
+                            ) : row.change === "added" ? (
+                              <AddRoundedIcon color={iconColor} />
+                            ) : (
+                              <CircleOutlinedIcon />
+                            )}
+                            <Typography ml={2}>{row.name}</Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">{row.depth}</TableCell>
+                        <TableCell align="right">{row.license}</TableCell>
+                        <TableCell align="right">{row.dependencies}</TableCell>
+                      </TableRow>
+
+                      <TableRow>
+                        <TableCell
+                          style={{ paddingBottom: 0, paddingTop: 0 }}
+                          colSpan={6}
+                        >
+                          <Collapse
+                            in={open === row.name}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            <Typography gutterBottom variant="body1">
+                              {row.summary ?? "NaN"}
+                            </Typography>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
                   );
                 })}
               {emptyRows > 0 && (
