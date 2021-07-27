@@ -80,7 +80,9 @@ const PackageDependencies = () => {
     if (isExpanded) {
       setSelectedPackage(package_name);
       const section = document.getElementById(package_name);
-      section.scrollIntoView({ block: "start", behavior: "smooth" });
+      if (section) {
+        section.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
     } else {
       setSelectedPackage(null);
     }

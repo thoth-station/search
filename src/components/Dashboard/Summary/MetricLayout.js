@@ -5,10 +5,11 @@ import React, { useContext } from "react";
 import InfoCard from "./InfoCard";
 import DependenciesMetric from "components/Dashboard/Summary/Metrics/DependenciesMetric";
 import LicenseMetric from "components/Dashboard/Summary/Metrics/LicenseMetric";
+import AdviseMetric from "components/Dashboard/Summary/Metrics/AdviseMetric";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
 // material-ui
-import Grid from "@material-ui/core/Grid";
+import { Grid } from "@material-ui/core";
 
 // redux
 import { StateContext } from "App";
@@ -32,6 +33,8 @@ const MetricLayout = () => {
                         <DependenciesMetric />
                       ) : key === "licenses" ? (
                         <LicenseMetric />
+                      ) : key === "advise" ? (
+                        <AdviseMetric />
                       ) : null
                     }
                   />

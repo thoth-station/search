@@ -16,6 +16,61 @@ import { useTheme } from "@material-ui/core/styles";
 // React hook for computing metrics and applying to state
 export function useComputeMetrics(graph, roots) {
   const dispatch = useContext(DispatchContext);
+  const state = useContext(StateContext);
+
+  useEffect(() => {
+    if (!state?.advise?.metadata || !state?.mergedGraph) {
+      return;
+    }
+
+    const advise = {
+      added: 0,
+      removed: 0,
+      version: 0,
+      equal: 0,
+      justification: {},
+      build: null
+    };
+
+    // package changes
+    state.mergedGraph.forEach(node => {
+      switch (node.change) {
+        case "added":
+          advise.added++;
+          break;
+        case "removed":
+          advise.removed++;
+          break;
+        case "version":
+          advise.version++;
+          break;
+        default:
+          advise.equal++;
+      }
+    });
+
+    // build environment
+    advise.build = `We have analysed an application stack running on ${state.advise.metadata.os_release.name} ${state.advise.metadata.os_release.version}, running Python (${state.advise.metadata.python.implementation_name}) ${state.advise.metadata.python.major}.${state.advise.metadata.python.minor}.${state.advise.metadata.python.micro}. It was Adviser Job ID ${state.advise.metadata.document_id}, by ${state.advise.metadata.analyzer} v${state.advise.metadata.analyzer_version}. `;
+
+    // justification counts
+    state.advise?.report?.products?.[0]?.justification.forEach(
+      justification => {
+        if (justification.type !== "INFO") {
+          if (advise?.justification[justification.type] !== undefined) {
+            advise.justification[justification.type]++;
+          } else {
+            advise.justification[justification.type] = 0;
+          }
+        }
+      }
+    );
+
+    dispatch({
+      type: "metric",
+      metric: "advise",
+      payload: advise
+    });
+  }, [state.mergedGraph, state.advise, dispatch]);
 
   useEffect(() => {
     if (!graph || !roots) {

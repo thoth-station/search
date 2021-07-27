@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 // local
 import MetricLayout from "components/Dashboard/Summary/MetricLayout";
 import PackageHeader from "components/Dashboard/Summary/PackageHeader";
-import AdviseHeader from "components/Dashboard/Summary/AdviseHeader";
+import AdviseHeader from "components/Dashboard/AdviseHeader";
 
 import TabPanel from "components/Shared/TabPanel";
 import AdvisePage from "components/Dashboard/Advise/AdvisePage";

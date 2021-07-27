@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
-    minWidth: 275
+    minWidth: 275,
+    height: "100%"
   },
   bullet: {
     display: "inline-block",
