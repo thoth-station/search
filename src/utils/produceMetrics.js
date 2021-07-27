@@ -4,7 +4,7 @@ import { thothSearchForPackage } from "services/thothApi";
 import { Graph } from "utils/Graph";
 
 // redux
-import { DispatchContext } from "App";
+import { DispatchContext, StateContext } from "App";
 
 import { useContext, useEffect, useState } from "react";
 
@@ -87,9 +87,19 @@ export function useComputeMetrics(graph, roots) {
   }, [graph, dispatch, roots]);
 }
 
-export function useFormatVisGraph(oldGraph, newGraph, root) {
-  const [visGraph, setVisGraph] = useState(undefined);
+export function useMergeGraphs(
+  oldGraph,
+  newGraph,
+  root,
+  showOldPackages = false
+) {
+  const dispatch = useContext(DispatchContext);
+  const state = useContext(StateContext);
+
   const theme = useTheme();
+
+  const [visGraph, setVisGraph] = useState(undefined);
+  const [filterdGraph, setFilterdGraph] = useState(undefined);
 
   useEffect(() => {
     if (!oldGraph || !newGraph || !root) {
@@ -118,7 +128,9 @@ export function useFormatVisGraph(oldGraph, newGraph, root) {
             label:
               newNode.value.label +
               " " +
-              (newNode?.value?.metadata?.version ?? "")
+              (newNode?.value?.metadata?.version ?? ""),
+            node: newNode,
+            change: "equal"
           });
         }
         // if the versions are different
@@ -129,7 +141,9 @@ export function useFormatVisGraph(oldGraph, newGraph, root) {
             label: newNode.value.label + " " + newNode.value.metadata.version,
             font: {
               color: theme.palette.success.main
-            }
+            },
+            node: newNode,
+            change: "version"
           });
         }
       }
@@ -141,14 +155,18 @@ export function useFormatVisGraph(oldGraph, newGraph, root) {
           font: {
             color: theme.palette.error.main
           },
-          color: theme.palette.error.main
+          color: theme.palette.error.main,
+          node: oldGraph.nodes.get(value.value.id),
+          change: "removed"
         });
 
         edgeColors.set(value.value.id, theme.palette.error.main);
       }
     });
 
+    // get added nodes
     newGraph.nodes.forEach((value, key) => {
+      // if the old grpah does not have what new graph has
       if (!oldGraph.nodes.has(key)) {
         data.nodes.push({
           id: value.value.id,
@@ -156,7 +174,9 @@ export function useFormatVisGraph(oldGraph, newGraph, root) {
           font: {
             color: theme.palette.success.main
           },
-          color: theme.palette.success.main
+          color: theme.palette.success.main,
+          node: newGraph.nodes.get(value.value.id),
+          change: "added"
         });
 
         edgeColors.set(value.value.id, theme.palette.success.main);
@@ -184,15 +204,40 @@ export function useFormatVisGraph(oldGraph, newGraph, root) {
         });
       });
     });
-    console.log(data);
 
-    setVisGraph({
+    const visData = {
       nodes: new DataSet(data.nodes),
       edges: new DataSet(data.edges)
-    });
-  }, [oldGraph, newGraph, theme, root]);
+    };
 
-  return { visGraph };
+    setVisGraph(visData);
+
+    dispatch({
+      type: "graph",
+      name: "mergedGraph",
+      payload: data.nodes
+    });
+  }, [oldGraph, newGraph, theme, root, dispatch]);
+
+  // if filter type is changed then apply filter to state
+  useEffect(() => {
+    if (!state.mergedGraph || !visGraph?.edges) {
+      return;
+    }
+
+    const filterdNodes = state.mergedGraph.filter(node => {
+      return node.change !== "removed" || showOldPackages;
+    });
+
+    setFilterdGraph(filterdNodes);
+
+    setVisGraph({
+      nodes: new DataSet(filterdNodes),
+      edges: visGraph.edges
+    });
+  }, [showOldPackages, dispatch, state.mergedGraph, visGraph?.edges]);
+
+  return { visGraph: visGraph, filterdGraph: filterdGraph };
 }
 
 export function useLockFileToGraph(pipfile, pipfileLock, stateName) {

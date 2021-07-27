@@ -6,16 +6,9 @@ import { recurseToRoot } from "utils/recurseToRoot";
 import { options } from "config/networkOptions";
 
 // vis-network
-import {
-  Network,
-  DataView,
-  DataSet
-} from "vis-network/standalone/esm/vis-network";
-
-import Graph from "react-graph-vis";
+import { Network, DataSet } from "vis-network/standalone/esm/vis-network";
 
 // material ui
-import SearchBar from "components/Shared/SearchBar";
 import { makeStyles } from "@material-ui/styles";
 
 // styling
@@ -33,9 +26,11 @@ const useStyles = makeStyles(theme => ({
 
 const NetworkGraph = ({
   data,
+  filterdGraph,
   searchText,
   root,
   selectedPackage,
+  search,
   ...props
 }) => {
   const classes = useStyles();
@@ -102,16 +97,17 @@ const NetworkGraph = ({
 
   // recursivly finds all paths from search result to root
   useEffect(() => {
+    const selectedColor = "#f39200";
+
     // clear selection
-    // data.nodes.updateOnly(
-    //   data.nodes.get().map(e => {
-    //     if (e.id !== root) {
-    //       e["color"] = options.nodes.color;
-    //       e["font"] = options.nodes.font;
-    //     }
-    //     return e;
-    //   })
-    // );
+    data.nodes.updateOnly(
+      data.nodes.get().map(e => {
+        if (e.color === selectedColor) {
+          e["color"] = filterdGraph.find(node => node.id === e.id).color;
+        }
+        return e;
+      })
+    );
 
     if (selectedPackage === null) {
       // reset node colors
@@ -135,15 +131,15 @@ const NetworkGraph = ({
 
     // set searched nodes to a different color
     if (result.id !== root) {
-      result["color"] = "#f39200";
+      result["color"] = selectedColor;
     }
 
     // update nodes and edges in the dataset
     data.nodes.updateOnly(result);
-  }, [selectedPackage, root, data]);
+  }, [selectedPackage, root, data, filterdGraph]);
 
   // recursivly finds all paths from search result to root
-  const handleSearch = (query, data) => {
+  useEffect(() => {
     // clear selection
     data.nodes.updateOnly(
       data.nodes.get().map(e => {
@@ -166,7 +162,7 @@ const NetworkGraph = ({
       })
     );
 
-    if (query.target.value === "") {
+    if (search === "") {
       // reset node colors
       return;
     }
@@ -174,7 +170,7 @@ const NetworkGraph = ({
     // use input text to find possible results
     let possible_results = data.nodes.get({
       filter: function(node) {
-        return node.label.includes(query.target.value);
+        return node.label.includes(search);
       }
     });
 
@@ -221,14 +217,10 @@ const NetworkGraph = ({
     // update nodes and edges in the dataset
     data.nodes.updateOnly(unselected_nodes.concat(possible_results));
     data.edges.updateOnly(unselected_edges);
-  };
+  }, [search, data, root]);
 
   return (
     <div className={`${classes.root} ${props.className}`}>
-      <SearchBar
-        label="Filter packages"
-        onChange={text => handleSearch(text, data)}
-      />
       <div ref={visJsRef} id="mynetwork" className={classes.canvas} />
     </div>
   );

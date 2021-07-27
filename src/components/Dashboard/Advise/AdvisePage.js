@@ -5,9 +5,11 @@ import React, { useContext, useState } from "react";
 import NetworkGraph from "components/Dashboard/Advise/NetworkGraph.js";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 import TabPanel from "components/Shared/TabPanel";
+import AdviseTable from "components/Dashboard/Advise/AdviseTable";
+import SearchBar from "components/Shared/SearchBar";
 
 // utils
-import { useFormatVisGraph } from "utils/produceMetrics";
+import { useMergeGraphs } from "utils/produceMetrics";
 
 // material-ui
 import {
@@ -40,23 +42,33 @@ const useStyles = makeStyles(theme => ({
   buttonGroup: {
     marginTop: theme.spacing(2),
     marginLeft: theme.spacing(2)
+  },
+  lockfile: {
+    overflow: "scroll",
+    paddingLeft: theme.spacing(1)
   }
 }));
 
 const PackageDependencies = () => {
   const classes = useStyles();
   const state = useContext(StateContext);
+
   const root = state.focus ?? "*App";
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [expanded, setExpanded] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const [showOldPackages, setShowOldPackages] = useState(false);
+
   // for tab control
   const [tab, setTab] = useState(0);
   const [display, setDisplay] = React.useState("graph");
 
-  const { visGraph } = useFormatVisGraph(
+  const { visGraph, filterdGraph } = useMergeGraphs(
     state.initGraph,
     state.adviseGraph,
-    root
+    root,
+    showOldPackages
   );
 
   const handleJustificationSelect = (package_name, i) => (
@@ -67,6 +79,8 @@ const PackageDependencies = () => {
 
     if (isExpanded) {
       setSelectedPackage(package_name);
+      const section = document.getElementById(package_name);
+      section.scrollIntoView({ block: "start", behavior: "smooth" });
     } else {
       setSelectedPackage(null);
     }
@@ -86,41 +100,94 @@ const PackageDependencies = () => {
         justifyContent="center"
         alignItems="flex-start"
       >
-        <Grid item s={12} md={6}>
+        <Grid item s={12} md={6} mt={2}>
           <Paper>
-            <ToggleButtonGroup
-              value={display}
-              exclusive
-              onChange={handleDisplay}
-              aria-label="text alignment"
-              className={classes.buttonGroup}
-            >
-              <ToggleButton value="graph">
-                <AccountTreeRoundedIcon />
-              </ToggleButton>
-              <ToggleButton value="table">
-                <TableRowsIcon />
-              </ToggleButton>
-              <ToggleButton value="file">
-                <DescriptionRoundedIcon />
-              </ToggleButton>
-            </ToggleButtonGroup>
+            <Grid container spacing={1} alignItems="center" ml={1}>
+              <Grid item md={4}>
+                <ToggleButtonGroup
+                  value={display}
+                  exclusive
+                  onChange={handleDisplay}
+                >
+                  <ToggleButton value="graph">
+                    <AccountTreeRoundedIcon />
+                  </ToggleButton>
+                  <ToggleButton value="table">
+                    <TableRowsIcon />
+                  </ToggleButton>
+                  <ToggleButton value="file">
+                    <DescriptionRoundedIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Grid>
+              {display !== "file" ? (
+                <>
+                  <Grid item md={4}>
+                    <SearchBar
+                      label="Filter packages"
+                      onChange={event => setSearch(event.target.value)}
+                    />
+                  </Grid>
+                  <Grid item md={4}>
+                    <ToggleButton
+                      size={"small"}
+                      value="check"
+                      selected={showOldPackages}
+                      onChange={() => {
+                        setShowOldPackages(!showOldPackages);
+                      }}
+                    >
+                      Include Changes
+                    </ToggleButton>
+                  </Grid>{" "}
+                </>
+              ) : null}
+            </Grid>
 
             <TabPanel value={display} index={"graph"}>
               <NetworkGraph
                 data={visGraph}
+                filterdGraph={filterdGraph}
                 className={classes.graph}
                 root={root}
                 selectedPackage={selectedPackage}
+                search={search}
               />
             </TabPanel>
-            <TabPanel value={display} index={"table"}></TabPanel>
+            <TabPanel value={display} index={"table"}>
+              <AdviseTable
+                filterdGraph={filterdGraph}
+                search={selectedPackage ?? search}
+              />
+            </TabPanel>
             <TabPanel value={display} index={"file"}>
-              <Typography>
-                {JSON.stringify(
-                  state?.advise?.report?.products?.[0]?.project
-                    ?.requirements_locked
-                )}
+              <Typography variant="caption">
+                <pre>
+                  <div
+                    className={classes.lockfile}
+                    dangerouslySetInnerHTML={{
+                      __html: JSON.stringify(
+                        state?.advise?.report?.products?.[0]?.project
+                          ?.requirements_locked,
+                        undefined,
+                        4
+                      )?.replaceAll(
+                        new RegExp(
+                          '("' +
+                            Object.keys(
+                              state?.advise?.report?.products?.[0]?.project
+                                ?.requirements_locked?.default
+                            )?.join('"|"') +
+                            '")',
+                          "g"
+                        ),
+                        match => {
+                          return `<a id="${match.slice(1, -1)}">${match}</a>`;
+                        }
+                      )
+                    }}
+                  />
+                </pre>
               </Typography>
             </TabPanel>
           </Paper>
