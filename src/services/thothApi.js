@@ -1,5 +1,5 @@
 import axios from "axios";
-import { PYPI, THOTH } from "./CONSTANTS";
+import { PYPI, THOTH, LICENSES } from "./CONSTANTS";
 import compareVersions from "tiny-version-compare";
 
 // GitHub
@@ -15,6 +15,18 @@ export function getGitHubFileText(githubRepo, fileName) {
         return response;
       });
   } else return Promise.reject();
+}
+
+export function getFile(url) {
+  return fetch(url)
+    .then(response => response.text())
+    .then(response => {
+      return response;
+    });
+}
+
+export function getLicenses() {
+  return getFile(LICENSES).then(text => JSON.parse(text));
 }
 
 // pypi
@@ -50,13 +62,15 @@ export const thothSearchForPackage = (
           .then(res => {
             return res.data.info;
           });
+      } else {
+        throw e;
       }
     });
 };
 
 // thoth
 export const thothAdvise = (pipfile, pipfileLock) => {
-  const data = {
+  const d = {
     application_stack: {
       requirements: pipfile,
       requirements_format: "pipenv",
@@ -72,7 +86,7 @@ export const thothAdvise = (pipfile, pipfileLock) => {
     }
   };
 
-  return axios.post(THOTH + "/advise/python", data, {
+  return axios.post(THOTH + "/advise/python", d, {
     params: {
       recommendation_type: "stable"
     },
@@ -83,6 +97,7 @@ export const thothAdvise = (pipfile, pipfileLock) => {
 };
 
 export const thothAdviseResult = analysis_id => {
+  //return Promise.resolve(data);
   return axios.get(THOTH + "/advise/python/" + analysis_id, {
     headers: {
       accept: "application/json"

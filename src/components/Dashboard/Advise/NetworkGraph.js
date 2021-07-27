@@ -1,18 +1,16 @@
 // react
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // utils and configs
 import { recurseToRoot } from "utils/recurseToRoot";
 import { options } from "config/networkOptions";
 
 // vis-network
-import { Network } from "vis-network/standalone/esm/vis-network";
+import { Network, DataSet } from "vis-network/standalone/esm/vis-network";
 
 // material ui
-import SearchBar from "components/Shared/SearchBar";
-import { makeStyles } from "@material-ui/styles";;
+import { makeStyles } from "@material-ui/styles";
 
-// styling
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -24,13 +22,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NetworkGraph = ({ data, searchText, root, ...props }) => {
-  const visJsRef = useRef(null);
+const NetworkGraph = ({
+  data,
+  filterdGraph,
+  searchText,
+  root,
+  selectedPackage,
+  search,
+  ...props
+}) => {
   const classes = useStyles();
+  const [selected, setSelected] = useState(data);
+  const visJsRef = useRef(null);
 
   useEffect(() => {
     const network =
-      visJsRef.current && new Network(visJsRef.current, data, options);
+      visJsRef.current && new Network(visJsRef.current, selected, options);
 
     // set root node to have specific color
     const rootNode = data.nodes.get(root);
@@ -84,16 +91,61 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
         network.editNode(params.nodes[0]);
       }
     });
-  }, [visJsRef, data, root]);
+  }, [root, selected, data.nodes]);
 
   // recursivly finds all paths from search result to root
-  const handleSearch = (query, data) => {
-    // clear selection if empty search bar
+  useEffect(() => {
+    const selectedColor = "#f39200";
+
+    // clear selection
+    data.nodes.updateOnly(
+      data.nodes.get().map(e => {
+        if (e.color === selectedColor) {
+          e["color"] = filterdGraph.find(node => node.id === e.id).color;
+        }
+        return e;
+      })
+    );
+
+    if (selectedPackage === null) {
+      // reset node colors
+      setSelected(data);
+      return;
+    }
+
+    // use input text to find possible results
+    const result = data.nodes.get(selectedPackage);
+
+    // recurse through possible results
+    const recurse = recurseToRoot(
+      [selectedPackage],
+      root,
+      data.edges.map(e => e)
+    );
+    setSelected({
+      nodes: new DataSet(data.nodes.get(recurse.nodes)),
+      edges: new DataSet(data.edges.get(recurse.esges))
+    });
+
+    // set searched nodes to a different color
+    if (result.id !== root) {
+      result["color"] = selectedColor;
+    }
+
+    // update nodes and edges in the dataset
+    data.nodes.updateOnly(result);
+  }, [selectedPackage, root, data, filterdGraph]);
+
+  // recursivly finds all paths from search result to root
+  useEffect(() => {
+    // clear selection
     data.nodes.updateOnly(
       data.nodes.get().map(e => {
         if (e.id !== root) {
-          e["color"] = options.nodes.color;
-          e["font"] = options.nodes.font;
+          //e["color"] = options.nodes.color;
+          //e["font"] = options.nodes.font;
+          e["opacity"] = 1;
+          e["font"] = { size: options.nodes.font.size };
         }
         return e;
       })
@@ -102,12 +154,13 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
     // reset edge colors
     data.edges.updateOnly(
       data.edges.get().map(e => {
-        e["color"] = options.edges.color;
+        //e["color"] = options.edges.color;
+        e["color"] = { opacity: 1 };
         return e;
       })
     );
 
-    if (query === "") {
+    if (search === "") {
       // reset node colors
       return;
     }
@@ -115,7 +168,7 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
     // use input text to find possible results
     let possible_results = data.nodes.get({
       filter: function(node) {
-        return node.label.includes(query);
+        return node.label.includes(search);
       }
     });
 
@@ -132,7 +185,8 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
       .get()
       .filter(edge => !selected.edges.includes(edge.id))
       .map(e => {
-        e["color"] = { color: "#e3e5e8" };
+        //e["color"] = { color: "#e3e5e8" };
+        e["color"] = { opacity: 0.05 };
         return e;
       });
 
@@ -142,8 +196,10 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
       .filter(node => !selected.nodes.includes(node.id))
       .map(e => {
         if (e.id !== root) {
-          e["color"] = { background: "#e3e5e8" };
-          e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
+          //e["color"] = { background: "#e3e5e8" };
+          //e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
+          e["font"] = { size: 0 };
+          e["opacity"] = 0.05;
         }
         return e;
       });
@@ -151,7 +207,7 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
     // set searched nodes to a different color
     possible_results = possible_results.map(e => {
       if (e.id !== root) {
-        e["color"] = { background: "#f39200" };
+        //e["color"] = { background: "#f39200" };
       }
       return e;
     });
@@ -159,14 +215,10 @@ const NetworkGraph = ({ data, searchText, root, ...props }) => {
     // update nodes and edges in the dataset
     data.nodes.updateOnly(unselected_nodes.concat(possible_results));
     data.edges.updateOnly(unselected_edges);
-  };
+  }, [search, data, root]);
 
   return (
     <div className={`${classes.root} ${props.className}`}>
-      <SearchBar
-        label="Filter packages"
-        onChange={text => handleSearch(text, data)}
-      />
       <div ref={visJsRef} id="mynetwork" className={classes.canvas} />
     </div>
   );

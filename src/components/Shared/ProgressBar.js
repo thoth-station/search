@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 // material-ui
 import { withStyles, makeStyles } from "@material-ui/styles";
-import { LinearProgress, Typography, Tooltip } from "@material-ui/core";
+import { LinearProgress, Typography, Tooltip, Grid } from "@material-ui/core";
 
 const CustomLinearProgress = withStyles(theme => ({
   root: {
@@ -29,44 +29,41 @@ const useStyles = makeStyles(theme => ({
     gridGap: theme.spacing(1)
   },
   label: {
-    gridColumnStart: 1,
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
   },
   value: {
-    gridColumnStart: 2,
     textAlign: "end"
-  },
-  bar: {
-    gridColumnStart: "span 3"
-  },
-  end: {
-    gridColumnStart: 6
   }
 }));
 
 const ProgressBar = ({ value, total, label, action, ...props }) => {
   const classes = useStyles();
   return (
-    <div className={`${classes.root} ${props.className}`}>
-      <Tooltip title={label} placement="left">
-        <Typography variant="body2" className={classes.label}>
-          {label}
+    <Grid container spacing={1} alignItems="center">
+      <Grid item xs={4}>
+        <Tooltip title={label} placement="left">
+          <Typography variant="body2" className={classes.label}>
+            {label}
+          </Typography>
+        </Tooltip>
+      </Grid>
+      <Grid item xs={1}>
+        <Typography className={classes.value} variant="body2">
+          {value}
         </Typography>
-      </Tooltip>
-
-      <Typography className={classes.value} variant="body2">
-        {value}
-      </Typography>
-
-      <CustomLinearProgress
-        variant="determinate"
-        value={total > 0 ? (value / total) * 100 : 0}
-        className={classes.bar}
-      />
-      <div className={classes.end}>{action ?? null}</div>
-    </div>
+      </Grid>
+      <Grid item xs={6}>
+        <CustomLinearProgress
+          variant="determinate"
+          value={total > 0 ? (value / total) * 100 : 0}
+        />
+      </Grid>
+      <Grid item xs>
+        <div>{action ?? null}</div>
+      </Grid>
+    </Grid>
   );
 };
 

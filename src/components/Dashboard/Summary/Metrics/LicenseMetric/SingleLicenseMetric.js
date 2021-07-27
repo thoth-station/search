@@ -9,6 +9,7 @@ import { Typography, Divider } from "@material-ui/core";
 // local
 import ProgressBar from "components/Shared/ProgressBar";
 
+
 const useStyles = makeStyles(theme => ({
   bar: {
     marginBottom: theme.spacing(1)

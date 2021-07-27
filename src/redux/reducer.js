@@ -1,7 +1,7 @@
 export function reducer(state, action) {
   switch (action.type) {
     case "graph":
-      return { ...state, graph: action.payload };
+      return { ...state, [action.name]: action.payload };
     case "metric":
       return {
         ...state,
@@ -33,6 +33,9 @@ export function reducer(state, action) {
     }
     case "reset": {
       return initState;
+    }
+    case "localStorage": {
+      return action.payload;
     }
 
     default:
