@@ -91,11 +91,12 @@ const PackageDependencies = () => {
         spacing={2}
         justifyContent="center"
         alignItems="flex-start"
+        mt={2}
       >
-        <Grid item s={12} md={6} mt={2}>
-          <Paper>
-            <Grid container spacing={1} alignItems="center" ml={1}>
-              <Grid item md={4}>
+        <Grid item s={12} md={6}>
+          <Paper className={classes.graph}>
+            <Grid container spacing={1} alignItems="center">
+              <Grid item xs>
                 <ToggleButtonGroup
                   value={display}
                   exclusive
@@ -114,13 +115,13 @@ const PackageDependencies = () => {
               </Grid>
               {display !== "file" ? (
                 <>
-                  <Grid item md={4}>
+                  <Grid item xs={6}>
                     <SearchBar
                       label="Filter packages"
                       onChange={event => setSearch(event.target.value)}
                     />
                   </Grid>
-                  <Grid item md={4}>
+                  <Grid item xs>
                     <ToggleButton
                       size={"small"}
                       value="check"
@@ -131,7 +132,7 @@ const PackageDependencies = () => {
                     >
                       Include Changes
                     </ToggleButton>
-                  </Grid>{" "}
+                  </Grid>
                 </>
               ) : null}
             </Grid>

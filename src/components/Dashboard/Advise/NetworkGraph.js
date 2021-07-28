@@ -245,14 +245,20 @@ const NetworkGraph = ({
 
     resetAll();
 
+    let special = {};
     if (search === "") {
       // reset node colors
       return;
+    } else if (search.includes("d:")) {
+      special["depth"] = parseInt(search.slice(2)) || 0;
     }
 
     // use input text to find possible results
     let possible_results = data.nodes.get({
       filter: function(node) {
+        if (special.depth !== undefined) {
+          return special.depth >= node.depth;
+        }
         return node.label.includes(search);
       }
     });

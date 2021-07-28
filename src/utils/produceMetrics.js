@@ -422,7 +422,10 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
                 // if package exists in lockfile
                 if (adjacentNode) {
                   // update depth
-                  adjacentNode.value.depth = node.value.depth + 1;
+                  adjacentNode.value.depth = Math.min(
+                    node.value.depth + 1,
+                    adjacentNode.value.depth ?? node.value.depth + 2
+                  );
 
                   // add edge connecting parent and dependency
                   graph.addEdge(node.key, adjacentNode.value.id);

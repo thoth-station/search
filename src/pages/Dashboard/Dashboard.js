@@ -236,8 +236,8 @@ export const Dashboard = ({ location }) => {
         indicatorColor="primary"
         textColor="primary"
       >
-        <Tab label="Overview" />
-        <Tab label="Dependencies" />
+        <Tab label="Summary" />
+        <Tab label="Advise Results" />
       </Tabs>
       <TabPanel value={value} index={0}>
         <MetricLayout />

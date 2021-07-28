@@ -19,29 +19,31 @@ const MetricLayout = () => {
 
   return (
     <LoadingErrorTemplate isLoading={state?.metrics === undefined}>
-      <Grid container spacing={3}>
-        {state?.metrics
-          ? Object.keys(state.metrics).map(key => {
-              return (
-                <Grid item xs={12} sm={6} key={key}>
-                  <InfoCard
-                    cardMeta={{
-                      title: key.charAt(0).toUpperCase() + key.slice(1)
-                    }}
-                    cardBody={
-                      key === "dependencies" ? (
-                        <DependenciesMetric />
-                      ) : key === "licenses" ? (
-                        <LicenseMetric />
-                      ) : key === "advise" ? (
-                        <AdviseMetric />
-                      ) : null
-                    }
-                  />
-                </Grid>
-              );
-            })
-          : null}
+      <Grid container spacing={3} mb={3}>
+        <Grid item xs={12} sm={6}>
+          <InfoCard
+            cardMeta={{
+              title: "Thoth Advise Summary"
+            }}
+            cardBody={<AdviseMetric />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <InfoCard
+            cardMeta={{
+              title: "Dependencies Summary"
+            }}
+            cardBody={<DependenciesMetric />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <InfoCard
+            cardMeta={{
+              title: "Licenses Summary"
+            }}
+            cardBody={<LicenseMetric />}
+          />
+        </Grid>
       </Grid>
     </LoadingErrorTemplate>
   );
