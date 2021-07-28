@@ -9,9 +9,6 @@ import { DispatchContext, StateContext } from "App";
 
 import { useContext, useEffect, useState } from "react";
 
-//vis-dataset
-import { DataSet } from "vis-network/standalone/esm/vis-network";
-
 import { useTheme } from "@material-ui/core/styles";
 
 // React hook for computing metrics and applying to state
@@ -34,8 +31,8 @@ export function useComputeMetrics(graph, roots) {
     };
 
     // package changes
-    state.mergedGraph.forEach(node => {
-      switch (node.change) {
+    state.mergedGraph.nodes.forEach(node => {
+      switch (node.value.change) {
         case "added":
           advise.added++;
           break;
@@ -169,31 +166,19 @@ export function useComputeMetrics(graph, roots) {
   }, [graph, dispatch, roots, licenseData]);
 }
 
-export function useMergeGraphs(
-  oldGraph,
-  newGraph,
-  root,
-  showOldPackages = false
-) {
+export function useMergeGraphs(oldGraph, newGraph, root) {
   const dispatch = useContext(DispatchContext);
-  const state = useContext(StateContext);
 
   const theme = useTheme();
-
-  const [visGraph, setVisGraph] = useState(undefined);
-  const [filterdGraph, setFilterdGraph] = useState(undefined);
 
   useEffect(() => {
     if (!oldGraph || !newGraph || !root) {
       return;
     }
 
-    const data = {
-      nodes: [],
-      edges: []
-    };
-
+    const visGraphEdges = [];
     const edgeColors = new Map();
+    const mergedGraph = new Graph();
 
     oldGraph.nodes.forEach((value, key) => {
       // if the new and old graph have the same package
@@ -205,42 +190,36 @@ export function useMergeGraphs(
           key === root ||
           value.value.metadata.version === newNode.value.metadata.version
         ) {
-          data.nodes.push({
-            id: newNode.value.id,
-            label:
-              newNode.value.label +
-              " " +
-              (newNode?.value?.metadata?.version ?? ""),
-            node: newNode,
-            change: "equal"
-          });
+          mergedGraph.nodes.set(newNode.key, newNode);
+          newNode.value["change"] = "equal";
+          newNode.value["label"] =
+            newNode.value.label +
+            " " +
+            (newNode?.value?.metadata?.version ?? "");
         }
         // if the versions are different
         else {
-          // set package node
-          data.nodes.push({
-            id: newNode.value.id,
-            label: newNode.value.label + " " + newNode.value.metadata.version,
-            font: {
-              color: theme.palette.success.main
-            },
-            node: newNode,
-            change: "version"
-          });
+          mergedGraph.nodes.set(newNode.key, newNode);
+          newNode.value["change"] = "version";
+          newNode.value["label"] =
+            newNode.value.label +
+            " " +
+            (newNode?.value?.metadata?.version ?? "");
+          newNode.value["font"] = {
+            color: theme.palette.success.main
+          };
         }
       }
       // if new graph does not have package then it is removed
       else {
-        data.nodes.push({
-          id: value.value.id,
-          label: value.value.label + " " + value.value.metadata.version,
-          font: {
-            color: theme.palette.error.main
-          },
-          color: theme.palette.error.main,
-          node: oldGraph.nodes.get(value.value.id),
-          change: "removed"
-        });
+        mergedGraph.nodes.set(value.key, value);
+        value.value["change"] = "removed";
+        value.value["label"] =
+          value.value.label + " " + (value?.value?.metadata?.version ?? "");
+        value.value["font"] = {
+          color: theme.palette.error.main
+        };
+        value.value["color"] = theme.palette.error.main;
 
         edgeColors.set(value.value.id, theme.palette.error.main);
       }
@@ -250,25 +229,24 @@ export function useMergeGraphs(
     newGraph.nodes.forEach((value, key) => {
       // if the old grpah does not have what new graph has
       if (!oldGraph.nodes.has(key)) {
-        data.nodes.push({
-          id: value.value.id,
-          label: value.value.label + " " + value.value.metadata.version,
-          font: {
-            color: theme.palette.success.main
-          },
-          color: theme.palette.success.main,
-          node: newGraph.nodes.get(value.value.id),
-          change: "added"
-        });
+        mergedGraph.nodes.set(value.key, value);
+        value.value["change"] = "added";
+        value.value["label"] =
+          value.value.label + " " + (value?.value?.metadata?.version ?? "");
+        value.value["font"] = {
+          color: theme.palette.success.main
+        };
+        value.value["color"] = theme.palette.success.main;
 
         edgeColors.set(value.value.id, theme.palette.success.main);
       }
     });
 
+    // add edges from old graph
     oldGraph.nodes.forEach((value, key) => {
       // set package edges
       value.adjacents.forEach(adj => {
-        data.edges.push({
+        visGraphEdges.push({
           to: value.value.id,
           from: adj.value.id,
           color: edgeColors.get(adj.value.id) ?? undefined
@@ -276,10 +254,11 @@ export function useMergeGraphs(
       });
     });
 
+    // add edges from new graph
     newGraph.nodes.forEach((value, key) => {
       // set package edges
       value.adjacents.forEach(adj => {
-        data.edges.push({
+        visGraphEdges.push({
           to: value.value.id,
           from: adj.value.id,
           color: edgeColors.get(adj.value.id) ?? undefined
@@ -287,39 +266,16 @@ export function useMergeGraphs(
       });
     });
 
-    const visData = {
-      nodes: new DataSet(data.nodes),
-      edges: new DataSet(data.edges)
-    };
+    // add edges to merged graph Object
+    mergedGraph["visEdges"] = visGraphEdges;
 
-    setVisGraph(visData);
-
+    // set state
     dispatch({
       type: "graph",
       name: "mergedGraph",
-      payload: data.nodes
+      payload: mergedGraph
     });
   }, [oldGraph, newGraph, theme, root, dispatch]);
-
-  // if filter type is changed then apply filter to state
-  useEffect(() => {
-    if (!state.mergedGraph || !visGraph?.edges) {
-      return;
-    }
-
-    const filterdNodes = state.mergedGraph.filter(node => {
-      return node.change !== "removed" || showOldPackages;
-    });
-
-    setFilterdGraph(filterdNodes);
-
-    setVisGraph({
-      nodes: new DataSet(filterdNodes),
-      edges: visGraph.edges
-    });
-  }, [showOldPackages, dispatch, state.mergedGraph, visGraph?.edges]);
-
-  return { visGraph: visGraph, filterdGraph: filterdGraph };
 }
 
 export function useLockFileToGraph(pipfile, pipfileLock, stateName) {

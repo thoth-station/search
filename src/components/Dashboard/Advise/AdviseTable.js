@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import Table from "@material-ui/core/Table";
@@ -17,6 +17,9 @@ import Collapse from "@material-ui/core/Collapse";
 import AddRoundedIcon from "@material-ui/icons/AddRounded";
 import RemoveRoundedIcon from "@material-ui/icons/RemoveRounded";
 import CircleOutlinedIcon from "@material-ui/icons/CircleOutlined";
+
+// redux
+import { StateContext } from "App";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -108,11 +111,7 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired
 };
 
-export default function EnhancedTable({
-  filterdGraph,
-  search,
-  selectedPackage
-}) {
+export default function EnhancedTable({ search, showOldPackages }) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
@@ -120,28 +119,38 @@ export default function EnhancedTable({
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = React.useState(null);
+  const state = useContext(StateContext);
 
   useEffect(() => {
-    if (!filterdGraph) {
+    if (!state.mergedGraph || !state.adviseGraph) {
       return;
     }
+
+    // get the graph to use
+    let graph = null;
+    if (showOldPackages) {
+      graph = state.mergedGraph;
+    } else {
+      graph = state.adviseGraph;
+    }
+
     const newRows = [];
-    filterdGraph.forEach(node => {
-      if (node.depth === -1) {
+    graph.nodes.forEach(node => {
+      if (node.value.depth === -1) {
         return;
       }
       newRows.push({
-        name: node.label,
+        name: node.value.label,
         warnings: [],
-        depth: node.node.value.depth,
-        license: node?.node?.value?.metadata?.license,
-        dependencies: node.node.adjacents.size,
-        change: node.change,
-        summary: node?.node?.value?.metadata?.summary
+        depth: node.value.depth,
+        license: node?.value?.metadata?.license,
+        dependencies: node.adjacents.size,
+        change: node.value.change,
+        summary: node?.value?.metadata?.summary
       });
     });
     setRows(newRows);
-  }, [filterdGraph]);
+  }, [state.mergedGraph, state.adviseGraph, showOldPackages]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";

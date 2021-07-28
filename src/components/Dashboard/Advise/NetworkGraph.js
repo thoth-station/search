@@ -1,9 +1,16 @@
 // react
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+  useCallback
+} from "react";
 
 // utils and configs
 import { recurseToRoot } from "utils/recurseToRoot";
 import { options } from "config/networkOptions";
+import { StateContext } from "App";
 
 // vis-network
 import { Network, DataSet } from "vis-network/standalone/esm/vis-network";
@@ -23,19 +30,77 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const NetworkGraph = ({
-  data,
-  filterdGraph,
-  searchText,
   root,
   selectedPackage,
   search,
+  showOldPackages,
   ...props
 }) => {
   const classes = useStyles();
-  const [selected, setSelected] = useState(data);
+  const [selected, setSelected] = useState();
+  const [data, setData] = useState();
   const visJsRef = useRef(null);
+  const state = useContext(StateContext);
+  const selectedColor = "#f39200";
 
+  const resetAll = useCallback(() => {
+    // clear selection
+    data.nodes.updateOnly(
+      data.nodes.get().map(e => {
+        if (e.id !== root) {
+          e["opacity"] = 1;
+          e["font"] = {
+            ...state.mergedGraph.nodes.get(e.id).value.font,
+            size: options.nodes.font.size
+          };
+          e["color"] =
+            state.mergedGraph.nodes.get(e.id).value.color ??
+            options.nodes.color;
+        }
+        return e;
+      })
+    );
+
+    // reset edge colors
+    data.edges.updateOnly(
+      data.edges.get().map(e => {
+        e["color"] = { opacity: 1 };
+        return e;
+      })
+    );
+  }, [data, root, state.mergedGraph]);
+
+  // set the graph to use based on filter
   useEffect(() => {
+    if (!state.mergedGraph || !state.adviseGraph) {
+      return;
+    }
+
+    // get the graph to use
+    let graph = null;
+    if (showOldPackages) {
+      graph = state.mergedGraph;
+    } else {
+      graph = state.adviseGraph;
+    }
+
+    // convert to vis graph format
+    const convertedNodes = [];
+    graph.nodes.forEach(value => convertedNodes.push(value.value));
+    const visData = {
+      nodes: new DataSet(convertedNodes),
+      edges: new DataSet(state.mergedGraph.visEdges)
+    };
+
+    setData(visData);
+  }, [showOldPackages, state.mergedGraph, state.adviseGraph]);
+
+  // create the graph
+  useEffect(() => {
+    if (!selected || !data?.nodes) {
+      return;
+    }
+
     const network =
       visJsRef.current && new Network(visJsRef.current, selected, options);
 
@@ -73,10 +138,47 @@ const NetworkGraph = ({
 
     // fix (stick in place) node when done dragging
     network.on("dragEnd", function(params) {
-      if (params.nodes.length !== 0) {
+      if (params.nodes.length !== 0 && !network.isCluster(params.nodes[0])) {
         network.editNode(params.nodes[0]);
       }
     });
+
+    // network.on("selectNode", function(params) {
+    //   if (params.nodes.length === 1) {
+    //     if (network.isCluster(params.nodes[0])) {
+    //       network.openCluster(params.nodes[0]);
+    //       network.stabilize();
+    //     } else {
+    //       const bfs = state.mergedGraph.graphSearch(
+    //         state.mergedGraph.nodes.get(params.nodes[0])
+    //       );
+    //
+    //       for (let n of Array.from(bfs).reverse()) {
+    //         // get nodes in path
+    //         var clusterOptionsByData = {
+    //           joinCondition: function(childOptions) {
+    //             return (
+    //               n.getAdjacents().some(adj => {
+    //                 return (
+    //                   adj.key === childOptions.id ||
+    //                   adj.key === childOptions.id.slice(2)
+    //                 );
+    //               }) || childOptions.id === n.key
+    //             );
+    //           },
+    //           clusterNodeProperties: {
+    //             id: "c_" + n.key,
+    //             //borderWidth: 3,
+    //             shape: "diamond",
+    //             label: n.value.label
+    //           }
+    //         };
+    //         // network.cluster(clusterOptionsByData);
+    //         network.cluster(clusterOptionsByData);
+    //       }
+    //     }
+    //   }
+    // });
 
     // un stick node if already stuck
     network.on("dragStart", function(params) {
@@ -85,27 +187,24 @@ const NetworkGraph = ({
       if (
         params.nodes.length !== 0 &&
         network.body.nodes[params.nodes[0]].options.x !== undefined &&
-        network.body.nodes[params.nodes[0]].options.x
+        network.body.nodes[params.nodes[0]].options.x &&
+        !network.isCluster(params.nodes[0])
       ) {
         // un fix node
         network.editNode(params.nodes[0]);
       }
     });
-  }, [root, selected, data.nodes]);
+  }, [root, selected, data?.nodes, state.mergedGraph]);
 
+  // select a node
   // recursivly finds all paths from search result to root
+  // and set the selected var to update graph
   useEffect(() => {
-    const selectedColor = "#f39200";
+    if (!root || !data || !state.mergedGraph) {
+      return;
+    }
 
-    // clear selection
-    data.nodes.updateOnly(
-      data.nodes.get().map(e => {
-        if (e.color === selectedColor) {
-          e["color"] = filterdGraph.find(node => node.id === e.id).color;
-        }
-        return e;
-      })
-    );
+    resetAll();
 
     if (selectedPackage === null) {
       // reset node colors
@@ -134,31 +233,17 @@ const NetworkGraph = ({
 
     // update nodes and edges in the dataset
     data.nodes.updateOnly(result);
-  }, [selectedPackage, root, data, filterdGraph]);
+  }, [selectedPackage, root, data, state.mergedGraph, resetAll]);
 
+  // search node
   // recursivly finds all paths from search result to root
+  // and grey out nodes that are not in criteria
   useEffect(() => {
-    // clear selection
-    data.nodes.updateOnly(
-      data.nodes.get().map(e => {
-        if (e.id !== root) {
-          //e["color"] = options.nodes.color;
-          //e["font"] = options.nodes.font;
-          e["opacity"] = 1;
-          e["font"] = { size: options.nodes.font.size };
-        }
-        return e;
-      })
-    );
+    if (!data || !root || !state.mergedGraph || selectedPackage) {
+      return;
+    }
 
-    // reset edge colors
-    data.edges.updateOnly(
-      data.edges.get().map(e => {
-        //e["color"] = options.edges.color;
-        e["color"] = { opacity: 1 };
-        return e;
-      })
-    );
+    resetAll();
 
     if (search === "") {
       // reset node colors
@@ -180,24 +265,21 @@ const NetworkGraph = ({
     );
 
     // grey out non search results
-    // nodes that are not in search results
+    // edges that are not in search results
     const unselected_edges = data.edges
       .get()
       .filter(edge => !selected.edges.includes(edge.id))
       .map(e => {
-        //e["color"] = { color: "#e3e5e8" };
         e["color"] = { opacity: 0.05 };
         return e;
       });
 
-    // edges that are not in search results
+    // nodes that are not in search results
     const unselected_nodes = data.nodes
       .get()
       .filter(node => !selected.nodes.includes(node.id))
       .map(e => {
         if (e.id !== root) {
-          //e["color"] = { background: "#e3e5e8" };
-          //e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
           e["font"] = { size: 0 };
           e["opacity"] = 0.05;
         }
@@ -207,7 +289,7 @@ const NetworkGraph = ({
     // set searched nodes to a different color
     possible_results = possible_results.map(e => {
       if (e.id !== root) {
-        //e["color"] = { background: "#f39200" };
+        e["color"] = selectedColor;
       }
       return e;
     });
@@ -215,7 +297,7 @@ const NetworkGraph = ({
     // update nodes and edges in the dataset
     data.nodes.updateOnly(unselected_nodes.concat(possible_results));
     data.edges.updateOnly(unselected_edges);
-  }, [search, data, root]);
+  }, [search, data, root, state.mergedGraph, resetAll, selectedPackage]);
 
   return (
     <div className={`${classes.root} ${props.className}`}>

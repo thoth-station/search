@@ -11,7 +11,11 @@ import TabPanel from "components/Shared/TabPanel";
 import AdvisePage from "components/Dashboard/Advise/AdvisePage";
 
 // utils
-import { useComputeMetrics, useLockFileToGraph } from "utils/produceMetrics";
+import {
+  useComputeMetrics,
+  useLockFileToGraph,
+  useMergeGraphs
+} from "utils/produceMetrics";
 import { useInterval } from "utils/useInterval";
 
 // api
@@ -106,7 +110,7 @@ export const Dashboard = ({ location }) => {
     // get results of advise request
     thothAdviseResult(params.analysis_id)
       .then(response => {
-        const data = response?.data ?? response;
+        const data = response?.data;
 
         // if cant run advise error
         if (response.status === 400 || response.status === 404) {
@@ -199,6 +203,7 @@ export const Dashboard = ({ location }) => {
     state.adviseGraph,
     state?.advise?.report?.products?.[0]?.project?.requirements?.packages
   );
+  useMergeGraphs(state.initGraph, state.adviseGraph, state.focus ?? "*App");
 
   console.log(state);
 

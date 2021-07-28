@@ -8,9 +8,6 @@ import TabPanel from "components/Shared/TabPanel";
 import AdviseTable from "components/Dashboard/Advise/AdviseTable";
 import SearchBar from "components/Shared/SearchBar";
 
-// utils
-import { useMergeGraphs } from "utils/produceMetrics";
-
 // material-ui
 import {
   Paper,
@@ -64,13 +61,6 @@ const PackageDependencies = () => {
   const [tab, setTab] = useState(0);
   const [display, setDisplay] = React.useState("graph");
 
-  const { visGraph, filterdGraph } = useMergeGraphs(
-    state.initGraph,
-    state.adviseGraph,
-    root,
-    showOldPackages
-  );
-
   const handleJustificationSelect = (package_name, i) => (
     event,
     isExpanded
@@ -95,7 +85,7 @@ const PackageDependencies = () => {
   };
 
   return (
-    <LoadingErrorTemplate isLoading={visGraph === undefined}>
+    <LoadingErrorTemplate isLoading={state.mergedGraph === undefined}>
       <Grid
         container
         spacing={2}
@@ -148,18 +138,17 @@ const PackageDependencies = () => {
 
             <TabPanel value={display} index={"graph"}>
               <NetworkGraph
-                data={visGraph}
-                filterdGraph={filterdGraph}
                 className={classes.graph}
                 root={root}
                 selectedPackage={selectedPackage}
                 search={search}
+                showOldPackages={showOldPackages}
               />
             </TabPanel>
             <TabPanel value={display} index={"table"}>
               <AdviseTable
-                filterdGraph={filterdGraph}
                 search={selectedPackage ?? search}
+                showOldPackages={showOldPackages}
               />
             </TabPanel>
             <TabPanel value={display} index={"file"}>
