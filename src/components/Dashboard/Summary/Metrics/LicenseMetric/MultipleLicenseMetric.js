@@ -10,10 +10,13 @@ import {
   Collapse,
   Chip,
   Button,
-  Box
+  Box,
+  Grid
 } from "@material-ui/core";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
+import CheckRoundedIcon from "@material-ui/icons/CheckRounded";
+import HelpOutlineRoundedIcon from "@material-ui/icons/HelpOutlineRounded";
 
 // local
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
@@ -40,44 +43,57 @@ const LicenseDisplay = ({ name, value, totalLicenses }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div>
-      <div className={classes.flex} onClick={() => setOpen(!open)}>
-        <ProgressBar
-          key={name}
-          value={Object.keys(value).length - 3 ?? 0}
-          total={totalLicenses}
-          label={name}
-          className={classes.bar}
-          action={open ? <ExpandLess /> : <ExpandMore />}
-        />
-      </div>
-
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <div className={classes.border}>
-          {Object.entries(value)
-            .sort((a, b) => {
-              return a[1] - b[1];
-            })
-            .map(([k, v]) => {
-              if (k[0] === "_") {
-                return null;
-              }
-              return (
-                <Chip
-                  key={k}
-                  className={classes.chip}
-                  color={
-                    v === 0 ? "primary" : v === 1 ? "secondary" : "default"
-                  }
-                  label={k}
-                  onClick={null}
-                />
-              );
-            })}
+    <Grid container>
+      <Grid item xs>
+        {value._meta.isOsiApproved === null ? (
+          <HelpOutlineRoundedIcon />
+        ) : value._meta.isOsiApproved ? (
+          <CheckRoundedIcon />
+        ) : null}
+      </Grid>
+      <Grid item xs={11}>
+        <div className={classes.flex} onClick={() => setOpen(!open)}>
+          <ProgressBar
+            key={name}
+            value={Object.keys(value).length - 1 ?? 0}
+            total={totalLicenses}
+            label={name}
+            className={classes.bar}
+            action={open ? <ExpandLess /> : <ExpandMore />}
+          />
         </div>
-        <Divider />
-      </Collapse>
-    </div>
+
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <div className={classes.border}>
+            {Object.entries(value)
+              .sort((a, b) => {
+                return a[1] - b[1];
+              })
+              .map(([k, v]) => {
+                if (k[0] === "_") {
+                  return null;
+                }
+                return (
+                  <Chip
+                    key={k}
+                    className={classes.chip}
+                    color={
+                      v.depth === 0
+                        ? "primary"
+                        : v.depth === 1
+                        ? "secondary"
+                        : "default"
+                    }
+                    label={k}
+                    onClick={null}
+                  />
+                );
+              })}
+          </div>
+          <Divider />
+        </Collapse>
+      </Grid>
+    </Grid>
   );
 };
 
@@ -96,9 +112,19 @@ const LicenseMetric = ({ metric, deepError }) => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="body2" gutterBottom>
-        <b>Dependency Licenses</b>
-      </Typography>
+      <Grid container>
+        <Grid item xs={1}>
+          <Typography variant="body2" gutterBottom>
+            <b>OSI</b>
+          </Typography>
+        </Grid>
+        <Grid item xs>
+          <Typography variant="body2" gutterBottom>
+            <b>Dependency Licenses</b>
+          </Typography>
+        </Grid>
+      </Grid>
+
       <Divider />
       <LoadingErrorTemplate
         state={deepError ? "error" : metric.all}

@@ -43,11 +43,9 @@ const ProgressBar = ({ value, total, label, action, ...props }) => {
   return (
     <Grid container spacing={1} alignItems="center">
       <Grid item xs={4}>
-        <Tooltip title={label} placement="left">
-          <Typography variant="body2" className={classes.label}>
-            {label}
-          </Typography>
-        </Tooltip>
+        <Typography variant="body2" className={classes.label}>
+          {label}
+        </Typography>
       </Grid>
       <Grid item xs={1}>
         <Typography className={classes.value} variant="body2">

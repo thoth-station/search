@@ -122,33 +122,74 @@ export function useComputeMetrics(graph, roots) {
         };
 
         // licence metric
+        const packageLicenses = [];
 
-        // find license in dataset
-        let found = undefined;
-        if (licenseData.licenses) {
-          found = licenseData.licenses.find(l => {
-            const lower = node.value.metadata.license.toLowerCase();
-            return (
-              l.name.toLowerCase() === lower ||
-              l.licenseId.toLowerCase() === lower
-            );
-          });
-        }
-
-        licenses = {
-          total: (licenses.total ?? 0) + 1,
-          root: licenses.root ?? node.value.metadata.license,
-          all: {
-            ...licenses.all,
-            [found?.licenseId ?? node.value.metadata.license]: {
-              ...(licenses.all[node.value.metadata.license] ?? null),
-              [node.value.label]: node.value.depth,
-              _found: found !== undefined,
-              _isOsiApproved: found?.isOsiApproved ?? null,
-              _isFsfLibre: found?.isFsfLibre ?? null
+        // get general classification
+        node.value.metadata.classifier.forEach(classifier => {
+          const parsed = classifier.split(" :: ");
+          if (parsed[0] === "License") {
+            if (parsed[1] === "OSI Approved") {
+              packageLicenses.push({
+                generalLicense: parsed?.[2] ?? node.value.metadata.license,
+                specificLicense: node.value.metadata.license,
+                isOsiApproved: true
+              });
+            } else {
+              packageLicenses.push({
+                generalLicense: parsed?.[2] ?? node.value.metadata.license,
+                specificLicense: node.value.metadata.license,
+                isOsiApproved: false
+              });
             }
           }
-        };
+        });
+
+        if (packageLicenses.length === 0) {
+          // find license in dataset
+          let found = undefined;
+          if (licenseData.licenses) {
+            found = licenseData.licenses.find(l => {
+              const lower = node.value.metadata.license.toLowerCase();
+              return (
+                l.name.toLowerCase() === lower ||
+                l.licenseId.toLowerCase() === lower
+              );
+            });
+          }
+          if (found) {
+            packageLicenses.push({
+              generalLicense: found.name,
+              specificLicense: found.licenseId,
+              isOsiApproved: found.isOsiApproved
+            });
+          } else {
+            packageLicenses.push({
+              generalLicense: node.value.metadata.license,
+              specificLicense: node.value.metadata.license,
+              isOsiApproved: null
+            });
+          }
+        }
+
+        // get specific classification
+        packageLicenses.forEach(license => {
+          licenses = {
+            total: (licenses.total ?? 0) + 1,
+            all: {
+              ...licenses.all,
+              [license.generalLicense]: {
+                ...(licenses.all[license.generalLicense] ?? null),
+                [node.value.label]: {
+                  depth: node.value.depth,
+                  specific: license.specificLicense
+                },
+                _meta: {
+                  isOsiApproved: license.isOsiApproved
+                }
+              }
+            }
+          };
+        });
       });
     });
 
