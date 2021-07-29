@@ -11,15 +11,15 @@ import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 // redux
 import { StateContext } from "App";
 
-const LicenseMetric = () => {
+const LicenseMetric = ({ metric }) => {
   const state = useContext(StateContext);
 
   return (
-    <LoadingErrorTemplate isLoading={state.metrics?.licences}>
+    <LoadingErrorTemplate isLoading={!metric}>
       {state?.focus ? (
-        <SingleLicenseMetric metric={state.metrics.licenses} />
+        <SingleLicenseMetric metric={metric} />
       ) : (
-        <MultipleLicenseMetric metric={state.metrics.licenses} />
+        <MultipleLicenseMetric metric={metric} />
       )}
     </LoadingErrorTemplate>
   );

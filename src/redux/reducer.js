@@ -3,13 +3,27 @@ export function reducer(state, action) {
     case "graph":
       return { ...state, [action.name]: action.payload };
     case "metric":
-      return {
-        ...state,
-        metrics: {
-          ...state.metrics,
-          [action.metric]: action.payload
-        }
-      };
+      if (!action.label) {
+        return {
+          ...state,
+          metrics: {
+            ...state.metrics,
+            [action.metric]: action.payload
+          }
+        };
+      } else {
+        return {
+          ...state,
+          metrics: {
+            ...state.metrics,
+            [action.label]: {
+              ...state.metrics?.[action.label],
+              [action.metric]: action.payload
+            }
+          }
+        };
+      }
+
     case "error": {
       return {
         ...state,

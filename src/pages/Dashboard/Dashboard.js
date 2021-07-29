@@ -201,7 +201,13 @@ export const Dashboard = ({ location }) => {
   );
   useComputeMetrics(
     state.adviseGraph,
-    state?.advise?.report?.products?.[0]?.project?.requirements?.packages
+    state?.advise?.report?.products?.[0]?.project?.requirements?.packages,
+    "new"
+  );
+  useComputeMetrics(
+    state.initGraph,
+    state?.advise?.initProject?.requirements?.packages,
+    "old"
   );
   useMergeGraphs(state.initGraph, state.adviseGraph, state.focus ?? "*App");
 

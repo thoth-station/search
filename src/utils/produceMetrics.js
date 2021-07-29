@@ -12,7 +12,7 @@ import { useContext, useEffect, useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
 
 // React hook for computing metrics and applying to state
-export function useComputeMetrics(graph, roots) {
+export function useComputeMetrics(graph, roots, label) {
   const dispatch = useContext(DispatchContext);
   const state = useContext(StateContext);
 
@@ -125,8 +125,12 @@ export function useComputeMetrics(graph, roots) {
         const packageLicenses = [];
 
         // get general classification
-        node.value.metadata.classifier.forEach(classifier => {
+        (
+          node?.value?.metadata?.classifier ??
+          node?.value?.metadata?.classifiers
+        )?.forEach(classifier => {
           const parsed = classifier.split(" :: ");
+
           if (parsed[0] === "License") {
             if (parsed[1] === "OSI Approved") {
               packageLicenses.push({
@@ -136,7 +140,7 @@ export function useComputeMetrics(graph, roots) {
               });
             } else {
               packageLicenses.push({
-                generalLicense: parsed?.[2] ?? node.value.metadata.license,
+                generalLicense: parsed?.[1] ?? node.value.metadata.license,
                 specificLicense: node.value.metadata.license,
                 isOsiApproved: false
               });
@@ -197,14 +201,16 @@ export function useComputeMetrics(graph, roots) {
     dispatch({
       type: "metric",
       metric: "dependencies",
+      label: label,
       payload: dependencies
     });
     dispatch({
       type: "metric",
       metric: "licenses",
+      label: label,
       payload: licenses
     });
-  }, [graph, dispatch, roots, licenseData]);
+  }, [graph, dispatch, roots, licenseData, label]);
 }
 
 export function useMergeGraphs(oldGraph, newGraph, root) {

@@ -9,13 +9,30 @@ import AdviseMetric from "components/Dashboard/Summary/Metrics/AdviseMetric";
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
 // material-ui
-import { Grid } from "@material-ui/core";
+import { Grid, ToggleButtonGroup, ToggleButton } from "@material-ui/core";
 
 // redux
 import { StateContext } from "App";
 
+const CustomCardAction = ({ value, onChange }) => {
+  return (
+    <ToggleButtonGroup value={value} exclusive size="small" onChange={onChange}>
+      <ToggleButton value="old">Old</ToggleButton>
+      <ToggleButton value="new">New</ToggleButton>
+    </ToggleButtonGroup>
+  );
+};
+
 const MetricLayout = () => {
   const state = useContext(StateContext);
+
+  const [pipfile, setPipfile] = React.useState("new");
+
+  const handlePipfile = (event, newPipfile) => {
+    if (newPipfile?.length) {
+      setPipfile(newPipfile);
+    }
+  };
 
   return (
     <LoadingErrorTemplate isLoading={state?.metrics === undefined}>
@@ -33,7 +50,14 @@ const MetricLayout = () => {
             cardMeta={{
               title: "Dependencies Summary"
             }}
-            cardBody={<DependenciesMetric />}
+            cardBody={
+              <DependenciesMetric
+                metric={state?.metrics?.[pipfile]?.dependencies}
+              />
+            }
+            cardAction={
+              <CustomCardAction value={pipfile} onChange={handlePipfile} />
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -41,7 +65,12 @@ const MetricLayout = () => {
             cardMeta={{
               title: "Licenses Summary"
             }}
-            cardBody={<LicenseMetric />}
+            cardBody={
+              <LicenseMetric metric={state?.metrics?.[pipfile]?.licenses} />
+            }
+            cardAction={
+              <CustomCardAction value={pipfile} onChange={handlePipfile} />
+            }
           />
         </Grid>
       </Grid>

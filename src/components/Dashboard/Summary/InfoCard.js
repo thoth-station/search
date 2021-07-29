@@ -24,13 +24,13 @@ const useStyles = makeStyles({
   }
 });
 
-const InfoCard = ({ cardMeta, cardBody }) => {
+const InfoCard = ({ cardMeta, cardBody, cardAction }) => {
   const classes = useStyles();
 
   return (
     <Card className={classes.root}>
       <CardHeader
-        action={cardMeta.action}
+        action={cardAction}
         title={cardMeta.title}
         subheader={cardMeta.subTitle}
       />
