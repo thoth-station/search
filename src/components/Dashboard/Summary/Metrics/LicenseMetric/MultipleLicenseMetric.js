@@ -17,6 +17,7 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import CheckRoundedIcon from "@material-ui/icons/CheckRounded";
 import HelpOutlineRoundedIcon from "@material-ui/icons/HelpOutlineRounded";
+import { TransitionGroup } from "react-transition-group";
 
 // local
 import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
@@ -130,28 +131,34 @@ const LicenseMetric = ({ metric, deepError }) => {
         state={deepError ? "error" : metric.all}
         errorText="Could not run analysis on dependencies."
       >
-        {licenses.slice(0, 10).map(([key, value]) => {
-          return (
-            <LicenseDisplay
-              key={key}
-              name={key}
-              value={value}
-              totalLicenses={totalLicenses}
-            />
-          );
-        })}
-
-        <Collapse in={more} timeout="auto" unmountOnExit>
-          {licenses.slice(10).map(([key, value]) => {
+        <TransitionGroup>
+          {licenses.slice(0, 10).map(([key, value]) => {
             return (
-              <LicenseDisplay
-                key={key}
-                name={key}
-                value={value}
-                totalLicenses={totalLicenses}
-              />
+              <Collapse key={key}>
+                <LicenseDisplay
+                  name={key}
+                  value={value}
+                  totalLicenses={totalLicenses}
+                />
+              </Collapse>
             );
           })}
+        </TransitionGroup>
+
+        <Collapse in={more} timeout="auto" unmountOnExit>
+          <TransitionGroup>
+            {licenses.slice(10).map(([key, value]) => {
+              return (
+                <Collapse key={key}>
+                  <LicenseDisplay
+                    name={key}
+                    value={value}
+                    totalLicenses={totalLicenses}
+                  />
+                </Collapse>
+              );
+            })}
+          </TransitionGroup>
         </Collapse>
         <Box textAlign="center">
           <Button onClick={() => setMore(!more)} color="primary">
