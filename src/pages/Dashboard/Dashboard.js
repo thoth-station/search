@@ -199,16 +199,8 @@ export const Dashboard = ({ location }) => {
     state?.advise?.initProject?.requirements_locked?.default,
     "initGraph"
   );
-  useComputeMetrics(
-    state.adviseGraph,
-    state?.advise?.report?.products?.[0]?.project?.requirements?.packages,
-    "new"
-  );
-  useComputeMetrics(
-    state.initGraph,
-    state?.advise?.initProject?.requirements?.packages,
-    "old"
-  );
+  useComputeMetrics(state.adviseGraph, "new");
+  useComputeMetrics(state.initGraph, "old");
   useMergeGraphs(state.initGraph, state.adviseGraph, state.focus ?? "*App");
 
   console.log(state);

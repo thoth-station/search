@@ -36,7 +36,7 @@ const MetricLayout = () => {
 
   return (
     <LoadingErrorTemplate isLoading={state?.metrics === undefined}>
-      <Grid container spacing={3} mb={3}>
+      <Grid container spacing={3} mb={3} mt={1}>
         <Grid item xs={12} sm={6}>
           <InfoCard
             cardMeta={{

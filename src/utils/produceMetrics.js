@@ -12,7 +12,7 @@ import { useContext, useEffect, useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
 
 // React hook for computing metrics and applying to state
-export function useComputeMetrics(graph, roots, label) {
+export function useComputeMetrics(graph, label) {
   const dispatch = useContext(DispatchContext);
   const state = useContext(StateContext);
 
@@ -81,7 +81,7 @@ export function useComputeMetrics(graph, roots, label) {
   }, []);
 
   useEffect(() => {
-    if (!graph || !roots || !licenseData) {
+    if (!graph || !licenseData) {
       return;
     }
 
@@ -92,8 +92,15 @@ export function useComputeMetrics(graph, roots, label) {
 
     let licenses = { total: undefined, all: {} };
 
+    const roots = [];
+    graph.nodes.forEach(value => {
+      if (value.value.depth === 0) {
+        roots.push(value.key);
+      }
+    });
+
     // for each starting node
-    Object.keys(roots).forEach(root => {
+    roots.forEach(root => {
       const bfs = graph.graphSearch(graph.nodes.get(root));
       const visitedOrder = Array.from(bfs);
 
@@ -210,7 +217,7 @@ export function useComputeMetrics(graph, roots, label) {
       label: label,
       payload: licenses
     });
-  }, [graph, dispatch, roots, licenseData, label]);
+  }, [graph, dispatch, licenseData, label]);
 }
 
 export function useMergeGraphs(oldGraph, newGraph, root) {

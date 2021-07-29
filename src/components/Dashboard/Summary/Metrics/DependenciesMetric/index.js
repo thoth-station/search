@@ -13,7 +13,6 @@ import { StateContext } from "App";
 
 const DependenciesMetric = ({ metric }) => {
   const state = useContext(StateContext);
-  console.log(metric);
 
   return (
     <LoadingErrorTemplate isLoading={!metric}>
