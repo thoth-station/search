@@ -24,7 +24,8 @@ const useStyles = makeStyles(theme => ({
 
 const AdviseMetric = ({ metric }) => {
   const classes = useStyles();
-  const total = metric.added + metric.removed + metric.version + metric.equal;
+  const total =
+    metric.added + metric.removed + metric.version + metric.unchanged;
   return (
     <div>
       <Typography variant="body2" gutterBottom>
@@ -78,7 +79,7 @@ AdviseMetric.propTypes = {
     added: PropTypes.number,
     removed: PropTypes.number,
     version: PropTypes.number,
-    equal: PropTypes.number,
+    unchanged: PropTypes.number,
     justification: PropTypes.object,
     build: PropTypes.string
   })

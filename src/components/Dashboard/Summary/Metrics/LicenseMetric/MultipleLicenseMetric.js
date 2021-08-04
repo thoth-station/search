@@ -171,10 +171,12 @@ const LicenseMetric = ({ metric, deepError }) => {
 };
 
 LicenseMetric.propTypes = {
-  metric: PropTypes.shape({
-    root: PropTypes.string,
-    all: PropTypes.object
-  }).isRequired
+  props: PropTypes.shape({
+    metric: PropTypes.shape({
+      total: PropTypes.number,
+      all: PropTypes.object
+    }).isRequired
+  })
 };
 
 export default LicenseMetric;

@@ -3,6 +3,7 @@ import { thothSearchForPackage, getLicenses } from "services/thothApi";
 
 // utils
 import { Graph } from "utils/Graph";
+import { Node } from "utils/Node";
 
 // redux
 import { DispatchContext, StateContext } from "App";
@@ -25,7 +26,7 @@ export function useComputeMetrics(graph, label) {
       added: 0,
       removed: 0,
       version: 0,
-      equal: 0,
+      unchanged: 0,
       justification: {},
       build: null
     };
@@ -43,7 +44,7 @@ export function useComputeMetrics(graph, label) {
           advise.version++;
           break;
         default:
-          advise.equal++;
+          advise.unchanged++;
       }
     });
 
@@ -99,6 +100,8 @@ export function useComputeMetrics(graph, label) {
       }
     });
 
+    const visited = new Set();
+
     // for each starting node
     roots.forEach(root => {
       const bfs = graph.graphSearch(graph.nodes.get(root));
@@ -106,8 +109,14 @@ export function useComputeMetrics(graph, label) {
 
       // depth to type of dependency
       visitedOrder.forEach(node => {
+        if (visited.has(node.value.id)) {
+          return;
+        } else {
+          visited.add(node.value.id);
+        }
+
         const depth =
-          node.value.depth === 0 || roots[node.value.id]
+          node.value.depth === 0
             ? "roots"
             : node.value.depth === 1
             ? "direct"
@@ -240,25 +249,24 @@ export function useMergeGraphs(oldGraph, newGraph, root) {
         // if the versions match
         const newNode = newGraph.nodes.get(key);
 
+        newNode.value["label"] =
+          newNode.value.label + " " + (newNode?.value?.metadata?.version ?? "");
+        newNode.value["version"] = newNode?.value?.metadata?.version ?? "";
+        newNode.value["depenencies"] = newNode.adjacents.size;
+        newNode.value["license"] = newNode?.value?.metadata?.license ?? "";
+        newNode.value["lockfile"] = ["new", "old"];
+
         if (
           key === root ||
           value.value.metadata.version === newNode.value.metadata.version
         ) {
           mergedGraph.nodes.set(newNode.key, newNode);
-          newNode.value["change"] = "equal";
-          newNode.value["label"] =
-            newNode.value.label +
-            " " +
-            (newNode?.value?.metadata?.version ?? "");
+          newNode.value["change"] = "unchanged";
         }
         // if the versions are different
         else {
           mergedGraph.nodes.set(newNode.key, newNode);
           newNode.value["change"] = "version";
-          newNode.value["label"] =
-            newNode.value.label +
-            " " +
-            (newNode?.value?.metadata?.version ?? "");
           newNode.value["font"] = {
             color: theme.palette.success.main
           };
@@ -274,6 +282,10 @@ export function useMergeGraphs(oldGraph, newGraph, root) {
           color: theme.palette.error.main
         };
         value.value["color"] = theme.palette.error.main;
+        value.value["version"] = value?.value?.metadata?.version ?? "";
+        value.value["depenencies"] = value.adjacents.size;
+        value.value["license"] = value?.value?.metadata?.license ?? "";
+        value.value["lockfile"] = ["old"];
 
         edgeColors.set(value.value.id, theme.palette.error.main);
       }
@@ -291,10 +303,27 @@ export function useMergeGraphs(oldGraph, newGraph, root) {
           color: theme.palette.success.main
         };
         value.value["color"] = theme.palette.success.main;
+        value.value["version"] = value?.value?.metadata?.version ?? "";
+        value.value["depenencies"] = value.adjacents.size;
+        value.value["license"] = value?.value?.metadata?.license ?? "";
+        value.value["lockfile"] = ["new"];
 
         edgeColors.set(value.value.id, theme.palette.success.main);
       }
     });
+
+    const newRoot = newGraph.nodes.get(root);
+    const oldRoot = oldGraph.nodes.get(root);
+    const combinedRoot = new Node(
+      root,
+      JSON.parse(JSON.stringify(newRoot.value))
+    );
+    oldRoot.getAdjacents().forEach(item => combinedRoot.adjacents.add(item));
+    newRoot.getAdjacents().forEach(item => combinedRoot.adjacents.add(item));
+
+    mergedGraph.nodes.set(root, combinedRoot);
+
+    //r.adjacents.add(...oldRoot.adjacents, ...newRoot.adjacents);
 
     // add edges from old graph
     oldGraph.nodes.forEach((value, key) => {

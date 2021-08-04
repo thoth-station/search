@@ -1,33 +1,44 @@
 // material ui
-import { TextField, Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Typography, Box, Paper, InputBase } from "@material-ui/core";
 
 // react
 import PropTypes from "prop-types";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
-    flexGrow: 1
-  }
-}));
-
 const SearchBar = props => {
-  const { onChange, label, helperText, boxprops, error = false } = props;
-  const classes = useStyles();
+  const {
+    onChange,
+    label,
+    helpertext,
+    boxprops,
+    error = false,
+    lefticon,
+    righticon
+  } = props;
 
   return (
-    <Box className={classes.root} {...boxprops}>
-      <TextField
+    <Box>
+      <Typography
+        variant={"body1"}
+        sx={{ color: error ? "error.main" : "text.secondary" }}
+      >
+        {label}
+      </Typography>
+      <Paper
+        component="form"
         variant="outlined"
-        label={label}
-        onChange={e => onChange(e.target.value)}
-        helperText={helperText}
-        error={error}
-        {...props}
-      />
+        sx={{ p: "2px 4px", display: "flex", alignItems: "center" }}
+        {...boxprops}
+      >
+        {lefticon}
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          placeholder={helpertext}
+          error={error}
+          onChange={e => onChange(e.target.value)}
+          {...props}
+        />
+        {righticon}
+      </Paper>
     </Box>
   );
 };
@@ -35,7 +46,7 @@ const SearchBar = props => {
 SearchBar.propTypes = {
   label: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  helperText: PropTypes.string,
+  helpertext: PropTypes.string,
   error: PropTypes.bool
 };
 

@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 // material-ui
-import { Typography, Button, Box, Collapse } from "@material-ui/core";
+import { Typography, Button, Box, Collapse, Grid } from "@material-ui/core";
 import LoadingButton from "@material-ui/lab/LoadingButton";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
@@ -219,7 +219,7 @@ const Home = () => {
           <SearchBar
             label="Search for a Python package"
             onChange={e => handleChange(e, "single")}
-            helperText={searchError}
+            helpertext={searchError}
             error={searchError !== ""}
             type="search"
             boxprops={{ mr: 2 }}
@@ -252,26 +252,30 @@ const Home = () => {
         index={"multiple"}
         className={`${classes.flexColumn} ${classes.stretchContent}`}
       >
-        <Box className={classes.multilineTextBoxContainer}>
-          <SearchBar
-            label="Pipfile contents"
-            onChange={e => handleChange(e, "pipfile")}
-            helperText={pipfileError}
-            error={pipfileError !== ""}
-            multiline
-            rows={8}
-            boxprops={{ mr: 1 }}
-          />
-          <SearchBar
-            label="Pipfile.lock contents"
-            onChange={e => handleChange(e, "lock")}
-            helperText={pipfileLockError}
-            error={pipfileLockError !== ""}
-            multiline
-            rows={8}
-            boxprops={{ ml: 1 }}
-          />
-        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs>
+            <SearchBar
+              label={pipfileError !== "" ? pipfileError : "Pipfile contents"}
+              onChange={e => handleChange(e, "pipfile")}
+              error={pipfileError !== ""}
+              multiline
+              rows={8}
+            />
+          </Grid>
+          <Grid item xs>
+            <SearchBar
+              label={
+                pipfileLockError !== ""
+                  ? pipfileLockError
+                  : "Pipfile.lock contents"
+              }
+              onChange={e => handleChange(e, "lock")}
+              error={pipfileLockError !== ""}
+              multiline
+              rows={8}
+            />
+          </Grid>
+        </Grid>
 
         <Box textAlign="center" mt={2}>
           <LoadingButton

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import Table from "@material-ui/core/Table";
@@ -17,9 +17,6 @@ import Collapse from "@material-ui/core/Collapse";
 import AddRoundedIcon from "@material-ui/icons/AddRounded";
 import RemoveRoundedIcon from "@material-ui/icons/RemoveRounded";
 import CircleOutlinedIcon from "@material-ui/icons/CircleOutlined";
-
-// redux
-import { StateContext } from "App";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -111,7 +108,7 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired
 };
 
-export default function EnhancedTable({ search, showOldPackages }) {
+export default function EnhancedTable({ search, filteredGraph }) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
@@ -119,23 +116,16 @@ export default function EnhancedTable({ search, showOldPackages }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = React.useState(null);
-  const state = useContext(StateContext);
 
   useEffect(() => {
-    if (!state.mergedGraph || !state.adviseGraph) {
+    if (!filteredGraph) {
       return;
     }
 
-    // get the graph to use
-    let graph = null;
-    if (showOldPackages) {
-      graph = state.mergedGraph;
-    } else {
-      graph = state.adviseGraph;
-    }
+    setPage(0);
 
     const newRows = [];
-    graph.nodes.forEach(node => {
+    filteredGraph.nodes.forEach(node => {
       if (node.value.depth === -1) {
         return;
       }
@@ -150,7 +140,7 @@ export default function EnhancedTable({ search, showOldPackages }) {
       });
     });
     setRows(newRows);
-  }, [state.mergedGraph, state.adviseGraph, showOldPackages]);
+  }, [filteredGraph]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";

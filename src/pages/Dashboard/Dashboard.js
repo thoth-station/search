@@ -66,6 +66,13 @@ export const Dashboard = ({ location }) => {
           payload: status
         });
 
+        if (response.data.error && state.error !== response.data.error) {
+          dispatch({
+            type: "error",
+            payload: response.data.error
+          });
+        }
+
         // check if advise is done
         // if done then turn off polling whcih triggers another call for results
         if (status.finished_at !== null) {
