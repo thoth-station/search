@@ -3,19 +3,17 @@ import { thothSearchForPackage, getLicenses } from "services/thothApi";
 
 // utils
 import { Graph } from "utils/Graph";
+import { Node } from "utils/Node";
 
 // redux
 import { DispatchContext, StateContext } from "App";
 
 import { useContext, useEffect, useState } from "react";
 
-//vis-dataset
-import { DataSet } from "vis-network/standalone/esm/vis-network";
-
 import { useTheme } from "@material-ui/core/styles";
 
 // React hook for computing metrics and applying to state
-export function useComputeMetrics(graph, roots) {
+export function useComputeMetrics(graph, label) {
   const dispatch = useContext(DispatchContext);
   const state = useContext(StateContext);
 
@@ -28,14 +26,14 @@ export function useComputeMetrics(graph, roots) {
       added: 0,
       removed: 0,
       version: 0,
-      equal: 0,
+      unchanged: 0,
       justification: {},
       build: null
     };
 
     // package changes
-    state.mergedGraph.forEach(node => {
-      switch (node.change) {
+    state.mergedGraph.nodes.forEach(node => {
+      switch (node.value.change) {
         case "added":
           advise.added++;
           break;
@@ -46,7 +44,7 @@ export function useComputeMetrics(graph, roots) {
           advise.version++;
           break;
         default:
-          advise.equal++;
+          advise.unchanged++;
       }
     });
 
@@ -84,7 +82,7 @@ export function useComputeMetrics(graph, roots) {
   }, []);
 
   useEffect(() => {
-    if (!graph || !roots || !licenseData) {
+    if (!graph || !licenseData) {
       return;
     }
 
@@ -95,15 +93,30 @@ export function useComputeMetrics(graph, roots) {
 
     let licenses = { total: undefined, all: {} };
 
+    const roots = [];
+    graph.nodes.forEach(value => {
+      if (value.value.depth === 0) {
+        roots.push(value.key);
+      }
+    });
+
+    const visited = new Set();
+
     // for each starting node
-    Object.keys(roots).forEach(root => {
+    roots.forEach(root => {
       const bfs = graph.graphSearch(graph.nodes.get(root));
       const visitedOrder = Array.from(bfs);
 
       // depth to type of dependency
       visitedOrder.forEach(node => {
+        if (visited.has(node.value.id)) {
+          return;
+        } else {
+          visited.add(node.value.id);
+        }
+
         const depth =
-          node.value.depth === 0 || roots[node.value.id]
+          node.value.depth === 0
             ? "roots"
             : node.value.depth === 1
             ? "direct"
@@ -125,33 +138,78 @@ export function useComputeMetrics(graph, roots) {
         };
 
         // licence metric
+        const packageLicenses = [];
 
-        // find license in dataset
-        let found = undefined;
-        if (licenseData.licenses) {
-          found = licenseData.licenses.find(l => {
-            const lower = node.value.metadata.license.toLowerCase();
-            return (
-              l.name.toLowerCase() === lower ||
-              l.licenseId.toLowerCase() === lower
-            );
-          });
-        }
+        // get general classification
+        (
+          node?.value?.metadata?.classifier ??
+          node?.value?.metadata?.classifiers
+        )?.forEach(classifier => {
+          const parsed = classifier.split(" :: ");
 
-        licenses = {
-          total: (licenses.total ?? 0) + 1,
-          root: licenses.root ?? node.value.metadata.license,
-          all: {
-            ...licenses.all,
-            [found?.licenseId ?? node.value.metadata.license]: {
-              ...(licenses.all[node.value.metadata.license] ?? null),
-              [node.value.label]: node.value.depth,
-              _found: found !== undefined,
-              _isOsiApproved: found?.isOsiApproved ?? null,
-              _isFsfLibre: found?.isFsfLibre ?? null
+          if (parsed[0] === "License") {
+            if (parsed[1] === "OSI Approved") {
+              packageLicenses.push({
+                generalLicense: parsed?.[2] ?? node.value.metadata.license,
+                specificLicense: node.value.metadata.license,
+                isOsiApproved: true
+              });
+            } else {
+              packageLicenses.push({
+                generalLicense: parsed?.[1] ?? node.value.metadata.license,
+                specificLicense: node.value.metadata.license,
+                isOsiApproved: false
+              });
             }
           }
-        };
+        });
+
+        if (packageLicenses.length === 0) {
+          // find license in dataset
+          let found = undefined;
+          if (licenseData.licenses) {
+            found = licenseData.licenses.find(l => {
+              const lower = node.value.metadata.license.toLowerCase();
+              return (
+                l.name.toLowerCase() === lower ||
+                l.licenseId.toLowerCase() === lower
+              );
+            });
+          }
+          if (found) {
+            packageLicenses.push({
+              generalLicense: found.name,
+              specificLicense: found.licenseId,
+              isOsiApproved: found.isOsiApproved
+            });
+          } else {
+            packageLicenses.push({
+              generalLicense: node.value.metadata.license,
+              specificLicense: node.value.metadata.license,
+              isOsiApproved: null
+            });
+          }
+        }
+
+        // get specific classification
+        packageLicenses.forEach(license => {
+          licenses = {
+            total: (licenses.total ?? 0) + 1,
+            all: {
+              ...licenses.all,
+              [license.generalLicense]: {
+                ...(licenses.all[license.generalLicense] ?? null),
+                [node.value.label]: {
+                  depth: node.value.depth,
+                  specific: license.specificLicense
+                },
+                _meta: {
+                  isOsiApproved: license.isOsiApproved
+                }
+              }
+            }
+          };
+        });
       });
     });
 
@@ -159,41 +217,31 @@ export function useComputeMetrics(graph, roots) {
     dispatch({
       type: "metric",
       metric: "dependencies",
+      label: label,
       payload: dependencies
     });
     dispatch({
       type: "metric",
       metric: "licenses",
+      label: label,
       payload: licenses
     });
-  }, [graph, dispatch, roots, licenseData]);
+  }, [graph, dispatch, licenseData, label]);
 }
 
-export function useMergeGraphs(
-  oldGraph,
-  newGraph,
-  root,
-  showOldPackages = false
-) {
+export function useMergeGraphs(oldGraph, newGraph, root) {
   const dispatch = useContext(DispatchContext);
-  const state = useContext(StateContext);
 
   const theme = useTheme();
-
-  const [visGraph, setVisGraph] = useState(undefined);
-  const [filterdGraph, setFilterdGraph] = useState(undefined);
 
   useEffect(() => {
     if (!oldGraph || !newGraph || !root) {
       return;
     }
 
-    const data = {
-      nodes: [],
-      edges: []
-    };
-
+    const visGraphEdges = [];
     const edgeColors = new Map();
+    const mergedGraph = new Graph();
 
     oldGraph.nodes.forEach((value, key) => {
       // if the new and old graph have the same package
@@ -201,46 +249,43 @@ export function useMergeGraphs(
         // if the versions match
         const newNode = newGraph.nodes.get(key);
 
+        newNode.value["label"] =
+          newNode.value.label + " " + (newNode?.value?.metadata?.version ?? "");
+        newNode.value["version"] = newNode?.value?.metadata?.version ?? "";
+        newNode.value["depenencies"] = newNode.adjacents.size;
+        newNode.value["license"] = newNode?.value?.metadata?.license ?? "";
+        newNode.value["lockfile"] = ["new", "old"];
+
         if (
           key === root ||
           value.value.metadata.version === newNode.value.metadata.version
         ) {
-          data.nodes.push({
-            id: newNode.value.id,
-            label:
-              newNode.value.label +
-              " " +
-              (newNode?.value?.metadata?.version ?? ""),
-            node: newNode,
-            change: "equal"
-          });
+          mergedGraph.nodes.set(newNode.key, newNode);
+          newNode.value["change"] = "unchanged";
         }
         // if the versions are different
         else {
-          // set package node
-          data.nodes.push({
-            id: newNode.value.id,
-            label: newNode.value.label + " " + newNode.value.metadata.version,
-            font: {
-              color: theme.palette.success.main
-            },
-            node: newNode,
-            change: "version"
-          });
+          mergedGraph.nodes.set(newNode.key, newNode);
+          newNode.value["change"] = "version";
+          newNode.value["font"] = {
+            color: theme.palette.success.main
+          };
         }
       }
       // if new graph does not have package then it is removed
       else {
-        data.nodes.push({
-          id: value.value.id,
-          label: value.value.label + " " + value.value.metadata.version,
-          font: {
-            color: theme.palette.error.main
-          },
-          color: theme.palette.error.main,
-          node: oldGraph.nodes.get(value.value.id),
-          change: "removed"
-        });
+        mergedGraph.nodes.set(value.key, value);
+        value.value["change"] = "removed";
+        value.value["label"] =
+          value.value.label + " " + (value?.value?.metadata?.version ?? "");
+        value.value["font"] = {
+          color: theme.palette.error.main
+        };
+        value.value["color"] = theme.palette.error.main;
+        value.value["version"] = value?.value?.metadata?.version ?? "";
+        value.value["depenencies"] = value.adjacents.size;
+        value.value["license"] = value?.value?.metadata?.license ?? "";
+        value.value["lockfile"] = ["old"];
 
         edgeColors.set(value.value.id, theme.palette.error.main);
       }
@@ -250,25 +295,41 @@ export function useMergeGraphs(
     newGraph.nodes.forEach((value, key) => {
       // if the old grpah does not have what new graph has
       if (!oldGraph.nodes.has(key)) {
-        data.nodes.push({
-          id: value.value.id,
-          label: value.value.label + " " + value.value.metadata.version,
-          font: {
-            color: theme.palette.success.main
-          },
-          color: theme.palette.success.main,
-          node: newGraph.nodes.get(value.value.id),
-          change: "added"
-        });
+        mergedGraph.nodes.set(value.key, value);
+        value.value["change"] = "added";
+        value.value["label"] =
+          value.value.label + " " + (value?.value?.metadata?.version ?? "");
+        value.value["font"] = {
+          color: theme.palette.success.main
+        };
+        value.value["color"] = theme.palette.success.main;
+        value.value["version"] = value?.value?.metadata?.version ?? "";
+        value.value["depenencies"] = value.adjacents.size;
+        value.value["license"] = value?.value?.metadata?.license ?? "";
+        value.value["lockfile"] = ["new"];
 
         edgeColors.set(value.value.id, theme.palette.success.main);
       }
     });
 
+    const newRoot = newGraph.nodes.get(root);
+    const oldRoot = oldGraph.nodes.get(root);
+    const combinedRoot = new Node(
+      root,
+      JSON.parse(JSON.stringify(newRoot.value))
+    );
+    oldRoot.getAdjacents().forEach(item => combinedRoot.adjacents.add(item));
+    newRoot.getAdjacents().forEach(item => combinedRoot.adjacents.add(item));
+
+    mergedGraph.nodes.set(root, combinedRoot);
+
+    //r.adjacents.add(...oldRoot.adjacents, ...newRoot.adjacents);
+
+    // add edges from old graph
     oldGraph.nodes.forEach((value, key) => {
       // set package edges
       value.adjacents.forEach(adj => {
-        data.edges.push({
+        visGraphEdges.push({
           to: value.value.id,
           from: adj.value.id,
           color: edgeColors.get(adj.value.id) ?? undefined
@@ -276,10 +337,11 @@ export function useMergeGraphs(
       });
     });
 
+    // add edges from new graph
     newGraph.nodes.forEach((value, key) => {
       // set package edges
       value.adjacents.forEach(adj => {
-        data.edges.push({
+        visGraphEdges.push({
           to: value.value.id,
           from: adj.value.id,
           color: edgeColors.get(adj.value.id) ?? undefined
@@ -287,39 +349,16 @@ export function useMergeGraphs(
       });
     });
 
-    const visData = {
-      nodes: new DataSet(data.nodes),
-      edges: new DataSet(data.edges)
-    };
+    // add edges to merged graph Object
+    mergedGraph["visEdges"] = visGraphEdges;
 
-    setVisGraph(visData);
-
+    // set state
     dispatch({
       type: "graph",
       name: "mergedGraph",
-      payload: data.nodes
+      payload: mergedGraph
     });
   }, [oldGraph, newGraph, theme, root, dispatch]);
-
-  // if filter type is changed then apply filter to state
-  useEffect(() => {
-    if (!state.mergedGraph || !visGraph?.edges) {
-      return;
-    }
-
-    const filterdNodes = state.mergedGraph.filter(node => {
-      return node.change !== "removed" || showOldPackages;
-    });
-
-    setFilterdGraph(filterdNodes);
-
-    setVisGraph({
-      nodes: new DataSet(filterdNodes),
-      edges: visGraph.edges
-    });
-  }, [showOldPackages, dispatch, state.mergedGraph, visGraph?.edges]);
-
-  return { visGraph: visGraph, filterdGraph: filterdGraph };
 }
 
 export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
@@ -466,7 +505,10 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
                 // if package exists in lockfile
                 if (adjacentNode) {
                   // update depth
-                  adjacentNode.value.depth = node.value.depth + 1;
+                  adjacentNode.value.depth = Math.min(
+                    node.value.depth + 1,
+                    adjacentNode.value.depth ?? node.value.depth + 2
+                  );
 
                   // add edge connecting parent and dependency
                   graph.addEdge(node.key, adjacentNode.value.id);

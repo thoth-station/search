@@ -11,7 +11,11 @@ import TabPanel from "components/Shared/TabPanel";
 import AdvisePage from "components/Dashboard/Advise/AdvisePage";
 
 // utils
-import { useComputeMetrics, useLockFileToGraph } from "utils/produceMetrics";
+import {
+  useComputeMetrics,
+  useLockFileToGraph,
+  useMergeGraphs
+} from "utils/produceMetrics";
 import { useInterval } from "utils/useInterval";
 
 // api
@@ -62,6 +66,13 @@ export const Dashboard = ({ location }) => {
           payload: status
         });
 
+        if (response.data.error && state.error !== response.data.error) {
+          dispatch({
+            type: "error",
+            payload: response.data.error
+          });
+        }
+
         // check if advise is done
         // if done then turn off polling whcih triggers another call for results
         if (status.finished_at !== null) {
@@ -106,7 +117,7 @@ export const Dashboard = ({ location }) => {
     // get results of advise request
     thothAdviseResult(params.analysis_id)
       .then(response => {
-        const data = response?.data ?? response;
+        const data = response?.data;
 
         // if cant run advise error
         if (response.status === 400 || response.status === 404) {
@@ -195,12 +206,9 @@ export const Dashboard = ({ location }) => {
     state?.advise?.initProject?.requirements_locked?.default,
     "initGraph"
   );
-  useComputeMetrics(
-    state.adviseGraph,
-    state?.advise?.report?.products?.[0]?.project?.requirements?.packages
-  );
-
-  console.log(state);
+  useComputeMetrics(state.adviseGraph, "new");
+  useComputeMetrics(state.initGraph, "old");
+  useMergeGraphs(state.initGraph, state.adviseGraph, "*App");
 
   // handle tab change
   const handleChange = (event, newValue) => {
@@ -231,8 +239,8 @@ export const Dashboard = ({ location }) => {
         indicatorColor="primary"
         textColor="primary"
       >
-        <Tab label="Overview" />
-        <Tab label="Dependencies" />
+        <Tab label="Summary" />
+        <Tab label="Advise Results" />
       </Tabs>
       <TabPanel value={value} index={0}>
         <MetricLayout />

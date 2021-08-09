@@ -1,9 +1,16 @@
 // react
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+  useCallback
+} from "react";
 
 // utils and configs
 import { recurseToRoot } from "utils/recurseToRoot";
 import { options } from "config/networkOptions";
+import { StateContext } from "App";
 
 // vis-network
 import { Network, DataSet } from "vis-network/standalone/esm/vis-network";
@@ -23,21 +30,91 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const NetworkGraph = ({
-  data,
-  filterdGraph,
-  searchText,
   root,
-  selectedPackage,
   search,
+  filteredGraph,
+  renderPathNodes,
+  lockfile,
   ...props
 }) => {
   const classes = useStyles();
-  const [selected, setSelected] = useState(data);
+  const [data, setData] = useState();
   const visJsRef = useRef(null);
+  const state = useContext(StateContext);
+  const selectedColor = "#f39200";
 
+  const resetAll = useCallback(() => {
+    // clear selection
+    data.nodes.updateOnly(
+      data.nodes.get().map(e => {
+        if (e.id !== root) {
+          e["opacity"] = 1;
+          e["font"] = {
+            ...state.mergedGraph.nodes.get(e.id)?.value?.font,
+            size: options.nodes.font.size
+          };
+          e["color"] =
+            state.mergedGraph.nodes.get(e.id)?.value?.color ??
+            options.nodes.color;
+        }
+        return e;
+      })
+    );
+
+    // reset edge colors
+    data.edges.updateOnly(
+      data.edges.get().map(e => {
+        e["color"] = { opacity: 1 };
+        return e;
+      })
+    );
+  }, [data, root, state.mergedGraph.nodes]);
+
+  // set the graph to use based on filter
   useEffect(() => {
+    if (!filteredGraph || !state.mergedGraph) {
+      return;
+    }
+
+    let nodes = null;
+    if (renderPathNodes) {
+      nodes = new Map();
+      filteredGraph.nodes.forEach((value, key) => {
+        const paths = state.mergedGraph.findAllPaths("*App", key);
+
+        paths.forEach(path => {
+          path.forEach(node => {
+            nodes.set(node.key, node);
+          });
+        });
+      });
+    } else {
+      nodes = filteredGraph.nodes;
+    }
+
+    // convert to vis graph format
+    const convertedNodes = [];
+    nodes.forEach(value => {
+      if (lockfile === "both" || value.value.lockfile.includes(lockfile)) {
+        convertedNodes.push(value.value);
+      }
+    });
+    const visData = {
+      nodes: new DataSet(convertedNodes),
+      edges: new DataSet(filteredGraph.visEdges)
+    };
+
+    setData(visData);
+  }, [filteredGraph, state.mergedGraph, lockfile, renderPathNodes]);
+
+  // create the graph
+  useEffect(() => {
+    if (!data?.nodes) {
+      return;
+    }
+
     const network =
-      visJsRef.current && new Network(visJsRef.current, selected, options);
+      visJsRef.current && new Network(visJsRef.current, data, options);
 
     // set root node to have specific color
     const rootNode = data.nodes.get(root);
@@ -73,7 +150,7 @@ const NetworkGraph = ({
 
     // fix (stick in place) node when done dragging
     network.on("dragEnd", function(params) {
-      if (params.nodes.length !== 0) {
+      if (params.nodes.length !== 0 && !network.isCluster(params.nodes[0])) {
         network.editNode(params.nodes[0]);
       }
     });
@@ -85,80 +162,24 @@ const NetworkGraph = ({
       if (
         params.nodes.length !== 0 &&
         network.body.nodes[params.nodes[0]].options.x !== undefined &&
-        network.body.nodes[params.nodes[0]].options.x
+        network.body.nodes[params.nodes[0]].options.x &&
+        !network.isCluster(params.nodes[0])
       ) {
         // un fix node
         network.editNode(params.nodes[0]);
       }
     });
-  }, [root, selected, data.nodes]);
+  }, [root, data]);
 
+  // search node
   // recursivly finds all paths from search result to root
+  // and grey out nodes that are not in criteria
   useEffect(() => {
-    const selectedColor = "#f39200";
-
-    // clear selection
-    data.nodes.updateOnly(
-      data.nodes.get().map(e => {
-        if (e.color === selectedColor) {
-          e["color"] = filterdGraph.find(node => node.id === e.id).color;
-        }
-        return e;
-      })
-    );
-
-    if (selectedPackage === null) {
-      // reset node colors
-      setSelected(data);
+    if (!data || !root) {
       return;
     }
 
-    // use input text to find possible results
-    const result = data.nodes.get(selectedPackage);
-
-    // recurse through possible results
-    const recurse = recurseToRoot(
-      [selectedPackage],
-      root,
-      data.edges.map(e => e)
-    );
-    setSelected({
-      nodes: new DataSet(data.nodes.get(recurse.nodes)),
-      edges: new DataSet(data.edges.get(recurse.esges))
-    });
-
-    // set searched nodes to a different color
-    if (result.id !== root) {
-      result["color"] = selectedColor;
-    }
-
-    // update nodes and edges in the dataset
-    data.nodes.updateOnly(result);
-  }, [selectedPackage, root, data, filterdGraph]);
-
-  // recursivly finds all paths from search result to root
-  useEffect(() => {
-    // clear selection
-    data.nodes.updateOnly(
-      data.nodes.get().map(e => {
-        if (e.id !== root) {
-          //e["color"] = options.nodes.color;
-          //e["font"] = options.nodes.font;
-          e["opacity"] = 1;
-          e["font"] = { size: options.nodes.font.size };
-        }
-        return e;
-      })
-    );
-
-    // reset edge colors
-    data.edges.updateOnly(
-      data.edges.get().map(e => {
-        //e["color"] = options.edges.color;
-        e["color"] = { opacity: 1 };
-        return e;
-      })
-    );
+    resetAll();
 
     if (search === "") {
       // reset node colors
@@ -180,24 +201,21 @@ const NetworkGraph = ({
     );
 
     // grey out non search results
-    // nodes that are not in search results
+    // edges that are not in search results
     const unselected_edges = data.edges
       .get()
       .filter(edge => !selected.edges.includes(edge.id))
       .map(e => {
-        //e["color"] = { color: "#e3e5e8" };
         e["color"] = { opacity: 0.05 };
         return e;
       });
 
-    // edges that are not in search results
+    // nodes that are not in search results
     const unselected_nodes = data.nodes
       .get()
       .filter(node => !selected.nodes.includes(node.id))
       .map(e => {
         if (e.id !== root) {
-          //e["color"] = { background: "#e3e5e8" };
-          //e["font"] = { color: "#e3e5e8", strokeWidth: 2, size: 15 };
           e["font"] = { size: 0 };
           e["opacity"] = 0.05;
         }
@@ -207,7 +225,7 @@ const NetworkGraph = ({
     // set searched nodes to a different color
     possible_results = possible_results.map(e => {
       if (e.id !== root) {
-        //e["color"] = { background: "#f39200" };
+        e["color"] = selectedColor;
       }
       return e;
     });
@@ -215,7 +233,7 @@ const NetworkGraph = ({
     // update nodes and edges in the dataset
     data.nodes.updateOnly(unselected_nodes.concat(possible_results));
     data.edges.updateOnly(unselected_edges);
-  }, [search, data, root]);
+  }, [search, data, root, resetAll]);
 
   return (
     <div className={`${classes.root} ${props.className}`}>

@@ -7,6 +7,7 @@ import ProgressBar from "components/Shared/ProgressBar";
 
 // material-ui
 import { makeStyles } from "@material-ui/styles";
+import { TransitionGroup } from "react-transition-group";
 
 import {
   Typography,
@@ -14,7 +15,8 @@ import {
   List,
   ListItem,
   ListItemText,
-  Grid
+  Grid,
+  Collapse
 } from "@material-ui/core/";
 
 const useStyles = makeStyles(theme => ({
@@ -58,40 +60,45 @@ const MultipleDependenciesMetric = ({ metric }) => {
       </Typography>
       <Divider className={classes.bar} />
       <List component="nav">
-        {Object.entries(metric.roots).map(([key, value], i) => {
-          const t =
-            (metric.roots[key].direct ?? 0) + (metric.roots[key].indirect ?? 0);
-          return (
-            <div key={key}>
-              <ListItem>
-                <Grid container alignItems="center">
-                  <Grid item xs>
-                    <ListItemText primary={key} />
-                  </Grid>
-                  <Grid item xs>
-                    <Grid container direction="column">
+        <TransitionGroup>
+          {Object.entries(metric.roots).map(([key, value], i) => {
+            const t =
+              (metric.roots[key].direct ?? 0) +
+              (metric.roots[key].indirect ?? 0);
+            return (
+              <Collapse key={key}>
+                <div>
+                  <ListItem>
+                    <Grid container alignItems="center">
                       <Grid item xs>
-                        <ProgressBar
-                          value={metric.roots[key].direct ?? 0}
-                          total={t}
-                          label={"Direct"}
-                        />
+                        <ListItemText primary={key} />
                       </Grid>
                       <Grid item xs>
-                        <ProgressBar
-                          value={metric.roots[key].indirect ?? 0}
-                          total={t}
-                          label={"Indirect"}
-                        />
+                        <Grid container direction="column">
+                          <Grid item xs>
+                            <ProgressBar
+                              value={metric.roots[key].direct ?? 0}
+                              total={t}
+                              label={"Direct"}
+                            />
+                          </Grid>
+                          <Grid item xs>
+                            <ProgressBar
+                              value={metric.roots[key].indirect ?? 0}
+                              total={t}
+                              label={"Indirect"}
+                            />
+                          </Grid>
+                        </Grid>
                       </Grid>
                     </Grid>
-                  </Grid>
-                </Grid>
-              </ListItem>
-              <Divider variant={"middle"} className={classes.bar} />
-            </div>
-          );
-        })}
+                  </ListItem>
+                  <Divider variant={"middle"} className={classes.bar} />
+                </div>
+              </Collapse>
+            );
+          })}
+        </TransitionGroup>
       </List>
     </div>
   );

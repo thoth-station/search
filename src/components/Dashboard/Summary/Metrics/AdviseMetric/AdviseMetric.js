@@ -24,7 +24,8 @@ const useStyles = makeStyles(theme => ({
 
 const AdviseMetric = ({ metric }) => {
   const classes = useStyles();
-  const total = metric.added + metric.removed + metric.version + metric.equal;
+  const total =
+    metric.added + metric.removed + metric.version + metric.unchanged;
   return (
     <div>
       <Typography variant="body2" gutterBottom>
@@ -51,7 +52,7 @@ const AdviseMetric = ({ metric }) => {
       <ProgressBar
         value={metric.version ?? 0}
         total={total}
-        label={"Changed Version"}
+        label={"Version Changes"}
       />
       <Typography
         variant="body2"
@@ -78,7 +79,7 @@ AdviseMetric.propTypes = {
     added: PropTypes.number,
     removed: PropTypes.number,
     version: PropTypes.number,
-    equal: PropTypes.number,
+    unchanged: PropTypes.number,
     justification: PropTypes.object,
     build: PropTypes.string
   })

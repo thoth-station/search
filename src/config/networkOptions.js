@@ -10,7 +10,7 @@ export const options = {
     hover: true,
     hoverConnectedEdges: false,
     selectConnectedEdges: false,
-    selectable: false
+    selectable: true
   },
   edges: {
     chosen: false,
@@ -26,6 +26,7 @@ export const options = {
       }
     }
   },
+
   nodes: {
     chosen: false,
     color: {

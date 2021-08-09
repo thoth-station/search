@@ -108,11 +108,7 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired
 };
 
-export default function EnhancedTable({
-  filterdGraph,
-  search,
-  selectedPackage
-}) {
+export default function EnhancedTable({ search, filteredGraph }) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
@@ -122,26 +118,29 @@ export default function EnhancedTable({
   const [open, setOpen] = React.useState(null);
 
   useEffect(() => {
-    if (!filterdGraph) {
+    if (!filteredGraph) {
       return;
     }
+
+    setPage(0);
+
     const newRows = [];
-    filterdGraph.forEach(node => {
-      if (node.depth === -1) {
+    filteredGraph.nodes.forEach(node => {
+      if (node.value.depth === -1) {
         return;
       }
       newRows.push({
-        name: node.label,
+        name: node.value.label,
         warnings: [],
-        depth: node.node.value.depth,
-        license: node?.node?.value?.metadata?.license,
-        dependencies: node.node.adjacents.size,
-        change: node.change,
-        summary: node?.node?.value?.metadata?.summary
+        depth: node.value.depth,
+        license: node?.value?.metadata?.license,
+        dependencies: node.adjacents.size,
+        change: node.value.change,
+        summary: node?.value?.metadata?.summary
       });
     });
     setRows(newRows);
-  }, [filterdGraph]);
+  }, [filteredGraph]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -189,7 +188,7 @@ export default function EnhancedTable({
                       : undefined;
 
                   return (
-                    <React.Fragment>
+                    <React.Fragment key={row.name}>
                       <TableRow
                         hover
                         onClick={() => {
@@ -201,7 +200,6 @@ export default function EnhancedTable({
                           }
                         }}
                         tabIndex={-1}
-                        key={row.name}
                         selected={selected === row.name}
                       >
                         <TableCell component="th" id={labelId} scope="row">

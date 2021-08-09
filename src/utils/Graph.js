@@ -116,8 +116,14 @@ export class Graph {
     const paths = [];
     sourceNode.getAdjacents().forEach(node => {
       if (!newPath.has(node)) {
-        const nextPaths = this.findAllPaths(node.value, destination, newPath);
-        nextPaths.forEach(nextPath => paths.push(nextPath));
+        const nextPaths = this.findAllPaths(
+          node.value.id,
+          destination,
+          newPath
+        );
+        nextPaths.forEach(nextPath => {
+          paths.push(nextPath);
+        });
       }
     });
     return paths;
