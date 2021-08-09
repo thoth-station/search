@@ -208,9 +208,7 @@ export const Dashboard = ({ location }) => {
   );
   useComputeMetrics(state.adviseGraph, "new");
   useComputeMetrics(state.initGraph, "old");
-  useMergeGraphs(state.initGraph, state.adviseGraph, state.focus ?? "*App");
-
-  console.log(state);
+  useMergeGraphs(state.initGraph, state.adviseGraph, "*App");
 
   // handle tab change
   const handleChange = (event, newValue) => {

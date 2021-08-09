@@ -122,7 +122,6 @@ export class Graph {
           newPath
         );
         nextPaths.forEach(nextPath => {
-          console.log(source);
           paths.push(nextPath);
         });
       }

@@ -52,7 +52,7 @@ const AdviseMetric = ({ metric }) => {
       <ProgressBar
         value={metric.version ?? 0}
         total={total}
-        label={"Version Chnages"}
+        label={"Version Changes"}
       />
       <Typography
         variant="body2"

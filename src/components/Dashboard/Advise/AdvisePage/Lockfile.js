@@ -15,6 +15,7 @@ const useStyles = makeStyles(theme => ({
 
 const Lockfile = ({ file }) => {
   const classes = useStyles();
+
   return (
     <Typography variant="caption">
       <pre>

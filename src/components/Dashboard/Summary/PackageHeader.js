@@ -9,6 +9,7 @@ import BookmarkIcon from "@material-ui/icons/Bookmark";
 
 // local
 import IconText from "components/Shared/IconText";
+import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 
 // utils
 import { timeSince } from "utils/timeSince";
@@ -41,36 +42,33 @@ const useStyles = makeStyles(theme => ({
 
 const PackageHeader = () => {
   const classes = useStyles();
-  const { roots, packageWarning } = useContext(StateContext);
+  const { state } = useContext(StateContext);
+
+  const metadata = state?.mergedGraph?.nodes?.get(state?.focus);
 
   return (
-    <div>
+    <LoadingErrorTemplate isLoading={metadata === undefined}>
       <div className={classes.titleRow}>
         <Typography variant="h4">
-          <b>{roots[0]?.metadata?.name}</b>
+          <b>{metadata?.name}</b>
         </Typography>
         <Typography className={classes.marginLeft} variant="subtitle1">
-          v{roots[0]?.metadata?.version ?? "NaN"}
+          v{metadata?.version ?? "NaN"}
         </Typography>
       </div>
 
       <Typography gutterBottom variant="body1">
-        {roots[0]?.metadata?.summary ?? "NaN"}
+        {metadata?.summary ?? "NaN"}
       </Typography>
       <div className={classes.linksRow}>
-        <IconText
-          text={roots[0]?.metadata?.license ?? "NaN"}
-          icon={<GavelIcon />}
-        />
+        <IconText text={metadata?.license ?? "NaN"} icon={<GavelIcon />} />
         <IconText
           className={classes.marginLeft}
           text={
             "Latest version published " +
             timeSince(
               new Date(
-                roots[0]?.metadata?.releases?.[
-                  roots[0]?.metadata?.version
-                ]?.[0]?.upload_time
+                metadata?.releases?.[metadata?.version]?.[0]?.upload_time
               )
             ) +
             " ago."
@@ -78,23 +76,7 @@ const PackageHeader = () => {
           icon={<BookmarkIcon />}
         />
       </div>
-      {packageWarning && packageWarning.length !== 0
-        ? packageWarning.map(p => {
-            return (
-              <Typography
-                gutterBottom
-                color={"error"}
-                className={classes.marginRight}
-                variant="body2"
-              >
-                Dependency <i>{packageWarning[0].value.label}</i>{" "}
-                <i>{packageWarning[0].value.metadata.version}</i> is currently
-                not supported by Thoth.
-              </Typography>
-            );
-          })
-        : null}
-    </div>
+    </LoadingErrorTemplate>
   );
 };
 

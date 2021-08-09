@@ -16,7 +16,7 @@ import LoadingErrorTemplate from "components/Shared/LoadingErrorTemplate";
 import { Graph } from "utils/Graph";
 
 // material-ui
-import { Paper, Grid, Box, Tab, Tabs } from "@material-ui/core";
+import { Paper, Grid, Card, CardContent, CardHeader } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/styles";
 
@@ -51,7 +51,6 @@ const PackageDependencies = () => {
   const [filteredGraph, setFilteredGraph] = useState();
 
   // for display control
-  const [tab, setTab] = useState(0);
   const [display, setDisplay] = useState("graph");
 
   const handleJustificationSelect = (event, isExpanded, package_name, i) => {
@@ -87,7 +86,7 @@ const PackageDependencies = () => {
   };
 
   useEffect(() => {
-    if (!filter || !state.mergedGraph.nodes) {
+    if (!filter || !state?.mergedGraph?.nodes) {
       return;
     }
 
@@ -185,6 +184,7 @@ const PackageDependencies = () => {
                 search={search}
                 filteredGraph={filteredGraph}
                 renderPathNodes={filter?.between?.query}
+                lockfile={filter?.lockfile?.query}
               />
             </TabPanel>
             <TabPanel value={display} index={"table"}>
@@ -201,28 +201,18 @@ const PackageDependencies = () => {
           </Paper>
         </Grid>
         <Grid item s={12} md={6}>
-          <Tabs
-            value={tab}
-            onChange={(event, newValue) => setTab(newValue)}
-            indicatorColor="primary"
-            textColor="primary"
-          >
-            <Tab label="Advise" />
-            <Tab label="Licenses" />
-          </Tabs>
-          <Box mt={4}>
-            <TabPanel value={tab} index={0}>
+          <Card className={classes.root}>
+            <CardHeader title="Thoth Justifications" />
+            <CardContent>
+              {" "}
               <AccordianList
                 justifications={
                   state?.advise?.report?.products?.[0]?.justification
                 }
                 handleJustificationSelect={handleJustificationSelect}
               />
-            </TabPanel>
-          </Box>
-          <TabPanel value={tab} index={1}>
-            under construnction
-          </TabPanel>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </LoadingErrorTemplate>

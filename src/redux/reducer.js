@@ -51,6 +51,9 @@ export function reducer(state, action) {
     case "localStorage": {
       return action.payload;
     }
+    case "focus": {
+      return { ...state, focus: action.payload };
+    }
 
     default:
       return state;

@@ -34,6 +34,7 @@ const NetworkGraph = ({
   search,
   filteredGraph,
   renderPathNodes,
+  lockfile,
   ...props
 }) => {
   const classes = useStyles();
@@ -79,9 +80,7 @@ const NetworkGraph = ({
     if (renderPathNodes) {
       nodes = new Map();
       filteredGraph.nodes.forEach((value, key) => {
-        console.group(key);
         const paths = state.mergedGraph.findAllPaths("*App", key);
-        console.groupEnd();
 
         paths.forEach(path => {
           path.forEach(node => {
@@ -95,14 +94,18 @@ const NetworkGraph = ({
 
     // convert to vis graph format
     const convertedNodes = [];
-    nodes.forEach(value => convertedNodes.push(value.value));
+    nodes.forEach(value => {
+      if (lockfile === "both" || value.value.lockfile.includes(lockfile)) {
+        convertedNodes.push(value.value);
+      }
+    });
     const visData = {
       nodes: new DataSet(convertedNodes),
       edges: new DataSet(filteredGraph.visEdges)
     };
 
     setData(visData);
-  }, [filteredGraph, state.mergedGraph, renderPathNodes]);
+  }, [filteredGraph, state.mergedGraph, lockfile, renderPathNodes]);
 
   // create the graph
   useEffect(() => {

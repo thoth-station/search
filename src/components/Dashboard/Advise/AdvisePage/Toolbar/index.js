@@ -1,5 +1,5 @@
 // react
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 
 // material-ui
@@ -21,8 +21,12 @@ import FilterAltRoundedIcon from "@material-ui/icons/FilterAltRounded";
 // Shared
 import SearchBar from "components/Shared/SearchBar";
 
+// redux
+import { StateContext } from "App";
+
 // local
 import FilterForm from "./FilterForm";
+import { MakeTextFile } from "./hooks/MakeTextFile";
 
 const Toolbar = ({
   handleSearch,
@@ -33,6 +37,13 @@ const Toolbar = ({
 }) => {
   const [filterView, setFilterView] = useState(false);
   const [filterCount, setFilterCount] = useState(0);
+
+  const state = useContext(StateContext);
+
+  // lockfile downloadLink
+  const downloadLink = MakeTextFile(
+    state?.advise?.report?.products?.[0]?.project?.requirements_locked
+  );
 
   return (
     <Grid
@@ -77,6 +88,8 @@ const Toolbar = ({
             sx={{ height: "100%" }}
             variant="outlined"
             endIcon={<DownloadRoundedIcon />}
+            href={downloadLink}
+            download="Pipfile.lock"
           >
             Download
           </Button>

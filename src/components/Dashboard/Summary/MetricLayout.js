@@ -37,7 +37,7 @@ const MetricLayout = () => {
   return (
     <LoadingErrorTemplate isLoading={state?.metrics === undefined}>
       <Grid container spacing={3} mb={3} mt={1}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} md={6}>
           <InfoCard
             cardMeta={{
               title: "Thoth Advise Summary"
@@ -45,7 +45,7 @@ const MetricLayout = () => {
             cardBody={<AdviseMetric />}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} md={6}>
           <InfoCard
             cardMeta={{
               title: "Dependencies Summary"
@@ -60,7 +60,7 @@ const MetricLayout = () => {
             }
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} md={6}>
           <InfoCard
             cardMeta={{
               title: "Licenses Summary"
