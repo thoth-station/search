@@ -5,6 +5,11 @@ export const MakeTextFile = file => {
   const [downloadLink, setDownloadLink] = useState("");
 
   useEffect(() => {
+    // this part avoids memory leaks
+    if (downloadLink !== "") window.URL.revokeObjectURL(downloadLink);
+  }, [downloadLink]);
+
+  useEffect(() => {
     if (!file) {
       return;
     }
@@ -13,9 +18,6 @@ export const MakeTextFile = file => {
       type: "text/plain",
       endings: "native"
     });
-
-    // this part avoids memory leaks
-    if (downloadLink !== "") window.URL.revokeObjectURL(downloadLink);
 
     setDownloadLink(window.URL.createObjectURL(data));
   }, [file]);

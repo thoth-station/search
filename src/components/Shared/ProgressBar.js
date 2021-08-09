@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 // material-ui
 import { withStyles, makeStyles } from "@material-ui/styles";
-import { LinearProgress, Typography, Tooltip, Grid } from "@material-ui/core";
+import { LinearProgress, Typography, Grid } from "@material-ui/core";
 
 const CustomLinearProgress = withStyles(theme => ({
   root: {

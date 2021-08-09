@@ -188,7 +188,7 @@ export default function EnhancedTable({ search, filteredGraph }) {
                       : undefined;
 
                   return (
-                    <React.Fragment>
+                    <React.Fragment key={row.name}>
                       <TableRow
                         hover
                         onClick={() => {
@@ -200,7 +200,6 @@ export default function EnhancedTable({ search, filteredGraph }) {
                           }
                         }}
                         tabIndex={-1}
-                        key={row.name}
                         selected={selected === row.name}
                       >
                         <TableCell component="th" id={labelId} scope="row">

@@ -256,7 +256,6 @@ export function useMergeGraphs(oldGraph, newGraph, root) {
         newNode.value["license"] = newNode?.value?.metadata?.license ?? "";
         newNode.value["lockfile"] = ["new", "old"];
 
-        console.log(root);
         if (
           key === root ||
           value.value.metadata.version === newNode.value.metadata.version
