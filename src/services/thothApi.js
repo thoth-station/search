@@ -1,7 +1,7 @@
 import axios from "axios";
 import { PYPI, THOTH, LICENSES } from "./CONSTANTS";
 import compareVersions from "tiny-version-compare";
-//import { data } from "./adviseResponseDev";
+import { data } from "./adviseResponseDev";
 
 // GitHub
 export function getGitHubFileText(githubRepo, fileName) {
@@ -98,7 +98,7 @@ export const thothAdvise = (pipfile, pipfileLock) => {
 };
 
 export const thothAdviseResult = analysis_id => {
-  //return Promise.resolve({ data: data, status: 200 });
+  return Promise.resolve({ data: data, status: 200 });
   return axios.get(THOTH + "/advise/python/" + analysis_id, {
     headers: {
       accept: "application/json"

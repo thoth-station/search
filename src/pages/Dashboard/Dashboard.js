@@ -3,12 +3,11 @@ import React, { useState, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 // local
-import MetricLayout from "components/Dashboard/Summary/MetricLayout";
-import PackageHeader from "components/Dashboard/Summary/PackageHeader";
-import AdviseHeader from "components/Dashboard/AdviseHeader";
+import MetricLayout from "components/dashboard/SummaryPage";
+import AdviseHeader from "components/dashboard/AdviseHeader";
 
-import TabPanel from "components/Shared/TabPanel";
-import AdvisePage from "components/Dashboard/Advise/AdvisePage";
+import TabPanel from "components/shared/TabPanel";
+import AdvisePage from "components/dashboard/AdvisePage";
 
 // utils
 import {
@@ -26,7 +25,7 @@ import { StateContext, DispatchContext } from "App";
 
 // material-ui
 import { makeStyles } from "@material-ui/styles";
-import { Tab, Tabs, Typography } from "@material-ui/core";
+import { Tab, Tabs, Typography, Box } from "@material-ui/core";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -216,38 +215,27 @@ export const Dashboard = ({ location }) => {
   };
 
   return (
-    <div className={classes.root}>
-      {state?.focus ? (
-        <PackageHeader />
-      ) : (
+    <div>
+      <div className={classes.root}>
         <AdviseHeader adviseID={params.analysis_id} />
-      )}
-      {state?.roots?.map(r => {
-        if (r.error) {
-          return (
-            <Typography color="error" gutterBottom variant="body2">
-              {r.error}
-            </Typography>
-          );
-        }
-        return null;
-      })}
-      <Typography color="error">{state?.error}</Typography>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        indicatorColor="primary"
-        textColor="primary"
-      >
-        <Tab label="Summary" />
-        <Tab label="Advise Results" />
-      </Tabs>
-      <TabPanel value={value} index={0}>
-        <MetricLayout />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <AdvisePage />
-      </TabPanel>
+        <Typography color="error">{state?.error}</Typography>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Summary" />
+          <Tab label="Advise Results" />
+        </Tabs>
+        <TabPanel value={value} index={0}>
+          <MetricLayout />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <AdvisePage />
+        </TabPanel>
+      </div>
+      <Box bgcolor="primary.main" minHeight="300px" mt={5}></Box>
     </div>
   );
 };

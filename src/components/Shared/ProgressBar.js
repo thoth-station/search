@@ -42,23 +42,23 @@ const ProgressBar = ({ value, total, label, action, ...props }) => {
   const classes = useStyles();
   return (
     <Grid container spacing={1} alignItems="center">
-      <Grid item xs={4}>
+      <Grid item xs={5}>
         <Typography variant="body2" className={classes.label}>
           {label}
         </Typography>
       </Grid>
-      <Grid item xs={1}>
+      <Grid item xs={1.75}>
         <Typography className={classes.value} variant="body2">
           {value}
         </Typography>
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs>
         <CustomLinearProgress
           variant="determinate"
           value={total > 0 ? (value / total) * 100 : 0}
         />
       </Grid>
-      <Grid item xs>
+      <Grid item xs={1}>
         <div>{action ?? null}</div>
       </Grid>
     </Grid>

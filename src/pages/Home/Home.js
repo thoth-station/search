@@ -9,7 +9,7 @@ import { makeStyles } from "@material-ui/styles";
 
 // local
 import { DASHBOARD } from "navigation/CONSTANTS";
-import SearchBar from "components/Shared/SearchBar";
+import SearchBar from "components/shared/SearchBar";
 
 // redux
 import { DispatchContext } from "App";
