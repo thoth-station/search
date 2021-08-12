@@ -18,3 +18,6 @@ If you want to see a feature added, make an issue and label it as a new feature.
 ## Bugs
 
 If you find a bug in the latest, make an issue and label it as a bug.
+
+`yarn`
+`yarn start`
