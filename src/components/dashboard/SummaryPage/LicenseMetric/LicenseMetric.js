@@ -40,13 +40,13 @@ const LicenseMetric = ({ metric, deepError }) => {
     <div>
       <Grid container>
         <Grid item xs={1}>
-          <Typography variant="body2" gutterBottom>
-            <b>OSI</b>
+          <Typography variant="h6" gutterBottom>
+            OSI
           </Typography>
         </Grid>
         <Grid item xs>
-          <Typography variant="body2" gutterBottom>
-            <b>Dependency Licenses</b>
+          <Typography variant="h6" gutterBottom>
+            Dependency Licenses
           </Typography>
         </Grid>
       </Grid>

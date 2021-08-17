@@ -111,7 +111,7 @@ const AdviseHeader = ({ adviseID }) => {
       ) : null}
 
       {statusText === "COMPLETE" ? (
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        <Typography variant="body1" sx={{ color: "text.secondary" }}>
           Thoth has added and removed packages from the original Pipfile.lock,
           resulting in a <i>new</i> Pipfile.lock. Switch between the new and old
           Python environments to see the differences.

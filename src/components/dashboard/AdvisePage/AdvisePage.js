@@ -12,11 +12,21 @@ import AccordianList from "./AccordianList";
 // hooks
 import { useFilterGraph } from "./hooks";
 
+// utils
+import { formatJustifications } from "./utils";
+
 // Shared
 import LoadingErrorTemplate from "components/shared/LoadingErrorTemplate";
 
 // material-ui
-import { Paper, Grid, Card, CardContent, CardHeader } from "@material-ui/core";
+import {
+  Paper,
+  Grid,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography
+} from "@material-ui/core";
 
 // redux
 import { StateContext } from "App";
@@ -28,7 +38,7 @@ const initialFilter = {
   version: { operator: "=", query: "" },
   license: { operator: "=", query: "" },
   depth: { operator: "=", query: "" },
-  depenencies: { operator: "=", query: "" },
+  dependencies: { operator: "=", query: "" },
   between: { query: true }
 };
 
@@ -75,6 +85,8 @@ const AdvisePage = () => {
     setFilter(filter);
   };
 
+  console.log(state);
+
   return (
     <LoadingErrorTemplate isLoading={state.mergedGraph === undefined}>
       <Grid
@@ -117,12 +129,39 @@ const AdvisePage = () => {
         </Grid>
         <Grid item s={12} md={6}>
           <Card>
-            <CardHeader title="Thoth Justifications" />
+            <CardHeader
+              title={<Typography variant="h4">Removed Packages</Typography>}
+              subheader={
+                <Typography variant="body1">
+                  Packages Thoth decided to remove from the original
+                  Pipfile.lock
+                </Typography>
+              }
+            />
             <CardContent>
               <AccordianList
-                justifications={
+                justifications={formatJustifications(
                   state?.advise?.report?.products?.[0]?.justification
-                }
+                )}
+                handleJustificationSelect={handleJustificationSelect}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader
+              title={<Typography variant="h4">Removed Packages</Typography>}
+              subheader={
+                <Typography variant="body1">
+                  Packages Thoth decided to remove from the original
+                  Pipfile.lock
+                </Typography>
+              }
+            />
+            <CardContent>
+              <AccordianList
+                justifications={formatJustifications(
+                  state?.advise?.report?.products?.[0]?.justification
+                )}
                 handleJustificationSelect={handleJustificationSelect}
               />
             </CardContent>

@@ -1,5 +1,6 @@
 // react
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 // material-ui
 import {
@@ -17,38 +18,46 @@ const AccordianList = ({ justifications, handleJustificationSelect }) => {
   return (
     <React.Fragment>
       {justifications.map((justification, i) => {
-        if (justification.type !== "INFO") {
-          return (
-            <Accordion
-              key={i}
-              onChange={(event, isExpanded) => {
-                handleJustificationSelect(
-                  event,
-                  isExpanded,
-                  justification.package_name,
-                  i
-                );
-                setExpanded(isExpanded ? i : false);
-              }}
-              expanded={expanded === i}
+        return (
+          <Accordion
+            key={i}
+            onChange={(event, isExpanded) => {
+              handleJustificationSelect(
+                event,
+                isExpanded,
+                justification.package,
+                i
+              );
+              setExpanded(isExpanded ? i : false);
+            }}
+            expanded={expanded === i}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreRoundedIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
             >
-              <AccordionSummary
-                expandIcon={<ExpandMoreRoundedIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>{justification.message}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>{justification.advisory}</Typography>
-                <Button href={justification.link}>READ MORE</Button>
-              </AccordionDetails>
-            </Accordion>
-          );
-        } else return null;
+              <Typography>{justification.title}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>{justification.body}</Typography>
+              <Button href={justification.link}>READ MORE</Button>
+            </AccordionDetails>
+          </Accordion>
+        );
       })}
     </React.Fragment>
   );
+};
+
+AccordianList.propTypes = {
+  justifications: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    package: PropTypes.string.isRequired,
+    body: PropTypes.string,
+    link: PropTypes.string
+  }),
+  cardBody: PropTypes.element
 };
 
 export default AccordianList;

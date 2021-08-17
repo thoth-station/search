@@ -20,10 +20,8 @@ const AdviseMetric = ({ metric }) => {
       <Typography variant="body2" gutterBottom>
         {metric?.build}
       </Typography>
-      <Typography variant="body2" gutterBottom mt={2}>
-        <b>
-          Differences between the old Pipfile.lock and Thoth's new Pipfile.lock
-        </b>
+      <Typography variant="h6" gutterBottom mt={2}>
+        What Thoth Changed
       </Typography>
       <Divider mb={1} />
       <ProgressBar
@@ -43,8 +41,8 @@ const AdviseMetric = ({ metric }) => {
         total={total}
         label={"Version Changes"}
       />
-      <Typography variant="body2" mt={3} gutterBottom>
-        <b>Noteworthy Justifications</b>
+      <Typography variant="h6" mt={3} gutterBottom>
+        Noteworthy Justifications
       </Typography>
       <Divider mb={1} />
       {Object.entries(metric?.justification ?? {}).map(([key, value]) => {

@@ -18,7 +18,7 @@ const params = [
   ["version", "Package version", "string"],
   ["license", "Package license", "string"],
   ["depth", "Distance from root packages", "number"],
-  ["depenencies", "Package depenencies count", "number"],
+  ["dependencies", "Package dependencies count", "number"],
   ["lockfile", "Which Pipfile.lock", "category", ["new", "old", "both"]],
   [
     "change",

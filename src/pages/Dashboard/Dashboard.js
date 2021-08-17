@@ -13,9 +13,9 @@ import AdvisePage from "components/dashboard/AdvisePage";
 import {
   useComputeMetrics,
   useLockFileToGraph,
-  useMergeGraphs
-} from "utils/produceMetrics";
-import { useInterval } from "utils/useInterval";
+  useMergeGraphs,
+  useInterval
+} from "./hooks";
 
 // api
 import { thothAdviseResult, thothAdviseStatus } from "services/thothApi";
@@ -235,7 +235,7 @@ export const Dashboard = ({ location }) => {
           <AdvisePage />
         </TabPanel>
       </div>
-      <Box bgcolor="primary.main" minHeight="300px" mt={5}></Box>
+      <Box bgcolor="#444f60" minHeight="300px" mt={5}></Box>
     </div>
   );
 };

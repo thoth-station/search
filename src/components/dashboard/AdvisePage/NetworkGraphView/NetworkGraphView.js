@@ -8,7 +8,7 @@ import React, {
 } from "react";
 
 // utils and configs
-import { recurseToRoot } from "utils/recurseToRoot";
+import { recurseToRoot } from "./utils";
 import { options } from "config/networkOptions";
 import { StateContext } from "App";
 
@@ -81,7 +81,6 @@ const NetworkGraph = ({
       nodes = new Map();
       filteredGraph.nodes.forEach((value, key) => {
         const paths = state.mergedGraph.findAllPaths("*App", key);
-
         paths.forEach(path => {
           path.forEach(node => {
             nodes.set(node.key, node);

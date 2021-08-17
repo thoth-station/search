@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 // material-ui
 import { makeStyles } from "@material-ui/styles";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Card, CardContent, CardHeader, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
@@ -31,7 +31,7 @@ const InfoCard = ({ cardMeta, cardBody, cardAction }) => {
     <Card className={classes.root}>
       <CardHeader
         action={cardAction}
-        title={cardMeta.title}
+        title={<Typography variant="h4">{cardMeta.title}</Typography>}
         subheader={cardMeta.subTitle}
       />
       <CardContent>{cardBody}</CardContent>

@@ -29,8 +29,8 @@ const DependenciesMetric = ({ metric }) => {
 
   return (
     <LoadingErrorTemplate isLoading={!metric}>
-      <Typography variant="body2" gutterBottom>
-        <b>All Packages</b>
+      <Typography variant="h6" gutterBottom>
+        All Packages
       </Typography>
       <Divider mb={1} />
       <ProgressBar
@@ -50,8 +50,8 @@ const DependenciesMetric = ({ metric }) => {
         total={totalDependencies}
         label={"Indirect"}
       />
-      <Typography variant="body2" gutterBottom mt={2}>
-        <b>Root Packages</b>
+      <Typography variant="h6" gutterBottom mt={2}>
+        Root Packages
       </Typography>
       <Divider mb={1} />
       <List component="nav">
