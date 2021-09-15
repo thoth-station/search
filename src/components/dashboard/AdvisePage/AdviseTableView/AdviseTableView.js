@@ -22,14 +22,17 @@ import { getComparator, stableSort } from "./utils";
 // local
 import EnhancedTableHead from "./EnhancedTableHead";
 
-export default function AdviseTableView({ search, filteredGraph }) {
+export default function AdviseTableView({
+  search,
+  filteredGraph,
+  setSelected,
+  selected
+}) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(25);
   const [rows, setRows] = React.useState([]);
-  const [open, setOpen] = React.useState(null);
 
   // format data
   useEffect(() => {
@@ -46,6 +49,7 @@ export default function AdviseTableView({ search, filteredGraph }) {
       }
       newRows.push({
         name: node.value.label,
+        key: node.key,
         warnings: [],
         depth: node.value.depth,
         license: node?.value?.metadata?.license,
@@ -81,7 +85,6 @@ export default function AdviseTableView({ search, filteredGraph }) {
       <TableContainer>
         <Table sx={{ minWidth: 750 }} size="medium">
           <EnhancedTableHead
-            numSelected={selected.length}
             order={order}
             orderBy={orderBy}
             onRequestSort={handleRequestSort}
@@ -105,16 +108,9 @@ export default function AdviseTableView({ search, filteredGraph }) {
                   <React.Fragment key={row.name}>
                     <TableRow
                       hover
-                      onClick={() => {
-                        setSelected(row.name);
-                        if (open !== row.name) {
-                          setOpen(row.name);
-                        } else {
-                          setOpen(null);
-                        }
-                      }}
+                      onClick={() => setSelected(row.key)}
                       tabIndex={-1}
-                      selected={selected === row.name}
+                      selected={selected === row.key}
                     >
                       <TableCell component="th" id={labelId} scope="row">
                         <Box display="flex">
@@ -137,17 +133,7 @@ export default function AdviseTableView({ search, filteredGraph }) {
                       <TableCell
                         style={{ paddingBottom: 0, paddingTop: 0 }}
                         colSpan={6}
-                      >
-                        <Collapse
-                          in={open === row.name}
-                          timeout="auto"
-                          unmountOnExit
-                        >
-                          <Typography gutterBottom variant="body1">
-                            {row.summary ?? "NaN"}
-                          </Typography>
-                        </Collapse>
-                      </TableCell>
+                      ></TableCell>
                     </TableRow>
                   </React.Fragment>
                 );

@@ -2,15 +2,9 @@
 import React, { useContext, useState, useMemo } from "react";
 
 // local components
-import NetworkGraphView from "./NetworkGraphView";
-import TabPanel from "components/shared/TabPanel";
 import AdviseTableView from "./AdviseTableView";
-import Toolbar from "./Toolbar";
-import LockfileView from "./LockfileView";
-import AccordianList from "./AccordianList";
 
-// hooks
-import { useFilterGraph } from "./hooks";
+import SelectedPackage from "./SelectedPackage";
 
 // utils
 import { discoverPackageChanges } from "./utils";
@@ -19,14 +13,7 @@ import { discoverPackageChanges } from "./utils";
 import LoadingErrorTemplate from "components/shared/LoadingErrorTemplate";
 
 // material-ui
-import {
-  Paper,
-  Grid,
-  Card,
-  CardContent,
-  CardHeader,
-  Typography
-} from "@material-ui/core";
+import { Paper, Grid, Typography } from "@material-ui/core";
 
 // redux
 import { StateContext } from "App";
@@ -46,12 +33,7 @@ const AdvisePage = () => {
   const state = useContext(StateContext);
 
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState(initialFilter);
-
-  const filteredGraph = useFilterGraph(filter, "*App", state?.mergedGraph);
-
-  // for display control
-  const [display, setDisplay] = useState("graph");
+  const [selected, setSelected] = useState();
 
   const justifications = useMemo(() => {
     return discoverPackageChanges(
@@ -60,37 +42,8 @@ const AdvisePage = () => {
     );
   }, [state?.mergedGraph?.nodes, state?.advise?.report?.products]);
 
-  const handleJustificationSelect = (event, isExpanded, package_name, i) => {
-    if (isExpanded) {
-      setFilter({
-        ...filter,
-        id: { query: package_name, operator: "=" },
-        lockfile: { query: "both", operator: "=" },
-        between: { query: true }
-      });
-      setSearch(package_name);
-      const section = document.getElementById(package_name);
-      if (section) {
-        section.scrollIntoView({ block: "start", behavior: "smooth" });
-      }
-    } else {
-      setFilter(initialFilter);
-      setSearch("");
-    }
-  };
-
-  const handleDisplay = (event, newDisplay) => {
-    if (newDisplay) {
-      setDisplay(newDisplay);
-    }
-  };
-
   const handleSearch = event => {
     setSearch(event.target.value);
-  };
-
-  const applyFilter = filter => {
-    setFilter(filter);
   };
 
   return (
@@ -104,53 +57,22 @@ const AdvisePage = () => {
       >
         <Grid item s={12} md={6}>
           <Paper sx={{ padding: 2 }}>
-            <Toolbar
-              handleSearch={handleSearch}
-              handleDisplay={handleDisplay}
-              display={display}
-              initialFilter={initialFilter}
-              applyFilter={applyFilter}
+            <AdviseTableView
+              search={search}
+              filteredGraph={state.mergedGraph}
+              selected={selected}
+              setSelected={setSelected}
             />
-            <TabPanel value={display} index={"graph"}>
-              <NetworkGraphView
-                root={"*App"}
-                search={search}
-                filteredGraph={filteredGraph}
-                renderPathNodes={filter?.between?.query}
-                lockfile={filter?.lockfile?.query}
-              />
-            </TabPanel>
-            <TabPanel value={display} index={"table"}>
-              <AdviseTableView search={search} filteredGraph={filteredGraph} />
-            </TabPanel>
-            <TabPanel value={display} index={"file"}>
-              <LockfileView
-                file={
-                  state?.advise?.report?.products?.[0]?.project
-                    ?.requirements_locked
-                }
-              />
-            </TabPanel>
           </Paper>
         </Grid>
         <Grid item s={12} md={6}>
-          <Card>
-            <CardHeader
-              title={<Typography variant="h4">Removed Packages</Typography>}
-              subheader={
-                <Typography variant="body1">
-                  Packages Thoth decided to remove from the original
-                  Pipfile.lock
-                </Typography>
-              }
-            />
-            <CardContent>
-              <AccordianList
-                justifications={justifications}
-                handleJustificationSelect={handleJustificationSelect}
-              />
-            </CardContent>
-          </Card>
+          {!selected ? (
+            <Typography variant="body1" align="center">
+              No package selected
+            </Typography>
+          ) : (
+            <SelectedPackage selectedKey={selected} />
+          )}
         </Grid>
       </Grid>
     </LoadingErrorTemplate>
