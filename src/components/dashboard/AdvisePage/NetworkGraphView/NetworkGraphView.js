@@ -79,14 +79,18 @@ const NetworkGraph = ({
     let nodes = null;
     if (renderPathNodes) {
       nodes = new Map();
+
       filteredGraph.nodes.forEach((value, key) => {
-        const paths = state.mergedGraph.findAllPaths("*App", key);
-        paths.forEach(path => {
-          path.forEach(node => {
-            nodes.set(node.key, node);
-          });
-        });
+        //nodes.set(key, filteredGraph.nodes.get(key));
+        nodes = new Map(
+          ...[
+            state.mergedGraph.findAllNodesOnAllPaths(value, "*App", nodes),
+            ...nodes
+          ]
+        );
       });
+
+      nodes.set("*App", state.mergedGraph.nodes.get("*App"));
     } else {
       nodes = filteredGraph.nodes;
     }

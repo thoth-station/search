@@ -77,6 +77,11 @@ export function useMergeGraphs(oldGraph, newGraph, root) {
             }
           };
 
+          combinedNode.parents = [
+            ...combinedNode.parents,
+            ...oldGraph.nodes.get(key)?.parents
+          ];
+
           // merge the dependencies becouse they could be different
           oldGraph.nodes
             .get(key)

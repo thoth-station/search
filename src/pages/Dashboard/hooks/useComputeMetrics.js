@@ -103,6 +103,10 @@ export function useComputeMetrics(graph, label) {
 
       // depth to type of dependency
       visitedOrder.forEach(node => {
+        if (node.key === "*App") {
+          return;
+        }
+
         if (visited.has(node.value.id)) {
           return;
         } else {

@@ -47,6 +47,8 @@ export const Dashboard = ({ location }) => {
   const state = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
+  console.log(state);
+
   // for tab control
   const [value, setValue] = useState(0);
 
@@ -213,6 +215,8 @@ export const Dashboard = ({ location }) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  console.log(state);
 
   return (
     <div>

@@ -1,5 +1,5 @@
 // React
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 
 // local components
 import NetworkGraphView from "./NetworkGraphView";
@@ -13,7 +13,7 @@ import AccordianList from "./AccordianList";
 import { useFilterGraph } from "./hooks";
 
 // utils
-import { formatJustifications } from "./utils";
+import { discoverPackageChanges } from "./utils";
 
 // Shared
 import LoadingErrorTemplate from "components/shared/LoadingErrorTemplate";
@@ -53,11 +53,19 @@ const AdvisePage = () => {
   // for display control
   const [display, setDisplay] = useState("graph");
 
+  const justifications = useMemo(() => {
+    return discoverPackageChanges(
+      state?.mergedGraph?.nodes,
+      state?.advise?.report?.products?.[0]?.justification
+    );
+  }, [state?.mergedGraph?.nodes, state?.advise?.report?.products]);
+
   const handleJustificationSelect = (event, isExpanded, package_name, i) => {
     if (isExpanded) {
       setFilter({
         ...filter,
         id: { query: package_name, operator: "=" },
+        lockfile: { query: "both", operator: "=" },
         between: { query: true }
       });
       setSearch(package_name);
@@ -84,8 +92,6 @@ const AdvisePage = () => {
   const applyFilter = filter => {
     setFilter(filter);
   };
-
-  console.log(state);
 
   return (
     <LoadingErrorTemplate isLoading={state.mergedGraph === undefined}>
@@ -140,28 +146,7 @@ const AdvisePage = () => {
             />
             <CardContent>
               <AccordianList
-                justifications={formatJustifications(
-                  state?.advise?.report?.products?.[0]?.justification
-                )}
-                handleJustificationSelect={handleJustificationSelect}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader
-              title={<Typography variant="h4">Removed Packages</Typography>}
-              subheader={
-                <Typography variant="body1">
-                  Packages Thoth decided to remove from the original
-                  Pipfile.lock
-                </Typography>
-              }
-            />
-            <CardContent>
-              <AccordianList
-                justifications={formatJustifications(
-                  state?.advise?.report?.products?.[0]?.justification
-                )}
+                justifications={justifications}
                 handleJustificationSelect={handleJustificationSelect}
               />
             </CardContent>
