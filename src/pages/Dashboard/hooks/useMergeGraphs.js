@@ -1,5 +1,6 @@
 // utils
 import { Graph } from "utils/Graph";
+import { discoverPackageChanges } from "../utils";
 
 // redux
 import { DispatchContext } from "App";
@@ -8,7 +9,7 @@ import { useContext, useEffect } from "react";
 
 import { useTheme } from "@material-ui/core/styles";
 
-export function useMergeGraphs(oldGraph, newGraph, root) {
+export function useMergeGraphs(oldGraph, newGraph, root, justifications) {
   const dispatch = useContext(DispatchContext);
 
   const theme = useTheme();
@@ -78,8 +79,10 @@ export function useMergeGraphs(oldGraph, newGraph, root) {
           };
 
           combinedNode.parents = [
-            ...combinedNode.parents,
-            ...oldGraph.nodes.get(key)?.parents
+            ...new Set([
+              ...combinedNode.parents,
+              ...oldGraph.nodes.get(key)?.parents
+            ])
           ];
 
           // merge the dependencies becouse they could be different
@@ -146,6 +149,9 @@ export function useMergeGraphs(oldGraph, newGraph, root) {
       });
     });
 
+    // set justifciations
+    discoverPackageChanges(mergedGraph.nodes, justifications);
+
     // add edges to merged graph Object
     mergedGraph["visEdges"] = visGraphEdges;
 
@@ -155,5 +161,5 @@ export function useMergeGraphs(oldGraph, newGraph, root) {
       name: "mergedGraph",
       payload: mergedGraph
     });
-  }, [oldGraph, newGraph, theme, root, dispatch]);
+  }, [oldGraph, newGraph, theme, root, dispatch, justifications]);
 }

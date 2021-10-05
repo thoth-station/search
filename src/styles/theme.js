@@ -22,24 +22,51 @@ export const themeLight = createTheme({
   },
   typography: {
     fontFamily: ["open sans", "sans-serif"],
+    h4: {
+      fontWeight: 700,
+      fontSize: "3rem",
+      color: "#363636",
+      lineHeight: 1.125
+    },
+    h5: {
+      fontWeight: 600,
+      fontSize: "2rem",
+      lineHeight: 1.125,
+      color: "#363636"
+    },
     h6: {
       fontWeight: 600,
       fontSize: "1.2rem",
       color: "#444f60",
       lineHeight: 1.5
     },
-    h4: {
-      fontWeight: 600,
-      fontSize: "2rem",
-      color: "##363636",
-      lineHeight: 1.125
-    }
 
-    // body2: {
-    //   fontWeight: 400,
-    //   fontSize: "0.875rem",
-    //   lineHeight: 1.43
-    // },
+    body1: {
+      fontWeight: 400,
+      fontSize: "1.25rem",
+      lineHeight: 1.25,
+      color: "#000"
+    },
+
+    body2: {
+      fontWeight: 400,
+      fontSize: "1rem",
+      lineHeight: 1.5,
+      color: "#000"
+    },
+    subtitle1: {
+      fontWeight: 400,
+      fontSize: "1.25rem",
+      lineHeight: 1.25,
+      color: "#999"
+    },
+
+    subtitle2: {
+      fontWeight: 400,
+      fontSize: "1rem",
+      lineHeight: 1.5,
+      color: "#999"
+    }
     //
     // button: {
     //   fontFamily: ["Roboto", "Helvetica", "Arial", "sans-serif"],

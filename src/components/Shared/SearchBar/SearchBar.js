@@ -26,7 +26,12 @@ const SearchBar = props => {
       <Paper
         component="form"
         variant="outlined"
-        sx={{ p: "2px 4px", display: "flex", alignItems: "center" }}
+        sx={{
+          p: "8px 4px",
+          display: "flex",
+          alignItems: "center",
+          borderColor: error ? "red" : undefined
+        }}
         {...boxprops}
       >
         {lefticon}

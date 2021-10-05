@@ -8,8 +8,7 @@ import {
   TableContainer,
   TablePagination,
   TableRow,
-  Typography,
-  Collapse
+  Typography
 } from "@material-ui/core";
 
 import AddRoundedIcon from "@material-ui/icons/AddRounded";

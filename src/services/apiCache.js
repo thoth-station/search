@@ -22,3 +22,7 @@ export const cacheSet = (group, key, value) => {
 export const cacheReset = () => {
   localStorage.removeItem(STORAGE_KEY);
 };
+
+export const cacheLoad = cache => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+};

@@ -90,7 +90,7 @@ export const thothAdvise = (pipfile, pipfileLock) => {
         version: "8"
       },
       platform: "linux-x86_64",
-      python_version: "3.6"
+      python_version: "3.9"
     }
   };
 
@@ -108,6 +108,7 @@ export const thothAdvise = (pipfile, pipfileLock) => {
 export const thothAdviseResult = analysis_id => {
   // grab from cache if available
   const cache = cacheGet("adviseResult", analysis_id);
+
   if (cache) {
     return Promise.resolve(cache);
   }

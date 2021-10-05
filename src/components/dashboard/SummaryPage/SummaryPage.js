@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 
 // local components
-import InfoCard from "./InfoCard";
+import InfoCard from "components/shared/InfoCard";
 import DependenciesMetric from "./DependenciesMetric";
 import LicenseMetric from "./LicenseMetric";
 import AdviseMetric from "./AdviseMetric";

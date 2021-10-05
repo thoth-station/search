@@ -3,61 +3,26 @@ import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 // material-ui
-import { Typography, Button, Box, Collapse, Grid } from "@material-ui/core";
+import { Typography, Button, Box, Grid } from "@material-ui/core";
 import LoadingButton from "@material-ui/lab/LoadingButton";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { makeStyles } from "@material-ui/styles";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 // local
-import { DASHBOARD } from "navigation/CONSTANTS";
+import { ADVISE, PACKAGE } from "navigation/CONSTANTS";
 import SearchBar from "components/shared/SearchBar";
 import TabPanel from "components/shared/TabPanel";
+import logo from "assets/thoth-logo.png";
 
 // redux
 import { DispatchContext } from "App";
 
 // api
-import { thothAdvise } from "services/thothApi";
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-    flexFlow: "column nowrap",
-    alignItems: "center",
-    marginTop: "10%"
-  },
-  stretchContent: {
-    minWidth: "50%"
-  },
-  searchBar: {
-    display: "flex",
-    justifyContent: "center"
-  },
-  flexColumn: {
-    display: "flex",
-    flexDirection: "column"
-  },
-  multilineTextBoxContainer: {
-    display: "flex",
-    justifyContent: "space-between"
-  },
-  description: {
-    marginBottom: theme.spacing(1),
-    maxWidth: "50%",
-    textAlign: "center"
-  },
-  mode: {
-    marginBottom: theme.spacing(3)
-  },
-  title: {
-    marginBottom: theme.spacing(1)
-  }
-}));
+import { thothAdvise, searchForPackage } from "services/thothApi";
 
 const Home = () => {
   const history = useHistory();
-  const classes = useStyles();
   const dispatch = useContext(DispatchContext);
 
   // textbox states
@@ -72,7 +37,6 @@ const Home = () => {
 
   // utlity states
   const [mode, setMode] = useState("multiple");
-  const [expandOptions, setExpandOptions] = useState(false);
 
   const [queryLoading, setQueryLoading] = useState(false);
 
@@ -110,20 +74,19 @@ const Home = () => {
 
   // handle the input
   const handleAnalyze = async () => {
-    // dispatch({
-    // 	type: "reset"
-    // });
-    // history.push({
-    // 	pathname: DASHBOARD,
-    // 	state: roots
-    // });
-
     if (mode === "single") {
       // if no query
       if (searchQuery === "") {
         return;
       }
-      setSearchError("Package does not exist");
+
+      searchForPackage(searchQuery)
+        .then(response => {
+          history.push(PACKAGE + "/" + response.data.info.name);
+        })
+        .catch(e => {
+          setSearchError("Package does not exist");
+        });
     }
     // if using pipfile and pipfile.lock
     else {
@@ -158,7 +121,7 @@ const Home = () => {
               param: "analysis_id",
               payload: response.data.analysis_id
             });
-            history.push(DASHBOARD + "/" + response.data.analysis_id);
+            history.push(ADVISE + "/" + response.data.analysis_id);
           })
           .catch(error => {
             setQueryLoading(false);
@@ -175,111 +138,157 @@ const Home = () => {
   };
 
   return (
-    <div className={classes.root}>
-      <Typography variant="h4" className={classes.title}>
-        <b>Thoth Search</b>
-      </Typography>
-      <Typography variant="body1" className={classes.description}>
-        Thoth Search is a tool that runs analysis on a Python application. It
-        utilizes package metadata and Thoth Adviser to analyse and recommend a
-        software stack. <br />
-        <br /> You can run analysis on a specific Python package or you can
-        provide a properly formatted Pipfile and/or Pipfile.lock to run analysis
-        on an entire Python application.
-      </Typography>
-      <ToggleButtonGroup
-        value={mode}
-        exclusive
-        onChange={handleMode}
-        size={"small"}
-        className={classes.mode}
-      >
-        <ToggleButton value="single" aria-label="left aligned" disabled>
-          <b>Single Package</b>
-        </ToggleButton>
-        <ToggleButton value="multiple" aria-label="centered">
-          <b>Multiple Packages</b>
-        </ToggleButton>
-      </ToggleButtonGroup>
-      <TabPanel
-        value={mode}
-        index={"single"}
-        className={`${classes.flexColumn} ${classes.stretchContent}`}
-      >
-        <Box className={classes.searchBar}>
-          <SearchBar
-            label="Search for a Python package"
-            onChange={e => handleChange(e, "single")}
-            helpertext={searchError}
-            error={searchError !== ""}
-            type="search"
-            boxprops={{ mr: 2 }}
-          />
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleAnalyze()}
-          >
-            <b>Analyze</b>
-          </Button>
-        </Box>
-
-        <Collapse in={expandOptions} timeout="auto" unmountOnExit>
-          <Box mt={1}></Box>
-        </Collapse>
-        <Box textAlign="center" mt={1}>
-          <Button
-            onClick={() => setExpandOptions(!expandOptions)}
-            color="primary"
-          >
-            {expandOptions ? "Less Options" : "More Options"}
-          </Button>
-        </Box>
-      </TabPanel>
-
-      <TabPanel
-        value={mode}
-        index={"multiple"}
-        className={`${classes.flexColumn} ${classes.stretchContent}`}
-      >
-        <Grid container spacing={2}>
-          <Grid item xs>
-            <SearchBar
-              label={pipfileError !== "" ? pipfileError : "Pipfile contents"}
-              onChange={e => handleChange(e, "pipfile")}
-              error={pipfileError !== ""}
-              multiline
-              rows={8}
-            />
+    <Grid container justifyContent="center">
+      <Grid item>
+        <Button sx={{ marginTop: 10 }}>
+          <img alt="Thoth Logo" src={logo} height={300} width={"100%"} />
+        </Button>
+      </Grid>
+      <Grid container item justifyContent="center" mt={5} spacing={0}>
+        <Grid container item xs={3} align="center" mr={5}>
+          <Grid item xs={12} align="left" mb={3}>
+            <Typography variant="h4">
+              <b>Thoth Search</b>
+            </Typography>
           </Grid>
-          <Grid item xs>
-            <SearchBar
-              label={
-                pipfileLockError !== ""
-                  ? pipfileLockError
-                  : "Pipfile.lock contents"
-              }
-              onChange={e => handleChange(e, "lock")}
-              error={pipfileLockError !== ""}
-              multiline
-              rows={8}
-            />
+          <Grid item xs={12} align="left">
+            <Typography variant="subtitle1">
+              Thoth Search is a tool that runs analysis on a Python application.
+              It utilizes package metadata and Thoth Adviser to analyse and
+              recommend a software stack. You can run analysis on a on an entire
+              Python application using a properly formatted Pipfile and
+              Pipfile.lock. Alternatively, you can analyse a single Python
+              package to see what Thoth knows about the package.
+            </Typography>
           </Grid>
         </Grid>
 
-        <Box textAlign="center" mt={2}>
-          <LoadingButton
-            variant="contained"
-            color="primary"
-            onClick={() => handleAnalyze()}
-            loading={queryLoading}
+        <Grid
+          item
+          container
+          xs={2}
+          direction="column"
+          justifyContent="center"
+          spacing={1}
+        >
+          {[
+            ["One", "100k"],
+            ["Two", "20%"],
+            ["Three", "62"],
+            ["Four", "N/A"]
+          ].map(stat => {
+            return (
+              <Grid item container alignItems="center">
+                <Grid item xs={6}>
+                  <Typography variant="h6">
+                    <b>Thoth Statistic {stat[0]}</b>
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography variant="h5" align="right">
+                    {stat[1]}
+                  </Typography>
+                </Grid>
+              </Grid>
+            );
+          })}
+        </Grid>
+
+        <Grid item xs={12} align="center" mt={3} mb={4}>
+          <ToggleButtonGroup
+            value={mode}
+            exclusive
+            onChange={handleMode}
+            size={"large"}
           >
-            <b>Analyze</b>
-          </LoadingButton>
-        </Box>
-      </TabPanel>
-    </div>
+            <ToggleButton value="single">
+              <b>single package analysis</b>
+            </ToggleButton>
+            <ToggleButton value="multiple">
+              <b>Python application analysis</b>
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Grid>
+
+        <Grid item xs={5}>
+          <TabPanel value={mode} index={"single"}>
+            <Grid container>
+              <Grid item xs={10}>
+                <Typography
+                  color="error"
+                  variant="body1"
+                  sx={{ minHeight: 30 }}
+                >
+                  {searchError ?? ""}
+                </Typography>
+              </Grid>
+              <Grid item xs={10}>
+                <SearchBar
+                  error={searchError !== ""}
+                  onChange={e => handleChange(e, "single")}
+                  helpertext={"Search for a Python package"}
+                  type="search"
+                  boxprops={{ mr: 2 }}
+                  lefticon={<SearchRoundedIcon />}
+                />
+              </Grid>
+              <Grid item sm={10} lg={1} ml={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleAnalyze()}
+                  sx={{ minHeight: "100%", minWidth: "100%" }}
+                >
+                  <b>Analyze</b>
+                </Button>
+              </Grid>
+            </Grid>
+          </TabPanel>
+
+          <TabPanel value={mode} index={"multiple"}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <SearchBar
+                  label={
+                    pipfileError !== "" ? pipfileError : "Pipfile contents"
+                  }
+                  onChange={e => handleChange(e, "pipfile")}
+                  error={pipfileError !== ""}
+                  multiline
+                  rows={8}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <SearchBar
+                  label={
+                    pipfileLockError !== ""
+                      ? pipfileLockError
+                      : "Pipfile.lock contents"
+                  }
+                  onChange={e => handleChange(e, "lock")}
+                  error={pipfileLockError !== ""}
+                  multiline
+                  rows={8}
+                />
+              </Grid>
+            </Grid>
+
+            <Box textAlign="center" mt={2}>
+              <LoadingButton
+                variant="contained"
+                color="primary"
+                onClick={() => handleAnalyze()}
+                loading={queryLoading}
+                sx={{ minHeight: "100%", minWidth: "100%" }}
+              >
+                <b>Analyze</b>
+              </LoadingButton>
+            </Box>
+          </TabPanel>
+        </Grid>
+        <div bgcolor="#444f60" minHeight="300px" mt={5}></div>
+      </Grid>
+    </Grid>
   );
 };
 

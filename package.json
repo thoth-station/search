@@ -10,6 +10,8 @@
     "@material-ui/icons": "^5.0.0-beta.1",
     "@material-ui/lab": "^5.0.0-alpha.40",
     "@material-ui/styles": "^5.0.0-beta.1",
+    "@mui/icons-material": "^5.0.0",
+    "@mui/material": "^5.0.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

@@ -30,6 +30,12 @@ export function reducer(state, action) {
         error: action.payload
       };
     }
+    case "dev": {
+      return {
+        ...state,
+        devMode: action.payload
+      };
+    }
     case "advise": {
       return {
         ...state,
@@ -43,6 +49,12 @@ export function reducer(state, action) {
       return {
         ...state,
         packageWarning: action.payload
+      };
+    }
+    case "package": {
+      return {
+        ...state,
+        package_data: action.payload
       };
     }
     case "reset": {

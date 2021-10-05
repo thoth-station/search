@@ -35,7 +35,7 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
 
             // add package to graph
             const node = graph.addVertex(v.id, v);
-            node.parents = [];
+            node.parents = new Set();
           });
         })
       );
@@ -62,7 +62,7 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
                         // add edge connecting parent and dependency
                         graph.addEdge(key, adjacentNode.value.id);
                         // set parent
-                        adjacentNode.parents.push(key);
+                        adjacentNode.parents.add(key);
                         notRoot.push(adjacentNode.value.id);
                       }
                     });
@@ -84,7 +84,7 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
                           // add edge connecting parent and dependency
                           graph.addEdge(key, adjacentNode.value.id);
                           // set parent
-                          adjacentNode.parents.push(key);
+                          adjacentNode.parents.add(key);
                           notRoot.push(adjacentNode.value.id);
                         }
                       });
@@ -111,7 +111,7 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
             if (!notRoot.includes(key) || Object.keys(pipfile).includes(key)) {
               const node = map.get(key);
               node.value.depth = 0;
-              node.parents.push("*App");
+              node.parents.add("*App");
               visitList.push(node);
               graph.addEdge(app.key, node.key);
             }

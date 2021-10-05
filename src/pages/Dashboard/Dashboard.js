@@ -18,14 +18,19 @@ import {
 } from "./hooks";
 
 // api
-import { thothAdviseResult, thothAdviseStatus } from "services/thothApi";
+import {
+  thothAdviseResult,
+  thothAdviseStatus,
+  getFile
+} from "services/thothApi";
+import { cacheLoad } from "services/apiCache";
 
 // redux
 import { StateContext, DispatchContext } from "App";
 
 // material-ui
 import { makeStyles } from "@material-ui/styles";
-import { Tab, Tabs, Typography, Box } from "@material-ui/core";
+import { Tab, Tabs, Typography, Button, TextField } from "@material-ui/core";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -47,7 +52,7 @@ export const Dashboard = ({ location }) => {
   const state = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
-  console.log(state);
+  const [cacheLink, setCacheLink] = useState(0);
 
   // for tab control
   const [value, setValue] = useState(0);
@@ -133,11 +138,11 @@ export const Dashboard = ({ location }) => {
 
         // if not done then start polling
         else if (response.status === 202) {
-          if (response.data.status.state === "error") {
+          if (data.status.state === "error") {
             dispatch({
               type: "advise",
               param: "status",
-              payload: response.data.status
+              payload: data.status
             });
           } else {
             setPollingTime(500);
@@ -209,17 +214,40 @@ export const Dashboard = ({ location }) => {
   );
   useComputeMetrics(state.adviseGraph, "new");
   useComputeMetrics(state.initGraph, "old");
-  useMergeGraphs(state.initGraph, state.adviseGraph, "*App");
+  useMergeGraphs(
+    state.initGraph,
+    state.adviseGraph,
+    "*App",
+    state?.advise?.report?.products?.[0]?.justification
+  );
 
   // handle tab change
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  console.log(state);
-
   return (
     <div>
+      <TextField
+        id="outlined-basic"
+        label="Cache URL"
+        variant="outlined"
+        defaultValue=""
+        value={cacheLink}
+        onChange={event => setCacheLink(event.target.value)}
+      />
+      <Button
+        variant="contained"
+        onClick={() => {
+          getFile(cacheLink).then(text => {
+            cacheLoad(text);
+            console.log(text);
+          });
+        }}
+      >
+        Load
+      </Button>
+
       <div className={classes.root}>
         <AdviseHeader adviseID={params.analysis_id} />
         <Typography color="error">{state?.error}</Typography>
@@ -239,7 +267,7 @@ export const Dashboard = ({ location }) => {
           <AdvisePage />
         </TabPanel>
       </div>
-      <Box bgcolor="#444f60" minHeight="300px" mt={5}></Box>
+      <div bgcolor="#444f60" minHeight="300px" mt={5}></div>
     </div>
   );
 };

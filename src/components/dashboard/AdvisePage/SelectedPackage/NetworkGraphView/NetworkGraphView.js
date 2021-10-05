@@ -1,15 +1,19 @@
 // react
 import React, { useEffect, useRef, useContext } from "react";
+import ReactDOM from "react-dom";
 
 // utils and configs
 import { options } from "config/networkOptions";
 import { StateContext } from "App";
 
 // vis-network
-import { Network, DataSet } from "vis-network/standalone/esm/vis-network";
+import { Network, DataSet } from "vis-network/standalone";
 
 // material ui
 import { makeStyles } from "@material-ui/styles";
+
+// local
+import Popup from "./Popup";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,40 +42,41 @@ const NetworkGraph = ({ root, selected, ...props }) => {
     nodes.set("*App", state.mergedGraph.nodes.get("*App"));
 
     // convert to vis graph format
-    const convertedNodes = [];
+    const convertedNodes = new DataSet();
     nodes.forEach(value => {
-      convertedNodes.push(value.value);
+      // popup element
+      var popup = document.createElement("div");
+      ReactDOM.render(<Popup node={value} />, popup);
+
+      // default colors
+      let color = value.value.color ?? options.nodes.color;
+      let font = undefined;
+
+      // if node is root
+      if (value.key === root) {
+        color = "#4fc1ea";
+        font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
+      }
+      // if selected node
+      else if (value.key === selected.key) {
+        color = "#f39200";
+      }
+
+      convertedNodes.add({
+        ...value.value,
+        color: color,
+        title:
+          value.key === selected.key || value.key === root ? undefined : popup,
+        font: font
+      });
     });
     const visData = {
-      nodes: new DataSet(convertedNodes),
+      nodes: convertedNodes,
       edges: new DataSet(state.mergedGraph.visEdges)
     };
 
     const network =
       visJsRef.current && new Network(visJsRef.current, visData, options);
-
-    // clear selection
-    visData.nodes.updateOnly(
-      visData.nodes.get().map(e => {
-        if (e.id !== root) {
-          e["color"] =
-            state.mergedGraph.nodes.get(e.id)?.value?.color ??
-            options.nodes.color;
-        }
-        return e;
-      })
-    );
-
-    // set root node to have specific color
-    const rootNode = visData.nodes.get(root);
-    rootNode.color = "#4fc1ea";
-    rootNode.font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
-    visData.nodes.updateOnly(rootNode);
-
-    // set selected node to have specific color
-    const selectedNode = visData.nodes.get(selected.key);
-    selectedNode.color = "#f39200";
-    visData.nodes.updateOnly(selectedNode);
 
     // change curser when hovering and grabbing
     // Get the canvas HTML element
@@ -106,17 +111,9 @@ const NetworkGraph = ({ root, selected, ...props }) => {
       }
     });
 
-    // un stick node if already stuck
-    network.on("dragStart", function(params) {
-      // check if node has not been touched or is fixed
-      // if fixed then un fix
-      if (
-        params.nodes.length !== 0 &&
-        network.body.nodes[params.nodes[0]].options.x !== undefined &&
-        network.body.nodes[params.nodes[0]].options.x &&
-        !network.isCluster(params.nodes[0])
-      ) {
-        // un fix node
+    // hover over node
+    network.on("dragEnd", function(params) {
+      if (params.nodes.length !== 0 && !network.isCluster(params.nodes[0])) {
         network.editNode(params.nodes[0]);
       }
     });
