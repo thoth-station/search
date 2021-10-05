@@ -1,7 +1,7 @@
 import axios from "axios";
 import { PYPI, THOTH, LICENSES } from "./CONSTANTS";
+import { cacheGet, cacheSet } from "./apiCache";
 import compareVersions from "tiny-version-compare";
-//import { data } from "./adviseResponseDev";
 
 // GitHub
 export function getGitHubFileText(githubRepo, fileName) {
@@ -42,6 +42,12 @@ export const thothSearchForPackage = (
   version,
   index = "https://pypi.org/simple"
 ) => {
+  // grab from cache if available
+  const cache = cacheGet("metadata", name + version);
+  if (cache) {
+    return Promise.resolve(cache);
+  }
+
   return axios
     .get(THOTH + "/python/package/metadata", {
       params: {
@@ -54,10 +60,11 @@ export const thothSearchForPackage = (
       }
     })
     .then(res => {
+      cacheSet("metadata", name + version, res.data.metadata);
       return res.data.metadata;
     })
     .catch(e => {
-      if (e?.response?.status === 404) {
+      if (e?.response?.status === 404 || e?.isAxiosError) {
         return axios
           .get(PYPI + "/" + name + (version ? "/" + version : "") + "/json")
           .then(res => {
@@ -83,13 +90,14 @@ export const thothAdvise = (pipfile, pipfileLock) => {
         version: "8"
       },
       platform: "linux-x86_64",
-      python_version: "3.6"
+      python_version: "3.9"
     }
   };
 
   return axios.post(THOTH + "/advise/python", d, {
     params: {
-      recommendation_type: "stable"
+      recommendation_type: "stable",
+      force: true
     },
     headers: {
       accept: "application/json"
@@ -98,12 +106,23 @@ export const thothAdvise = (pipfile, pipfileLock) => {
 };
 
 export const thothAdviseResult = analysis_id => {
-  //return Promise.resolve({ data: data, status: 200 });
-  return axios.get(THOTH + "/advise/python/" + analysis_id, {
-    headers: {
-      accept: "application/json"
-    }
-  });
+  // grab from cache if available
+  const cache = cacheGet("adviseResult", analysis_id);
+
+  if (cache) {
+    return Promise.resolve(cache);
+  }
+
+  return axios
+    .get(THOTH + "/advise/python/" + analysis_id, {
+      headers: {
+        accept: "application/json"
+      }
+    })
+    .then(response => {
+      cacheSet("adviseResult", analysis_id, response);
+      return response;
+    });
 };
 
 export const thothAdviseStatus = analysis_id => {
@@ -119,17 +138,28 @@ export const thothGetDependencies = (
   version,
   index = "https://pypi.org/simple"
 ) => {
-  return axios.get(THOTH + "/python/package/dependencies", {
-    params: {
-      name: name,
-      version: version,
-      index: index
-    },
-    //timeout: 5000,
-    headers: {
-      accept: "application/json"
-    }
-  });
+  // grab from cache if available
+  const cache = cacheGet("dependencies", name + version);
+  if (cache) {
+    return Promise.resolve(cache);
+  }
+
+  return axios
+    .get(THOTH + "/python/package/dependencies", {
+      params: {
+        name: name,
+        version: version,
+        index: index
+      },
+      //timeout: 5000,
+      headers: {
+        accept: "application/json"
+      }
+    })
+    .then(response => {
+      cacheSet("dependencies", name + version, response);
+      return response;
+    });
 };
 
 export const thothGetLatestVersion = (name, version) => {

@@ -97,6 +97,25 @@ export class Graph {
     return [];
   }
 
+  findAllNodesOnAllPaths(source, destination, visited = new Map()) {
+    const visitList = [];
+
+    visitList.push(source);
+
+    while (visitList.length !== 0) {
+      const node = visitList.pop();
+      if (node.key === destination) {
+        continue;
+      }
+      if (node && !visited.has(node.key)) {
+        visited.set(node.key, node);
+        node.parents.forEach(parent => visitList.push(this.nodes.get(parent)));
+      }
+    }
+
+    return visited;
+  }
+
   /**
    * Find all paths from source to destination
    */

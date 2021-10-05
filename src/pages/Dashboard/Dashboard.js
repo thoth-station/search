@@ -3,30 +3,34 @@ import React, { useState, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 // local
-import MetricLayout from "components/Dashboard/Summary/MetricLayout";
-import PackageHeader from "components/Dashboard/Summary/PackageHeader";
-import AdviseHeader from "components/Dashboard/AdviseHeader";
+import MetricLayout from "components/dashboard/SummaryPage";
+import AdviseHeader from "components/dashboard/AdviseHeader";
 
-import TabPanel from "components/Shared/TabPanel";
-import AdvisePage from "components/Dashboard/Advise/AdvisePage";
+import TabPanel from "components/shared/TabPanel";
+import AdvisePage from "components/dashboard/AdvisePage";
 
 // utils
 import {
   useComputeMetrics,
   useLockFileToGraph,
-  useMergeGraphs
-} from "utils/produceMetrics";
-import { useInterval } from "utils/useInterval";
+  useMergeGraphs,
+  useInterval
+} from "./hooks";
 
 // api
-import { thothAdviseResult, thothAdviseStatus } from "services/thothApi";
+import {
+  thothAdviseResult,
+  thothAdviseStatus,
+  getFile
+} from "services/thothApi";
+import { cacheLoad } from "services/apiCache";
 
 // redux
 import { StateContext, DispatchContext } from "App";
 
 // material-ui
 import { makeStyles } from "@material-ui/styles";
-import { Tab, Tabs, Typography } from "@material-ui/core";
+import { Tab, Tabs, Typography, Button, TextField } from "@material-ui/core";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -47,6 +51,8 @@ export const Dashboard = ({ location }) => {
   const params = useParams();
   const state = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
+
+  const [cacheLink, setCacheLink] = useState(0);
 
   // for tab control
   const [value, setValue] = useState(0);
@@ -132,11 +138,11 @@ export const Dashboard = ({ location }) => {
 
         // if not done then start polling
         else if (response.status === 202) {
-          if (response.data.status.state === "error") {
+          if (data.status.state === "error") {
             dispatch({
               type: "advise",
               param: "status",
-              payload: response.data.status
+              payload: data.status
             });
           } else {
             setPollingTime(500);
@@ -208,7 +214,12 @@ export const Dashboard = ({ location }) => {
   );
   useComputeMetrics(state.adviseGraph, "new");
   useComputeMetrics(state.initGraph, "old");
-  useMergeGraphs(state.initGraph, state.adviseGraph, "*App");
+  useMergeGraphs(
+    state.initGraph,
+    state.adviseGraph,
+    "*App",
+    state?.advise?.report?.products?.[0]?.justification
+  );
 
   // handle tab change
   const handleChange = (event, newValue) => {
@@ -216,38 +227,47 @@ export const Dashboard = ({ location }) => {
   };
 
   return (
-    <div className={classes.root}>
-      {state?.focus ? (
-        <PackageHeader />
-      ) : (
-        <AdviseHeader adviseID={params.analysis_id} />
-      )}
-      {state?.roots?.map(r => {
-        if (r.error) {
-          return (
-            <Typography color="error" gutterBottom variant="body2">
-              {r.error}
-            </Typography>
-          );
-        }
-        return null;
-      })}
-      <Typography color="error">{state?.error}</Typography>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        indicatorColor="primary"
-        textColor="primary"
+    <div>
+      <TextField
+        id="outlined-basic"
+        label="Cache URL"
+        variant="outlined"
+        defaultValue=""
+        value={cacheLink}
+        onChange={event => setCacheLink(event.target.value)}
+      />
+      <Button
+        variant="contained"
+        onClick={() => {
+          getFile(cacheLink).then(text => {
+            cacheLoad(text);
+            console.log(text);
+          });
+        }}
       >
-        <Tab label="Summary" />
-        <Tab label="Advise Results" />
-      </Tabs>
-      <TabPanel value={value} index={0}>
-        <MetricLayout />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <AdvisePage />
-      </TabPanel>
+        Load
+      </Button>
+
+      <div className={classes.root}>
+        <AdviseHeader adviseID={params.analysis_id} />
+        <Typography color="error">{state?.error}</Typography>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Summary" />
+          <Tab label="Advise Results" />
+        </Tabs>
+        <TabPanel value={value} index={0}>
+          <MetricLayout />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <AdvisePage />
+        </TabPanel>
+      </div>
+      <div bgcolor="#444f60" minHeight="300px" mt={5}></div>
     </div>
   );
 };

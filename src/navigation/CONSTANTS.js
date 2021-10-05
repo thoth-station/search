@@ -1,3 +1,4 @@
 export const REPONAME = "/thoth-search";
 export const ROOT = "/";
-export const DASHBOARD = "/dashboard";
+export const ADVISE = "/advise";
+export const PACKAGE = "/package";
