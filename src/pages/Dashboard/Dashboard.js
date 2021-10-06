@@ -18,19 +18,14 @@ import {
 } from "./hooks";
 
 // api
-import {
-  thothAdviseResult,
-  thothAdviseStatus,
-  getFile
-} from "services/thothApi";
-import { cacheLoad } from "services/apiCache";
+import { thothAdviseResult, thothAdviseStatus } from "services/thothApi";
 
 // redux
 import { StateContext, DispatchContext } from "App";
 
 // material-ui
 import { makeStyles } from "@material-ui/styles";
-import { Tab, Tabs, Typography, Button, TextField } from "@material-ui/core";
+import { Tab, Tabs, Typography } from "@material-ui/core";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -51,10 +46,6 @@ export const Dashboard = ({ location }) => {
   const params = useParams();
   const state = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
-
-  const [cacheLink, setCacheLink] = useState(
-    "https://raw.githubusercontent.com/Gkrumbach07/thoth-search/master/cache.txt"
-  );
 
   // for tab control
   const [value, setValue] = useState(0);
