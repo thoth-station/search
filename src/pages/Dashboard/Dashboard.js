@@ -52,7 +52,9 @@ export const Dashboard = ({ location }) => {
   const state = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
-  const [cacheLink, setCacheLink] = useState(0);
+  const [cacheLink, setCacheLink] = useState(
+    "https://raw.githubusercontent.com/Gkrumbach07/thoth-search/master/cache.txt"
+  );
 
   // for tab control
   const [value, setValue] = useState(0);
@@ -228,26 +230,6 @@ export const Dashboard = ({ location }) => {
 
   return (
     <div>
-      <TextField
-        id="outlined-basic"
-        label="Cache URL"
-        variant="outlined"
-        defaultValue=""
-        value={cacheLink}
-        onChange={event => setCacheLink(event.target.value)}
-      />
-      <Button
-        variant="contained"
-        onClick={() => {
-          getFile(cacheLink).then(text => {
-            cacheLoad(text);
-            console.log(text);
-          });
-        }}
-      >
-        Load
-      </Button>
-
       <div className={classes.root}>
         <AdviseHeader adviseID={params.analysis_id} />
         <Typography color="error">{state?.error}</Typography>

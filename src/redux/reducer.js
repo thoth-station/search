@@ -30,12 +30,7 @@ export function reducer(state, action) {
         error: action.payload
       };
     }
-    case "dev": {
-      return {
-        ...state,
-        devMode: action.payload
-      };
-    }
+
     case "advise": {
       return {
         ...state,

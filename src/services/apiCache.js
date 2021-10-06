@@ -1,10 +1,17 @@
+import stored_cache from "assets/cache.json";
+
 const STORAGE_KEY = "thoth-search-cache";
+const devMode = true;
 
 export const cacheGet = (group, key) => {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}")?.[group]?.[
-      key
-    ];
+    if (devMode) {
+      return stored_cache?.[group]?.[key];
+    } else {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}")?.[group]?.[
+        key
+      ];
+    }
   } catch (error) {
     cacheReset();
     return undefined;
@@ -12,6 +19,9 @@ export const cacheGet = (group, key) => {
 };
 
 export const cacheSet = (group, key, value) => {
+  if (devMode) {
+    return;
+  }
   let cache = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
 
   cache[group] = { ...cache[group], [key]: value };
@@ -20,9 +30,8 @@ export const cacheSet = (group, key, value) => {
 };
 
 export const cacheReset = () => {
+  if (devMode) {
+    return;
+  }
   localStorage.removeItem(STORAGE_KEY);
-};
-
-export const cacheLoad = cache => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
 };
