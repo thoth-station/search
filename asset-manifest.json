@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.js": "/thoth-search/static/js/main.e6ac9ffa.chunk.js",
-    "main.js.map": "/thoth-search/static/js/main.e6ac9ffa.chunk.js.map",
+    "main.js": "/thoth-search/static/js/main.fd4ce9de.chunk.js",
+    "main.js.map": "/thoth-search/static/js/main.fd4ce9de.chunk.js.map",
     "runtime-main.js": "/thoth-search/static/js/runtime-main.4c0f76bb.js",
     "runtime-main.js.map": "/thoth-search/static/js/runtime-main.4c0f76bb.js.map",
-    "static/js/2.8ff4d44f.chunk.js": "/thoth-search/static/js/2.8ff4d44f.chunk.js",
-    "static/js/2.8ff4d44f.chunk.js.map": "/thoth-search/static/js/2.8ff4d44f.chunk.js.map",
+    "static/js/2.b72405a3.chunk.js": "/thoth-search/static/js/2.b72405a3.chunk.js",
+    "static/js/2.b72405a3.chunk.js.map": "/thoth-search/static/js/2.b72405a3.chunk.js.map",
     "index.html": "/thoth-search/index.html",
-    "static/js/2.8ff4d44f.chunk.js.LICENSE.txt": "/thoth-search/static/js/2.8ff4d44f.chunk.js.LICENSE.txt",
+    "static/js/2.b72405a3.chunk.js.LICENSE.txt": "/thoth-search/static/js/2.b72405a3.chunk.js.LICENSE.txt",
     "static/media/thoth-logo.1a28a729.png": "/thoth-search/static/media/thoth-logo.1a28a729.png"
   },
   "entrypoints": [
     "static/js/runtime-main.4c0f76bb.js",
-    "static/js/2.8ff4d44f.chunk.js",
-    "static/js/main.e6ac9ffa.chunk.js"
+    "static/js/2.b72405a3.chunk.js",
+    "static/js/main.fd4ce9de.chunk.js"
   ]
 }
