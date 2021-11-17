@@ -84,7 +84,7 @@ const Home = () => {
         .then(response => {
           history.push(PACKAGE + "/" + response.data.info.name);
         })
-        .catch(e => {
+        .catch(() => {
           setSearchError("Package does not exist");
         });
     }
@@ -125,10 +125,10 @@ const Home = () => {
           })
           .catch(error => {
             setQueryLoading(false);
-            if (error.response.status === 400) {
-              if (error.response.data.error.includes("Pipfile.lock")) {
+            if (error?.response?.status === 400) {
+              if (error?.response?.data?.error.includes("Pipfile.lock")) {
                 setPipfileLockError("Failed to parse provided Pipfile.lock");
-              } else if (error.response.data.error.includes("Pipfile")) {
+              } else if (error?.response?.data?.error.includes("Pipfile")) {
                 setPipfileError("Failed to parse provided Pipfile");
               }
             }
@@ -286,7 +286,6 @@ const Home = () => {
             </Box>
           </TabPanel>
         </Grid>
-        <div bgcolor="#444f60" minHeight="300px" mt={5}></div>
       </Grid>
     </Grid>
   );

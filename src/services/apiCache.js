@@ -1,11 +1,12 @@
 import stored_cache from "assets/cache.json";
 
 const STORAGE_KEY = "thoth-search-cache";
-const devMode = true;
+const devMode = false;
 
 export const cacheGet = (group, key) => {
   try {
     if (devMode) {
+      console.log(stored_cache?.[group]?.[key]);
       return stored_cache?.[group]?.[key];
     } else {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}")?.[group]?.[

@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // The page that displays all analyis data
-export const PackageOverview = ({ location }) => {
+export const PackageOverview = () => {
   const classes = useStyles();
   const params = useParams();
   const dispatch = useContext(DispatchContext);
@@ -73,7 +73,7 @@ export const PackageOverview = ({ location }) => {
               }
             });
           })
-          .catch(e => {
+          .catch(() => {
             dispatch({
               type: "package",
               payload: {
@@ -90,6 +90,9 @@ export const PackageOverview = ({ location }) => {
   return (
     <Grid container className={classes.root}>
       <Grid item xs={12}>
+        <PackageHeader />
+      </Grid>
+      <Grid item xs={6}>
         <PackageHeader />
       </Grid>
     </Grid>

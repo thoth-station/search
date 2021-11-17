@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // The page that displays all analyis data
-export const Dashboard = ({ location }) => {
+export const Dashboard = () => {
   const classes = useStyles();
   const params = useParams();
   const state = useContext(StateContext);
@@ -222,7 +222,7 @@ export const Dashboard = ({ location }) => {
   return (
     <div>
       <div className={classes.root}>
-        <AdviseHeader adviseID={params.analysis_id} />
+        <AdviseHeader adviseID={params.analysis_id} adviseReport={state?.advise}/>
         <Typography color="error">{state?.error}</Typography>
         <Tabs
           value={value}
@@ -240,7 +240,7 @@ export const Dashboard = ({ location }) => {
           <AdvisePage />
         </TabPanel>
       </div>
-      <div bgcolor="#444f60" minHeight="300px" mt={5}></div>
+      <div style={{backgroundColor: "#444f60", marginTop: 5}} />
     </div>
   );
 };

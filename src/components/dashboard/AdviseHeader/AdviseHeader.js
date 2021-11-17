@@ -1,5 +1,5 @@
 // React
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 
 // material-ui
 import { Typography, Chip, Button, Collapse } from "@material-ui/core";
@@ -11,11 +11,9 @@ import IconText from "components/shared/IconText";
 // utils
 import { calcTime } from "./utils";
 
-// redux
-import { StateContext } from "App";
-
 // local
 import CustomAlert from "./CustomAlert";
+import PropTypes from "prop-types";
 
 // component styling
 
@@ -42,23 +40,27 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const AdviseHeader = ({ adviseID }) => {
+/**
+ * Displays basic Advise document information and
+ * displays any errors, info, or warnings that came up
+ * in the document generation.
+ */
+const AdviseHeader = ({ adviseID, adviseReport }) => {
   const classes = useStyles();
-  const state = useContext(StateContext);
   const [expandAlerts, setExpandAlerts] = React.useState(false);
 
   const [statusText, statusColor] = (() => {
     // if report is done
-    if (state?.advise?.report) {
-      if (state.advise.report.ERROR) {
+    if (adviseReport?.report) {
+      if (adviseReport.report.ERROR) {
         return ["ERROR", "error"];
       } else {
         return ["COMPLETE", "success"];
       }
     }
     // if report is not done
-    else if (state?.advise?.status?.state) {
-      return [state.advise.status.state.toUpperCase(), "info"];
+    else if (adviseReport?.status?.state) {
+      return [adviseReport.status.state.toUpperCase(), "info"];
     } else {
       return ["UNKNOWN", undefined];
     }
@@ -66,12 +68,12 @@ const AdviseHeader = ({ adviseID }) => {
 
   const alerts = useMemo(
     () =>
-      state?.advise?.report?.stack_info
-        ? state.advise.report.stack_info.filter(alert => {
+      adviseReport?.report?.stack_info
+        ? adviseReport.report.stack_info.filter(alert => {
             return alert.type === "ERROR";
           })
         : null,
-    [state?.advise?.report?.stack_info]
+    [adviseReport?.report?.stack_info]
   );
 
   return (
@@ -84,9 +86,9 @@ const AdviseHeader = ({ adviseID }) => {
         <IconText
           className={classes.marginLeft}
           text={calcTime(
-            state?.advise?.status?.finished_at,
-            state?.advise?.status?.started_at,
-            state?.advise?.metadata?.datetime
+            adviseReport?.status?.finished_at,
+            adviseReport?.status?.started_at,
+            adviseReport?.metadata?.datetime
           )}
           icon={<AccessTimeIcon />}
         />
@@ -120,5 +122,10 @@ const AdviseHeader = ({ adviseID }) => {
     </div>
   );
 };
+
+AdviseHeader.propTypes = {
+  adviseID: PropTypes.string.isRequired,
+  adviseReport: PropTypes.object
+}
 
 export default AdviseHeader;
