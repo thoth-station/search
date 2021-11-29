@@ -2,19 +2,19 @@
 import { getLicenses } from "services/thothApi";
 
 // redux
-import { DispatchContext, StateContext } from "App";
-
-import { useContext, useEffect, useState } from "react";
+// import { DispatchContext, StateContext } from "App";
+//
+ import { useContext, useEffect, useState } from "react";
 
 // React hook for computing metrics and applying to state
 export function useComputeMetrics(graph, label) {
-  const dispatch = useContext(DispatchContext);
-  const state = useContext(StateContext);
+  // const dispatch = useContext(DispatchContext);
+  // const state = useContext(StateContext);
 
   useEffect(() => {
-    if (!state?.advise?.metadata || !state?.mergedGraph) {
-      return;
-    }
+    // if (!state?.advise?.metadata || !state?.mergedGraph) {
+    //   return;
+    // }
 
     const advise = {
       added: 0,
@@ -42,10 +42,10 @@ export function useComputeMetrics(graph, label) {
       }
     });
 
-    // build environment
+    //build environment
     advise.build = `We have analysed an application stack running on ${state.advise.metadata.os_release.name} ${state.advise.metadata.os_release.version}, running Python (${state.advise.metadata.python.implementation_name}) ${state.advise.metadata.python.major}.${state.advise.metadata.python.minor}.${state.advise.metadata.python.micro}. It was Adviser Job ID ${state.advise.metadata.document_id}, by ${state.advise.metadata.analyzer} v${state.advise.metadata.analyzer_version}. `;
 
-    // justification counts
+    //justification counts
     state.advise?.report?.products?.[0]?.justification.forEach(
       justification => {
         if (justification.type !== "INFO") {
@@ -63,7 +63,7 @@ export function useComputeMetrics(graph, label) {
       metric: "advise",
       payload: advise
     });
-  }, [state.mergedGraph, state.advise, dispatch]);
+  }, []);
 
   // get license info
   const [licenseData, setLicenseData] = useState();
@@ -85,7 +85,7 @@ export function useComputeMetrics(graph, label) {
       roots: {}
     };
 
-    let licenses = { total: undefined, all: {} };
+    let licenses = { };
 
     const roots = [];
     graph.nodes.forEach(value => {
@@ -191,27 +191,34 @@ export function useComputeMetrics(graph, label) {
 
         // get specific classification
         packageLicenses.forEach(license => {
+          if(!licenses[license.generalLicense]) {
+            licenses[license.generalLicense] = {
+              packages: {},
+              metadata: {
+                isOsiApproved: license.isOsiApproved
+              }
+            }
+          }
+
           licenses = {
-            total: (licenses.total ?? 0) + 1,
-            all: {
-              ...licenses.all,
-              [license.generalLicense]: {
-                ...(licenses.all[license.generalLicense] ?? null),
+            ...licenses,
+            [license.generalLicense]: {
+              ...licenses[license.generalLicense],
+              packages: {
+                ...(licenses[license.generalLicense].packages ?? null),
                 [node.value.label]: {
                   depth: node.value.depth,
                   specific: license.specificLicense
                 },
-                _meta: {
-                  isOsiApproved: license.isOsiApproved
-                }
               }
             }
           };
+
         });
       });
     });
 
-    // apply metrics to global state
+    //apply metrics to global state
     dispatch({
       type: "metric",
       metric: "dependencies",
@@ -224,5 +231,5 @@ export function useComputeMetrics(graph, label) {
       label: label,
       payload: licenses
     });
-  }, [graph, dispatch, licenseData, label]);
+  }, [graph, licenseData, label]);
 }

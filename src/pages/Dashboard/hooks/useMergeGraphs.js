@@ -3,14 +3,14 @@ import { Graph } from "utils/Graph";
 import { discoverPackageChanges } from "../utils";
 
 // redux
-import { DispatchContext } from "App";
+//import { DispatchContext } from "App";
 
 import { useContext, useEffect } from "react";
 
 import { useTheme } from "@material-ui/core/styles";
 
 export function useMergeGraphs(oldGraph, newGraph, root, justifications) {
-  const dispatch = useContext(DispatchContext);
+  //const dispatch = useContext(DispatchContext);
 
   const theme = useTheme();
 
@@ -149,17 +149,17 @@ export function useMergeGraphs(oldGraph, newGraph, root, justifications) {
       });
     });
 
-    // set justifciations
+    // set justifications
     discoverPackageChanges(mergedGraph.nodes, justifications);
 
     // add edges to merged graph Object
     mergedGraph["visEdges"] = visGraphEdges;
 
     // set state
-    dispatch({
-      type: "graph",
-      name: "mergedGraph",
-      payload: mergedGraph
-    });
-  }, [oldGraph, newGraph, theme, root, dispatch, justifications]);
+    // dispatch({
+    //   type: "graph",
+    //   name: "mergedGraph",
+    //   payload: mergedGraph
+    // });
+  }, [oldGraph, newGraph, theme, root, justifications]);
 }

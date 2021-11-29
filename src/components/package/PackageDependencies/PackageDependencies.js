@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // local
-import ProgressBar from "components/shared/ProgressBar";
+import ProgressBar from "components/Elements/ProgressBar";
 
 // material-ui
 import { makeStyles } from "@material-ui/styles";
@@ -14,6 +14,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+/**
+ * A metric card displaying dependency information of a single package.
+ */
 const PackageDependencies = ({ metric }) => {
   const classes = useStyles();
   const totalDependencies =
@@ -38,9 +41,20 @@ const PackageDependencies = ({ metric }) => {
 };
 
 PackageDependencies.propTypes = {
+    /** An object holding metric info. */
   metric: PropTypes.shape({
+        /**
+         * ```
+         * all: {
+         *     direct: 6,
+         *     indirect: 22
+         * }
+         * ```
+         */
     all: PropTypes.shape({
+        /** Direct dependencies of the package. */
       direct: PropTypes.number,
+        /** Indirect dependencies of the package (dependencies of direct and indirect packages) */
       indirect: PropTypes.number
     })
   })

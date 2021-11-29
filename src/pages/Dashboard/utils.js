@@ -26,30 +26,28 @@ const whyRemoved = (start, packages) => {
     }
   }
 
-  const reasons = reasonNodes.map(node => {
+  return reasonNodes.map(node => {
     const reason =
-      node.value.change === "version"
-        ? " had its version changed to " +
-          node.value.version +
-          " from " +
-          node.value.oldVersion +
-          ". Version " +
-          node.value.oldVersion +
-          " of " +
-          node.key +
-          " included package " +
-          start.value.label +
-          " as a dependency, where version " +
-          node.value.version +
-          " does not. "
-        : " did not have any dependents and was removed by the Thoth resolver.";
+        node.value.change === "version"
+            ? " had its version changed to " +
+            node.value.version +
+            " from " +
+            node.value.oldVersion +
+            ". Version " +
+            node.value.oldVersion +
+            " of " +
+            node.key +
+            " included package " +
+            start.value.label +
+            " as a dependency, where version " +
+            node.value.version +
+            " does not. "
+            : " did not have any dependents and was removed by the Thoth resolver.";
     return {
       package: node.key,
       reason: reason
     };
   });
-
-  return reasons;
 };
 
 export const discoverPackageChanges = (nodes, justifications) => {

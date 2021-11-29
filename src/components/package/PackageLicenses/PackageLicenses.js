@@ -7,7 +7,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Typography, Divider } from "@material-ui/core";
 
 // local
-import ProgressBar from "components/shared/ProgressBar";
+import ProgressBar from "components/Elements/ProgressBar";
 
 const useStyles = makeStyles(theme => ({
   bar: {
@@ -18,6 +18,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+/**
+ * A metric card showing a package's (and its dependencies') licenses
+ */
 const PackageLicenses = ({ metric }) => {
   const classes = useStyles();
 
@@ -52,7 +55,20 @@ const PackageLicenses = ({ metric }) => {
 
 PackageLicenses.propTypes = {
   metric: PropTypes.shape({
+      /** The total number of dependencies of the package */
+      total: PropTypes.number,
+      /** The license of the root package */
     root: PropTypes.string,
+      /** key value object of package's dependencies' licenses
+       *
+       * ```
+       * all: {
+       *     MIT: {
+       *
+       *     }
+       * }
+       * ```
+       * */
     all: PropTypes.object
   }).isRequired
 };

@@ -7,10 +7,10 @@ import { thothSearchForPackage, thothGetDependencies } from "services/thothApi";
 import { Graph } from "utils/Graph";
 
 // redux
-import { DispatchContext } from "App";
+//import { DispatchContext } from "App";
 
 export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
-  const dispatch = useContext(DispatchContext);
+  //const dispatch = useContext(DispatchContext);
 
   useEffect(() => {
     if (!pipfile || !pipfileLock || !stateName) {
@@ -136,20 +136,20 @@ export function useLockFileToGraph(pipfile, pipfileLock, stateName) {
             }
           }
 
-          dispatch({
-            type: "graph",
-            name: stateName,
-            payload: graph
-          });
+          // dispatch({
+          //   type: "graph",
+          //   name: stateName,
+          //   payload: graph
+          // });
         });
       })
       .catch(e => {
-        dispatch({
-          type: "error",
-          payload:
-            (e?.response?.statusText ?? "Unknown Error") +
-            ": an error occured while fetching package data."
-        });
+        // dispatch({
+        //   type: "error",
+        //   payload:
+        //     (e?.response?.statusText ?? "Unknown Error") +
+        //     ": an error occured while fetching package data."
+        // });
       });
-  }, [pipfile, pipfileLock, dispatch, stateName]);
+  }, [pipfile, pipfileLock, stateName]);
 }

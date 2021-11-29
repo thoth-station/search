@@ -10,7 +10,7 @@ import { thothSearchForPackage, searchForPackage } from "services/thothApi";
 import compareVersions from "tiny-version-compare";
 
 // redux
-import { DispatchContext } from "App";
+//import { DispatchContext, StateContext  } from "App";
 
 // material-ui
 import { Grid } from "@material-ui/core";
@@ -29,71 +29,72 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// The page that displays all analyis data
+// The page that displays all analysis data
 export const PackageOverview = () => {
   const classes = useStyles();
   const params = useParams();
-  const dispatch = useContext(DispatchContext);
+ // const dispatch = useContext(DispatchContext);
+ // const {package_data} = useContext(StateContext)
 
   useEffect(() => {
-    searchForPackage(params.package_name, params.package_version).then(
-      response => {
-        var pypi_data = response.data;
+      searchForPackage(params.package_name, params.package_version).then(
+          response => {
+              var pypi_data = response.data;
 
-        // get versions
-        var package_data = {
-          latest_version: pypi_data.info.version,
-          all_versions: {}
-        };
-        Object.entries(pypi_data.releases).forEach(([k, v]) => {
-          if (
-            compareVersions(package_data.latest_version, k) === -1 &&
-            !v?.[0]?.yanked
-          ) {
-            package_data.latest_version = k;
+              // get versions
+              var package_data = {
+                  latest_version: pypi_data.info.version,
+                  all_versions: {}
+              };
+              Object.entries(pypi_data.releases).forEach(([k, v]) => {
+                  if (
+                      compareVersions(package_data.latest_version, k) === -1 &&
+                      !v?.[0]?.yanked
+                  ) {
+                      package_data.latest_version = k;
+                  }
+                  package_data.all_versions[k] = {
+                      date: v?.[0]?.upload_time,
+                      yanked: v?.[0]?.yanked
+                  };
+              });
+
+              // get thoth data of package
+              thothSearchForPackage(
+                  params.package_name,
+                  params.package_version ?? package_data.latest_version
+              )
+                  .then(response => {
+                      // dispatch({
+                      //   type: "package",
+                      //   payload: {
+                      //     ...package_data,
+                      //     ...response.data.metadata,
+                      //     isThoth: true
+                      //   }
+                      // });
+                  })
+                  .catch(() => {
+                      // dispatch({
+                      //   type: "package",
+                      //   payload: {
+                      //     ...package_data,
+                      //     ...pypi_data.info,
+                      //     isThoth: false
+                      //   }
+                      // });
+                  });
           }
-          package_data.all_versions[k] = {
-            date: v?.[0]?.upload_time,
-            yanked: v?.[0]?.yanked
-          };
-        });
-
-        // get thoth data of package
-        thothSearchForPackage(
-          params.package_name,
-          params.package_version ?? package_data.latest_version
-        )
-          .then(response => {
-            dispatch({
-              type: "package",
-              payload: {
-                ...package_data,
-                ...response.data.metadata,
-                isThoth: true
-              }
-            });
-          })
-          .catch(() => {
-            dispatch({
-              type: "package",
-              payload: {
-                ...package_data,
-                ...pypi_data.info,
-                isThoth: false
-              }
-            });
-          });
-      }
-    );
-  }, [dispatch, params.package_name, params.package_version]);
-
+      );
+      // }, [dispatch, params.package_name, params.package_version]);
+  })
   return (
     <Grid container className={classes.root}>
       <Grid item xs={12}>
-        <PackageHeader />
+        {/*<PackageHeader package_data={package_data}/>*/}
       </Grid>
       <Grid item xs={6}>
-        <PackageHeader />
+        {/*<PackageHeader package_data={package_data}/>*/}
       </Grid>
     </Grid>
   );
