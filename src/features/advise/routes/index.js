@@ -16,6 +16,7 @@ import {useMetrics, useMergeGraphs, useGraph} from "../hooks";
 
 // misc
 import {CircularProgress} from "@material-ui/core";
+import {AdviseNotFound} from "./AdviseNotFound";
 
 
 export const AdviseRoutes = () => {
@@ -23,7 +24,7 @@ export const AdviseRoutes = () => {
     const { analysis_id } = useParams();
 
     // api get thoth advise document
-    const adviseDocument = useAdviseDocument(analysis_id)
+    const adviseDocument = useAdviseDocument(analysis_id, { useErrorBoundary: false })
 
     // format init graph data
     const initGraphData = useMemo(() => {
@@ -38,6 +39,7 @@ export const AdviseRoutes = () => {
             return formatLockfile(adviseDocument.data.data.result.report.products[0].project.requirements_locked.default)
         }
     }, [adviseDocument]);
+
 
 
     // create init graph
@@ -58,7 +60,12 @@ export const AdviseRoutes = () => {
         );
     }
 
-    if(!adviseDocument.data) {return undefined}
+
+    if(!adviseDocument.data) {
+        return (
+            <AdviseNotFound analysis_id={analysis_id} />
+        )
+    }
 
     return (
             <AdviseLayout header={<AdviseHeader adviseDocument={adviseDocument.data.data} /> }>

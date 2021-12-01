@@ -15,7 +15,7 @@ export const AdviseDetails = ({mergedGraph}) => {
     };
 
     if(!mergedGraph) {
-        return <></>
+        return null
     }
 
     return (

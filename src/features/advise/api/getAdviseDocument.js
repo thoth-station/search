@@ -2,7 +2,7 @@ import axios from "axios";
 import {THOTH_URL,} from "config"
 import {useQuery} from 'react-query';
 
-export const getAdviseDocument = (analysis_id) => {
+export const getAdviseDocument = async (analysis_id) => {
     return axios
         .get(THOTH_URL + "/advise/python/" + analysis_id, {
             headers: {

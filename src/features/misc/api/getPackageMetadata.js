@@ -30,7 +30,7 @@ export const getPackageMetadata = (
 
 export const getPackageMetadataPyPi = (name, version) => {
     return axios
-        .get(PYPI_URL + "/" + name + (version ? "/" + version : "") + "/json")
+        .get(PYPI_URL + "/" + name + (version ? "/" + version : "") + "/json").catch(() => { return undefined })
 }
 
 export const usePackageMetadata = (name, version, config) => {
