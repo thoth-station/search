@@ -1,9 +1,13 @@
+const path = require('path')
 module.exports = {
+    styleguideComponents: {
+        Wrapper: path.join(__dirname, 'src/styles/Provider.js')
+    },
     sections: [
         {
-            name: 'UI Components',
-            components: 'src/components/**/*.{js,jsx,ts,tsx}',
-            ignore: 'src/components/**/index.js'
+            name: 'Adviser Details Page',
+            components: 'src/**/*.{js,jsx,ts,tsx}',
+            ignore: 'src/**/{index,utils}.js',
         }
     ]
 }
