@@ -195,8 +195,8 @@ export function useGraph(data, knownRoots) {
         }
 
         setGraph(tempGraph)
-
-     }, [allDependenciesStatus, allMetadataStatus]);
+// eslint-disable-next-line react-hooks/exhaustive-deps
+     }, [allMetadataStatus, allDependenciesStatus, knownRoots]);
 
     return graph
 

@@ -17,6 +17,7 @@ import {useMetrics, useMergeGraphs, useGraph} from "../hooks";
 // misc
 import {CircularProgress} from "@material-ui/core";
 import {AdviseNotFound} from "./AdviseNotFound";
+import {NavigationLayout} from "components/Layout/NavigationLayout";
 
 
 export const AdviseRoutes = () => {
@@ -63,17 +64,19 @@ export const AdviseRoutes = () => {
 
     if(!adviseDocument.data) {
         return (
-            <AdviseNotFound analysis_id={analysis_id} />
+            <NavigationLayout><AdviseNotFound analysis_id={analysis_id} /></NavigationLayout>
         )
     }
 
     return (
-            <AdviseLayout header={<AdviseHeader adviseDocument={adviseDocument.data.data} /> }>
+        <NavigationLayout>
+            <AdviseLayout header={<AdviseHeader adviseDocument={adviseDocument.data.data}/> }>
                 <Routes>
                     <Route path="summary" element={<AdviseSummary metrics={metrics}/>} />
                     <Route path="details" element={<AdviseDetails adviseDocument={adviseDocument}/>} />
                     <Route path="*" element={<Navigate to="summary" />} />
                 </Routes>
             </AdviseLayout>
+        </NavigationLayout>
     );
 };

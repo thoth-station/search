@@ -10,6 +10,7 @@ import {usePackageMetadata} from "features/misc/api";
 import {PackageOverview} from "./PackageOverview";
 import {NotFound} from "features/misc";
 import {PackageNotFound} from "./PackageNotFound";
+import {NavigationLayout} from "../../../components/Layout/NavigationLayout";
 
 
 // The page that displays all analysis data
@@ -32,10 +33,12 @@ export const PackageRoutes = () => {
     }
 
     return (
-        <Routes>
-            <Route path="/:package_version" element={<PackageOverview metadata={metadata.data.data.metadata ?? metadata.data.data.info}/>} />
-            <Route path="/" element={<PackageOverview metadata={metadata.data.data.metadata ?? metadata.data.data.info}/>} />
-            <Route path="*" status={404} element={<NotFound/>} />
-        </Routes>
+        <NavigationLayout>
+            <Routes>
+                <Route path="/:package_version" element={<PackageOverview metadata={metadata.data.data.metadata ?? metadata.data.data.info}/>} />
+                <Route path="/" element={<PackageOverview metadata={metadata.data.data.metadata ?? metadata.data.data.info}/>} />
+                <Route path="*" status={404} element={<NotFound/>} />
+            </Routes>
+        </NavigationLayout>
     );
 };

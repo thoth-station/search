@@ -3,7 +3,7 @@ import {THOTH_URL, PYPI_URL} from "config"
 import {useQueries, useQuery} from 'react-query';
 
 
-export const getPackageMetadata = (
+export const getPackageMetadata = async (
     name,
     version,
     index = "https://pypi.org/simple"

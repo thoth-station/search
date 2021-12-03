@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 
 // material-ui
-import { Typography, Button, Grid } from "@material-ui/core";
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import {Typography, Button, Grid, Divider, ToggleButtonGroup, ToggleButton} from "@material-ui/core";
 
 // local
 import TabPanel from "components/Elements/TabPanel";
@@ -97,6 +95,7 @@ export const Home = () => {
                 </Grid>
 
                 <Grid item xs={5}>
+                    <Divider />
                     <TabPanel value={mode} index="single">
                         <PackageSearch />
                     </TabPanel>

@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 
 // material-ui
-import {Typography, Chip, Button, Collapse, CircularProgress} from "@material-ui/core";
+import {Typography, Chip, Button, Collapse} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 // local
@@ -14,7 +14,6 @@ import { calcTime } from "../../utils";
 // local
 import CustomAlert from "./CustomAlert";
 import PropTypes from "prop-types";
-import {useAdviseDocument} from "../../api/getAdviseDocument";
 
 // component styling
 
