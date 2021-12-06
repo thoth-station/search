@@ -38,8 +38,8 @@
     "predeploy": "yarn run build",
     "deploy": "gh-pages -d build",
     "generate": "rc-autocomplete",
-    "docs-build": "npx styleguidist build",
-    "docs-server": "npx styleguidist server"
+    "styleguide": "styleguidist server",
+    "styleguide:build": "styleguidist build && rm -rf docs && mv styleguide docs"
   },
   "eslintConfig": {
     "extends": [
