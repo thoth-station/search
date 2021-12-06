@@ -2,6 +2,9 @@ import * as React from 'react';
 import {Tab, Tabs} from "@material-ui/core";
 import {Link as RouterLink, useLocation} from 'react-router-dom';
 
+/**
+ * A layout used for the advise feature tabs. It formats the tabs as router links.
+ */
 export const AdviseLayout = ({ children, header }) => {
     const location = useLocation();
 
