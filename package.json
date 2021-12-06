@@ -37,7 +37,9 @@
     "eject": "react-scripts eject",
     "predeploy": "yarn run build",
     "deploy": "gh-pages -d build",
-    "generate": "rc-autocomplete"
+    "generate": "rc-autocomplete",
+    "docs-build": "npx styleguidist build",
+    "docs-server": "npx styleguidist server"
   },
   "eslintConfig": {
     "extends": [
@@ -56,5 +58,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "docgen": "^0.0.1",
+    "jsdoc": "^3.6.7",
+    "react-docgen": "^5.4.0"
   }
 }

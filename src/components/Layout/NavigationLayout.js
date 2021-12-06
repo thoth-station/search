@@ -2,6 +2,9 @@ import * as React from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Button} from "@material-ui/core";
 
+/**
+ * Layout is used in most of the app and allows for backwards navigation.
+ */
 export const NavigationLayout = ({ children }) => {
     const navigate = useNavigate();
 

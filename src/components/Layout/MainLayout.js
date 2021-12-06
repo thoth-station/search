@@ -15,6 +15,9 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
+/**
+ * Main layout adds margins and spacing to the whole app.
+ */
 export const MainLayout = ({ children }) => {
     const classes = useStyles();
 
