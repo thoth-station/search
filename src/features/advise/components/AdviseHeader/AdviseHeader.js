@@ -83,7 +83,7 @@ export const AdviseHeader = ({ adviseDocument }) => {
   return (
     <div>
       <Typography variant="h4">
-        <b>{adviseDocument.metadata.document_id}</b>
+        <b>{adviseDocument?.metadata?.document_id ?? adviseDocument?.parameters?.analysis_id}</b>
       </Typography>
       <div className={classes.linksRow}>
         <Chip label={statusText} color={statusColor} />
@@ -97,6 +97,7 @@ export const AdviseHeader = ({ adviseDocument }) => {
           icon={<AccessTimeIcon />}
         />
       </div>
+      <Typography variant={"subtitle2"}>{adviseDocument?.error}</Typography>
       {alerts?.length > 0 ? (
         <div>
           <CustomAlert info={alerts[0]} />
