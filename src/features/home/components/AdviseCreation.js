@@ -105,9 +105,9 @@ export const AdviseCreation = () => {
                 .catch(error => {
                     dispatch({type: "loading", payload: false});
                     if (error?.response?.status === 400) {
-                        if (error?.response?.data?.error.includes("Pipfile.lock")) {
+                        if (error?.response?.data?.error?.includes("Pipfile.lock")) {
                             dispatch({type: "error", param: "pipfileLock", payload: error?.response?.data?.error})
-                        } else if (error?.response?.data?.error.includes("Pipfile")) {
+                        } else if (error?.response?.data?.error?.includes("Pipfile")) {
                             dispatch({type: "error", param: "pipfile", payload: error?.response?.data?.error})
                         }
                     }
@@ -190,22 +190,22 @@ export const AdviseCreation = () => {
                                 <TextField onChange={e => dispatch({type: "input", param: "base_image", payload: e.target.value})} value={state.base_image} sx={{minWidth: "100%"}} label="Base Image" required={false} helperText="A base container image used to run the application." error={state.error?.base_image} />
                             </Grid>
                             <Grid item xs={4}>
-                                <ComboBox setValue={e => dispatch({type: "input", param: "cuda_version", payload: e})} value={state.cuda_version} suggestions={["9.0"]} label="CUDA Version" required={false} help="Nvidia CUDA version which the application uses." error={state.error?.cuda_version}/>
+                                <ComboBox setValue={e => dispatch({type: "input", param: "cuda_version", payload: e?.title ?? ""})} value={state.cuda_version} suggestions={["9.0"]} label="CUDA Version" required={false} help="Nvidia CUDA version which the application uses." error={state.error?.cuda_version}/>
                             </Grid>
                             <Grid item xs={4}>
-                                <ComboBox setValue={e => dispatch({type: "input", param: "cudnn_version", payload: e})} value={state.cudnn_version} suggestions={["8"]} label="cuDNN Version" required={false} help="NVIDIA cuDNN version used, if any." error={state.error?.cudnn_version}/>
+                                <ComboBox setValue={e => dispatch({type: "input", param: "cudnn_version", payload: e?.title ?? ""})} value={state.cudnn_version} suggestions={["8"]} label="cuDNN Version" required={false} help="NVIDIA cuDNN version used, if any." error={state.error?.cudnn_version}/>
                             </Grid>
                             <Grid item xs={4}>
-                                <ComboBox setValue={e => dispatch({type: "input", param: "mkl_version", payload: e})} value={state.mkl_version} suggestions={["2021.1.1"]} label="MKL Version" required={false} help="Intel® Math Kernel Library version used, if any." error={state.error?.mkl_version}/>
+                                <ComboBox setValue={e => dispatch({type: "input", param: "mkl_version", payload: e?.title ?? ""})} value={state.mkl_version} suggestions={["2021.1.1"]} label="MKL Version" required={false} help="Intel® Math Kernel Library version used, if any." error={state.error?.mkl_version}/>
                             </Grid>
                             <Grid item xs={4}>
-                                <ComboBox setValue={e => dispatch({type: "input", param: "name", payload: e})} value={state.name} suggestions={["ubi:8-prod"]} label="Name" required={true} help="User defined name of the runtime environment." error={state.error?.name}/>
+                                <ComboBox setValue={e => dispatch({type: "input", param: "name", payload: e.title ?? ""})} value={state.name} suggestions={["ubi:8-prod"]} label="Name" required={true} help="User defined name of the runtime environment." error={state.error?.name}/>
                             </Grid>
                             <Grid item xs={4}>
-                                <ComboBox setValue={e => dispatch({type: "input", param: "openblas_version", payload: e})} value={state.openblas_version} suggestions={["0.3.13"]} label="OpenBLAS Version" required={false} help="OpenBLAS version used, if any." error={state.error?.openblas_version}/>
+                                <ComboBox setValue={e => dispatch({type: "input", param: "openblas_version", payload: e?.title ?? ""})} value={state.openblas_version} suggestions={["0.3.13"]} label="OpenBLAS Version" required={false} help="OpenBLAS version used, if any." error={state.error?.openblas_version}/>
                             </Grid>
                             <Grid item xs={4}>
-                                <ComboBox setValue={e => dispatch({type: "input", param: "openmpi_version", payload: e})} value={state.openmpi_version} suggestions={["4.1"]} label="Open MPI Version" required={false} help="Open MPI version used, if any." error={state.error?.openmpi_version}/>
+                                <ComboBox setValue={e => dispatch({type: "input", param: "openmpi_version", payload: e?.title ?? ""})} value={state.openmpi_version} suggestions={["4.1"]} label="Open MPI Version" required={false} help="Open MPI version used, if any." error={state.error?.openmpi_version}/>
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField onChange={e => dispatch({type: "input", param: "operating_system_name", payload: e.target.value})} value={state.operating_system_name} sx={{minWidth: "100%"}} label="Operating System Name" required={false} helperText="Operating system name used." error={state.error?.operating_system_name}/>
@@ -214,21 +214,21 @@ export const AdviseCreation = () => {
                                 <TextField onChange={e => dispatch({type: "input", param: "operating_system_version", payload: e.target.value})} value={state.operating_system_version} sx={{minWidth: "100%"}} label="Operating System Version" required={false} helperText="Operating system version used." error={state.error?.operating_system_version}/>
                             </Grid>
                             <Grid item xs={4}>
-                                <ComboBox setValue={e => dispatch({type: "input", param: "platform", payload: e})} value={state.platform} suggestions={["linux-x86_64"]} label="Platform" required={false} help="Platform used - corresponds to sysconfig.get_platform() call." error={state.error?.platform}/>
+                                <ComboBox setValue={e => dispatch({type: "input", param: "platform", payload: e?.title ?? ""})} value={state.platform} suggestions={["linux-x86_64"]} label="Platform" required={false} help="Platform used - corresponds to sysconfig.get_platform() call." error={state.error?.platform}/>
                             </Grid>
                             <Grid item xs={4}>
-                                <ComboBox setValue={e => dispatch({type: "input", param: "python_version", payload: e})} value={state.python_version} suggestions={["2.7", "3.6", "3.7", "3.8", "3.9"]} label="Python Version" required={false} help="Python version on which the application runs on." error={state.error?.python_version}/>
+                                <ComboBox setValue={e => dispatch({type: "input", param: "python_version", payload: e?.title ?? ""})} value={state.python_version} suggestions={["2.7", "3.6", "3.7", "3.8", "3.9"]} label="Python Version" required={false} help="Python version on which the application runs on." error={state.error?.python_version}/>
+
                             </Grid>
                             <Grid item xs={6}>
-                                <LoadingButton
+                                <Button
                                     variant="outlined"
                                     color="primary"
                                     onClick={() => dispatch({type: "input", param: "lookupType", payload: "id"})}
-                                    loading={state.loading}
                                     sx={{ minHeight: "100%", minWidth: "100%" }}
                                 >
                                     <b>Cancel</b>
-                                </LoadingButton>
+                                </Button>
                             </Grid>
                             <Grid item xs={6}>
                                 <LoadingButton
