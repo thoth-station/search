@@ -120,7 +120,7 @@ export const AdviseCreation = () => {
         <>
             <Collapse in={state.lookupType === "id"}>
                 <>
-                    <Grid container justifyContent="center" spacing={2}>
+                    <Grid container justifyContent="center">
                         <Grid item xs={12}>
                             <Typography
                                 color="error"
@@ -130,25 +130,27 @@ export const AdviseCreation = () => {
                                 {state.error?.id}
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} md={10}>
-                            <SearchBar
-                                error={state.error?.id}
-                                onChange={e => dispatch({type: "input", param: "id", payload: e.target.value})}
-                                helpertext={"Analysis ID"}
-                                type="search"
-                                boxprops={{ mr: 2 }}
-                                lefticon={<SearchRoundedIcon />}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => handleAnalyze()}
-                                sx={{ minHeight: "100%", minWidth: "100%" }}
-                            >
-                                <b>Analyze</b>
-                            </Button>
+                        <Grid container item xs={12} spacing={2}>
+                            <Grid item xs={12} md={10}>
+                                <SearchBar
+                                    error={state.error?.id}
+                                    onChange={e => dispatch({type: "input", param: "id", payload: e.target.value})}
+                                    helpertext={"Analysis ID"}
+                                    type="search"
+                                    boxprops={{ mr: 2 }}
+                                    lefticon={<SearchRoundedIcon />}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={2}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleAnalyze()}
+                                    sx={{ minHeight: "100%", minWidth: "100%" }}
+                                >
+                                    <b>Analyze</b>
+                                </Button>
+                            </Grid>
                         </Grid>
                     </Grid>
                     <Button onClick={() => dispatch({type: "input", param: "lookupType", payload: "manual"})}>New Advise</Button>
