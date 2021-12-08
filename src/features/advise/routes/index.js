@@ -25,18 +25,23 @@ export const AdviseRoutes = () => {
     const { analysis_id } = useParams();
 
     // api get thoth advise document
-    const adviseDocument = useAdviseDocument(analysis_id, { useErrorBoundary: false })
+    const adviseDocument = useAdviseDocument(analysis_id, { useErrorBoundary: false, refetchInterval: (data) => {
+        if(data?.data?.status) {
+            return 10000;
+        }
+        return false
+        }})
 
     // format init graph data
     const initGraphData = useMemo(() => {
-        if(adviseDocument.isSuccess) {
+        if(adviseDocument.isSuccess && adviseDocument.data.data?.result?.parameters?.project?.requirements_locked) {
             return formatLockfile(adviseDocument.data.data.result.parameters.project.requirements_locked)
         }
     }, [adviseDocument]);
 
     // format advise graph data
     const adviseGraphData = useMemo(() => {
-        if(adviseDocument.isSuccess && adviseDocument.data.data.result.report?.products?.[0]?.project?.requirements_locked?.default) {
+        if(adviseDocument.isSuccess && adviseDocument.data.data?.result?.report?.products?.[0]?.project?.requirements_locked?.default) {
             return formatLockfile(adviseDocument.data.data.result.report.products[0].project.requirements_locked.default)
         }
     }, [adviseDocument]);

@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.js": "/thoth-search/build/main.07225c47.js",
+    "runtime-main.js": "/thoth-search/build/bundle.eaded300.js",
+    "build/2.125a8cad.js": "/thoth-search/build/2.125a8cad.js",
+    "build/2.125a8cad.js.LICENSE.txt": "/thoth-search/build/2.125a8cad.js.LICENSE.txt",
+    "index.html": "/thoth-search/index.html"
+  },
+  "entrypoints": [
+    "build/bundle.eaded300.js",
+    "build/2.125a8cad.js",
+    "build/main.07225c47.js"
+  ]
+}

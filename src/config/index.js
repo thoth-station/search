@@ -2,7 +2,9 @@ export const PYPI_URL = "https://pypi.org/pypi";
 export const THOTH_URL = "https://khemenu.thoth-station.ninja/api/v1";
 export const LICENSES_URL = "https://raw.githubusercontent.com/spdx/license-list-data/master/json/licenses.json";
 
-
+/**
+ * used for vis-js graph render engine
+ */
 export const options = {
   manipulation: {
     enabled: false,
