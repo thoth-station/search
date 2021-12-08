@@ -2,7 +2,10 @@
 import React, { useState } from "react";
 
 // material-ui
-import {Typography, Button, Grid, Divider, ToggleButtonGroup, ToggleButton} from "@material-ui/core";
+import {Typography, Grid, Divider, ToggleButtonGroup, ToggleButton, Box} from "@material-ui/core";
+
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // local
 import TabPanel from "components/Elements/TabPanel";
@@ -14,6 +17,9 @@ export const Home = () => {
     // utility states
     const [mode, setMode] = useState("multiple");
 
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
     // change mode view
     const handleMode = (event, newMode) => {
         if (newMode) {
@@ -23,16 +29,17 @@ export const Home = () => {
 
 
     return (
+        <div style={{maxWidth: "1000px", marginLeft: "auto", marginRight: "auto"}}>
         <Grid container justifyContent="center">
             <Grid item>
-                <Button sx={{ marginTop: 10 }}>
-                    <img alt="Thoth Logo" src={logo} height={300} width={"100%"} />
-                </Button>
+                <Box sx={{ marginTop: 10 }}>
+                    <img alt="Thoth Logo" src={logo} height={!matches ? "auto" : 300} width={"100%"} />
+                </Box>
             </Grid>
             <Grid container item justifyContent="center" mt={5} spacing={0}>
-                <Grid container item xs={3} align="center" mr={5}>
+                <Grid container item sm={12} md={6} align="center" mr={5}>
                     <Grid item xs={12} align="left" mb={3}>
-                        <Typography variant="h4">
+                        <Typography variant="h4" >
                             <b>Thoth Search</b>
                         </Typography>
                     </Grid>
@@ -51,7 +58,7 @@ export const Home = () => {
                 <Grid
                     item
                     container
-                    xs={2}
+                    sm={12} md={5}
                     direction="column"
                     justifyContent="center"
                     spacing={1}
@@ -69,7 +76,7 @@ export const Home = () => {
                                         <b>Thoth Statistic {stat[0]}</b>
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={6}>
                                     <Typography variant="h5" align="right">
                                         {stat[1]}
                                     </Typography>
@@ -83,7 +90,7 @@ export const Home = () => {
                         value={mode}
                         exclusive
                         onChange={handleMode}
-                        size={"large"}
+                        size={!matches ? "small" : "large"}
                     >
                         <ToggleButton value="single">
                             <b>single package analysis</b>
@@ -94,8 +101,8 @@ export const Home = () => {
                     </ToggleButtonGroup>
                 </Grid>
 
-                <Grid item xs={5}>
-                    <Divider />
+                <Grid item xs={12}>
+                    <Divider sx={{marginBottom: 3}}/>
                     <TabPanel value={mode} index="single">
                         <PackageSearch />
                     </TabPanel>
@@ -105,5 +112,6 @@ export const Home = () => {
                 </Grid>
             </Grid>
         </Grid>
+        </div>
     );
 };

@@ -4,7 +4,6 @@ import {Footer} from "../Footer";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        maxWidth: "95%",
         marginLeft: "auto",
         marginRight: "auto",
         paddingRight: theme.spacing(3),
