@@ -10,6 +10,7 @@ const useStyles = makeStyles(theme => ({
         paddingRight: theme.spacing(3),
         paddingLeft: theme.spacing(3),
         marginTop: theme.spacing(4),
+        marginBottom: theme.spacing(15),
         minHeight: "100vh",
     },
 
