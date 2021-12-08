@@ -35,8 +35,8 @@ export const PackageSearch = () => {
 
     return(
 
-            <Grid container>
-                <Grid item xs={10}>
+            <Grid container justifyContent="center">
+                <Grid alignSelf="flex-start" item xs={12}>
                     <Typography
                         color="error"
                         variant="body1"
@@ -45,26 +45,29 @@ export const PackageSearch = () => {
                         {searchError ?? ""}
                     </Typography>
                 </Grid>
-                <Grid item xs={10}>
-                    <SearchBar
-                        error={searchError !== ""}
-                        onChange={e => handleChange(e)}
-                        helpertext={"Search for a Python package"}
-                        type="search"
-                        boxprops={{ mr: 2 }}
-                        lefticon={<SearchRoundedIcon />}
-                    />
+                <Grid container spacing={2} item xs={12}>
+                    <Grid item xs={12} md={10}>
+                        <SearchBar
+                            error={searchError !== ""}
+                            onChange={e => handleChange(e)}
+                            helpertext={"Search for a Python package"}
+                            type="search"
+                            boxprops={{ mr: 2 }}
+                            lefticon={<SearchRoundedIcon />}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleAnalyze()}
+                            sx={{ minHeight: "100%", minWidth: "100%" }}
+                        >
+                            <b>Analyze</b>
+                        </Button>
+                    </Grid>
                 </Grid>
-                <Grid item sm={10} lg={1} ml={2}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleAnalyze()}
-                        sx={{ minHeight: "100%", minWidth: "100%" }}
-                    >
-                        <b>Analyze</b>
-                    </Button>
-                </Grid>
+
             </Grid>
     )
 }

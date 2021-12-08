@@ -4,12 +4,12 @@ import {Footer} from "../Footer";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        maxWidth: "95%",
         marginLeft: "auto",
         marginRight: "auto",
         paddingRight: theme.spacing(3),
         paddingLeft: theme.spacing(3),
         marginTop: theme.spacing(4),
+        marginBottom: theme.spacing(15),
         minHeight: "100vh",
     },
 
