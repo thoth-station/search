@@ -249,15 +249,11 @@ export const useAdviseMetric = (graph, adviseDocument) => {
         base.build = `We have analysed an application stack running on ${adviseDocument.metadata.os_release.name} ${adviseDocument.metadata.os_release.version}, running Python (${adviseDocument.metadata.python.implementation_name}) ${adviseDocument.metadata.python.major}.${adviseDocument.metadata.python.minor}.${adviseDocument.metadata.python.micro}. It was Adviser Job ID ${adviseDocument.metadata.document_id}, by ${adviseDocument.metadata.analyzer} v${adviseDocument.metadata.analyzer_version}.`;
 
         //justification counts
-        adviseDocument?.report?.products?.[0]?.justification.forEach(
+        adviseDocument?.result?.report?.products?.[0]?.justification.forEach(
             justification => {
-                if (justification.type !== "INFO") {
-                    if (base?.justification[justification.type] !== undefined) {
-                        base.justification[justification.type]++;
-                    } else {
-                        base.justification[justification.type] = 0;
-                    }
-                }
+                base.justification[justification.type] = base.justification[justification.type]
+                    ? base.justification[justification.type] + 1
+                    : 1;
             }
         );
         setMetric(base)

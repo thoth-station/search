@@ -5,6 +5,7 @@ import React, { useMemo } from "react";
 import {Typography, Chip, Button, Collapse} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import FeedRoundedIcon from '@mui/icons-material/FeedRounded';
 // local
 import IconText from "components/Elements/IconText";
 
@@ -45,19 +46,24 @@ const useStyles = makeStyles(theme => ({
  * displays any errors, info, or warnings that came up
  * in the document generation.
  */
-export const AdviseHeader = ({ adviseDocument }) => {
+export const AdviseHeader = ({ adviseDocument, logs}) => {
   const classes = useStyles();
   const [expandAlerts, setExpandAlerts] = React.useState(false);
+  const [showLogs, setShowLogs] = React.useState(false);
+  const [selectedLine, setSelectedLine] = React.useState();
 
   // get status of the report
   const [statusText, statusColor] = useMemo(() => {
     // if report is done
-    if (adviseDocument?.report) {
-      if (adviseDocument.report.ERROR) {
+    if (adviseDocument?.result?.report) {
+      if (adviseDocument.result.report.ERROR) {
         return ["ERROR", "error"];
       } else {
         return ["COMPLETE", "success"];
       }
+    }
+    else if(adviseDocument?.result?.error) {
+      return ["ERROR", "error"];
     }
     // if report is not done
     else if (adviseDocument?.status?.state) {
@@ -69,9 +75,9 @@ export const AdviseHeader = ({ adviseDocument }) => {
 
   // get alerts from report
   const alerts = useMemo(() => {
-        if (adviseDocument?.report) {
-          return adviseDocument?.report?.stack_info
-              ? adviseDocument.report.stack_info.filter(alert => {
+        if (adviseDocument?.result?.report) {
+          return adviseDocument?.result?.report?.stack_info
+              ? adviseDocument?.result?.report.stack_info.filter(alert => {
                 return alert.type === "ERROR";
               })
               : null
@@ -96,8 +102,14 @@ export const AdviseHeader = ({ adviseDocument }) => {
           )}
           icon={<AccessTimeIcon />}
         />
+        <Button sx={{marginLeft: 2}} onClick={() => setShowLogs(!showLogs)}>
+          <IconText
+              text="Logs"
+              icon={<FeedRoundedIcon />}
+          />
+        </Button>
       </div>
-      <Typography variant={"subtitle2"}>{adviseDocument?.error}</Typography>
+      <Typography variant={"subtitle2"}>{adviseDocument?.result?.report?.ERROR ?? adviseDocument?.error ?? adviseDocument?.result?.error_msg}</Typography>
       {alerts?.length > 0 ? (
         <div>
           <CustomAlert info={alerts[0]} />
@@ -116,6 +128,22 @@ export const AdviseHeader = ({ adviseDocument }) => {
           </Button>
         </div>
       ) : null}
+
+      <Collapse in={showLogs}>
+        {logs?.split("\n").map((line, i) => {
+          return(
+                <Typography key={i}
+                            noWrap={selectedLine !== i}
+                            onClick={() => setSelectedLine(selectedLine === i ? undefined : i)}
+                            variant="body2"
+                            sx={{backgroundColor: selectedLine === i ? "lightyellow" : i % 2 === 0 ? "lightgray" : "unset"}}
+                >
+                  {line}
+                </Typography>
+          )
+        }) ?? "Advisor log is not available."}
+
+      </Collapse>
 
       {statusText === "COMPLETE" ? (
         <Typography variant="body1" sx={{ color: "text.secondary" }}>

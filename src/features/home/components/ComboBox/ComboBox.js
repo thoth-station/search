@@ -23,7 +23,7 @@ export default function ComboBox({suggestions, label, help, required, error, val
                     setValue(newValue);
                 } else if (newValue && newValue.inputValue) {
                     // Create a new value from the user input
-                    setValue(newValue.inputValue);
+                    setValue({title: newValue.inputValue});
                 } else {
                     setValue(newValue);
                 }

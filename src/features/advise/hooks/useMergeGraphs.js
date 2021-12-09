@@ -148,8 +148,9 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
         // add edges to merged graph Object
         mergedGraph["visEdges"] = visGraphEdges;
 
-        setGraph(null)
+        setGraph(mergedGraph)
     }, [oldGraph, newGraph, adviseDocument, theme])
+
 
     return graph
 }

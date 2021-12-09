@@ -9,7 +9,7 @@ import {AdviseSummary} from "./AdviseSummary";
 import {AdviseDetails} from "./AdviseDetails";
 
 // feature specific imports
-import {useAdviseDocument} from "../api";
+import {useAdviseDocument, useAdviseLogs} from "../api";
 import {formatLockfile} from "../utils";
 import {AdviseHeader} from "../components";
 import {useMetrics, useMergeGraphs, useGraph} from "../hooks";
@@ -32,6 +32,14 @@ export const AdviseRoutes = () => {
         return false
         }})
 
+    const logs = useAdviseLogs(analysis_id, { useErrorBoundary: false, refetchInterval: () => {
+            if(adviseDocument.data?.data?.status) {
+                return 10000;
+            }
+            return false
+        }})
+
+
     // format init graph data
     const initGraphData = useMemo(() => {
         if(adviseDocument.isSuccess && adviseDocument.data.data?.result?.parameters?.project?.requirements_locked) {
@@ -41,8 +49,8 @@ export const AdviseRoutes = () => {
 
     // format advise graph data
     const adviseGraphData = useMemo(() => {
-        if(adviseDocument.isSuccess && adviseDocument.data.data?.result?.report?.products?.[0]?.project?.requirements_locked?.default) {
-            return formatLockfile(adviseDocument.data.data.result.report.products[0].project.requirements_locked.default)
+        if(adviseDocument.isSuccess && adviseDocument.data.data?.result?.report?.products?.[0]?.project?.requirements_locked) {
+            return formatLockfile(adviseDocument.data.data.result.report.products[0].project.requirements_locked)
         }
     }, [adviseDocument]);
 
@@ -50,7 +58,7 @@ export const AdviseRoutes = () => {
 
     // create init graph
     const initGraph = useGraph(initGraphData ?? [], adviseDocument.data?.data?.result?.parameters?.project?.requirements?.packages);
-    const adviseGraph = useGraph(adviseGraphData ?? [], adviseDocument.data?.data?.result?.parameters?.project?.requirements?.packages);
+    const adviseGraph = useGraph(adviseGraphData ?? [], adviseDocument.data?.data?.result?.report?.products?.[0]?.dependency_graph);
 
     // merge graphs based on added, removed, changed packages
     const mergedGraph = useMergeGraphs(initGraph, adviseGraph, adviseDocument.data?.data)
@@ -75,10 +83,10 @@ export const AdviseRoutes = () => {
 
     return (
         <NavigationLayout>
-            <AdviseLayout header={<AdviseHeader adviseDocument={adviseDocument.data.data}/> }>
+            <AdviseLayout header={<AdviseHeader adviseDocument={adviseDocument.data.data} logs={logs.data?.data?.log}/> }>
                 <Routes>
                     <Route path="summary" element={<AdviseSummary metrics={metrics}/>} />
-                    <Route path="details" element={<AdviseDetails adviseDocument={adviseDocument}/>} />
+                    <Route path="details" element={<AdviseDetails mergedGraph={mergedGraph}/>} />
                     <Route path="*" element={<Navigate to="summary" />} />
                 </Routes>
             </AdviseLayout>

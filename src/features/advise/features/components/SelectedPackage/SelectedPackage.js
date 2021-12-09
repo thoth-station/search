@@ -1,10 +1,9 @@
 // React
-import React, { useContext } from "react";
+import React, {useContext, useMemo} from "react";
 
 // material-ui
 import { Typography, Grid, Box, Paper, Link, Button } from "@material-ui/core";
 import GavelIcon from "@material-ui/icons/Gavel";
-import BookmarkIcon from "@material-ui/icons/Bookmark";
 
 // local
 import IconText from "components/Elements/IconText";
@@ -29,16 +28,25 @@ export const SelectedPackage = ({mergedGraph}) => {
       dependents[mergedGraph.nodes.get(node).value.change].push(node);
     });
 
+  const justifications = useMemo(() => {
+    const justs = {}
+    selectedPackage?.value?.justifications?.thoth?.forEach(just => {
+      justs[just.type] = [...(justs[just.type] ?? []), just]
+    })
+
+    return justs
+  }, [selectedPackage])
+
   return (
     <Box>
       <Paper sx={{ padding: 2 }}>
         <Grid container alignItems="center" mb={1}>
-          <Grid item sx={6}>
+          <Grid item>
             <Typography variant="h3">
               <b>{selectedPackage?.value?.metadata?.name}</b>
             </Typography>
           </Grid>
-          <Grid item sx={6}>
+          <Grid item>
             <Typography ml={2} variant="h6">
               v{selectedPackage?.value?.metadata?.version ?? "NaN"}
             </Typography>
@@ -55,17 +63,6 @@ export const SelectedPackage = ({mergedGraph}) => {
               icon={<GavelIcon />}
             />
           </Grid>
-          <Grid item>
-            <IconText
-              ml={2}
-              text={
-                selectedPackage?.value?.latestVersion
-                  ? "Latest version is installed"
-                  : "Installed version is NOT the latest."
-              }
-              icon={<BookmarkIcon />}
-            />
-          </Grid>
         </Grid>
       </Paper>
 
@@ -76,45 +73,49 @@ export const SelectedPackage = ({mergedGraph}) => {
         </Typography>
         {selectedPackage?.value?.justifications?.reasons?.length ? (
           <ul>
-            {selectedPackage?.value?.justifications?.reasons.map(reason => {
+            {selectedPackage?.value?.justifications?.reasons.map((reason, i) => {
               return (
-                <li key={reason.package}>
-                  <Typography variant="body1" mt={2}>
-                    <Link
-                      underline="hover"
-                      onClick={() => setSelected(reason.package)}
-                    >
-                      {reason.package}
-                    </Link>
-                    {reason.reason}
-                  </Typography>
-                </li>
+                    <li key={i + reason.reason}>
+                      <Typography variant="body1" mt={2}>
+                        <Link
+                            underline="hover"
+                            onClick={() => setSelected(reason.package)}
+                        >
+                          {reason.package}
+                        </Link>
+                        {reason.reason}
+                      </Typography>
+                    </li>
               );
             })}
           </ul>
         ) : null}
 
-        {selectedPackage?.value?.justifications?.thoth?.length > 0 ? (
-          <Typography variant="h6" mt={2}>
-            Security Reasonings
-          </Typography>
-        ) : null}
-        {selectedPackage?.value?.justifications?.thoth?.map(reason => {
-          return (
-            <Grid container alignItems="center" ml={3}>
-              <Grid item xs={10}>
-                <Typography variant="body1" mt={1}>
-                  {reason.message}
+        {Object.entries(justifications).map(([type, reasons]) => {
+          return(
+              <React.Fragment key={type}>
+                <Typography variant="h6" mt={2}>
+                  {type} Justifications
                 </Typography>
-                <Typography variant="body2" ml={3} mt={0.5}>
-                  {reason.advisory}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Button href={reason.link}>READ MORE</Button>
-              </Grid>
-            </Grid>
-          );
+                {reasons.map((reason, i) => {
+                  return(
+                      <Grid container alignItems="center" ml={3} key={reason.message + i}>
+                        <Grid item xs={10}>
+                          <Typography variant="body1" mt={1}>
+                            {reason.message}
+                          </Typography>
+                          <Typography variant="body2" ml={3} mt={0.5}>
+                            {reason.advisory}
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Button href={reason.link}>READ MORE</Button>
+                        </Grid>
+                      </Grid>
+                  )
+                })}
+              </React.Fragment>
+          )
         })}
       </Paper>
 

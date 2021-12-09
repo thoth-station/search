@@ -14,6 +14,7 @@ import ProgressBar from "components/Elements/ProgressBar";
  */
 export const AdviseMetric = ({ metric }) => {
   const total = metric?.added + metric?.removed + metric?.version + metric?.unchanged;
+  const justTotal = Object.values(metric?.justification).reduce((a, b) => a + b);
 
   if(!metric) {
       return (
@@ -25,7 +26,7 @@ export const AdviseMetric = ({ metric }) => {
       )
   }
 
-  return (
+    return (
     <>
       <Typography variant="body2" gutterBottom>
         {metric?.build}
@@ -52,14 +53,18 @@ export const AdviseMetric = ({ metric }) => {
         label={"Version Changes"}
       />
       <Typography variant="h6" mt={3} gutterBottom>
-        Noteworthy Justifications
+          Justification Counts
       </Typography>
       <Divider mb={1} />
       {Object.entries(metric?.justification ?? {}).map(([key, value]) => {
         return (
-          <Typography variant="body2" gutterBottom key={key}>
-            {key}: {value}
-          </Typography>
+            <ProgressBar
+                key={key}
+                value={value}
+                total={justTotal}
+                label={key}
+                mb={1}
+            />
         );
       })}
     </>
