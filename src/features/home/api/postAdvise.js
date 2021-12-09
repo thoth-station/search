@@ -14,8 +14,7 @@ export const postAdvise = (pipfile, pipfileLock, runtime_environment) => {
 
     return axios.post(THOTH_URL + "/advise/python", data, {
         params: {
-            recommendation_type: "stable",
-            force: true
+            recommendation_type: "stable"
         },
         headers: {
             "accept": "application/json",

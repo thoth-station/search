@@ -29,8 +29,8 @@ export const initState = {
     lookupType: "id",
     operating_system_name: "ubi",
     operating_system_version: "8",
-    platform: "linux-x86_64",
-    python_version: "3.6",
+    platform: "",
+    python_version: "3.8",
     cuda_version: "",
     cudnn_version: "",
     mkl_version: "",
@@ -97,21 +97,31 @@ export const AdviseCreation = () => {
                 openblas_version: state.openblas_version,
                 openmpi_version: state.openmpi_version,
             }
+
+            Object.keys(runtime_environment).forEach(key => {
+                if(runtime_environment[key] === "") {
+                    delete runtime_environment[key];
+                }
+            })
+            if(runtime_environment["operating_system"]["name"] === "" || runtime_environment["operating_system"]["version"] === "") {
+                delete runtime_environment["operating_system"]
+            }
+
             postAdvise(state.pipfile, state.pipfileLock, runtime_environment)
-                .then(response => {
-                    dispatch({type: "loading", payload: false});
-                    navigate( "/advise/" + response.data.analysis_id);
-                })
-                .catch(error => {
-                    dispatch({type: "loading", payload: false});
-                    if (error?.response?.status === 400) {
-                        if (error?.response?.data?.error?.includes("Pipfile.lock")) {
-                            dispatch({type: "error", param: "pipfileLock", payload: error?.response?.data?.error})
-                        } else if (error?.response?.data?.error?.includes("Pipfile")) {
-                            dispatch({type: "error", param: "pipfile", payload: error?.response?.data?.error})
-                        }
+            .then(response => {
+                dispatch({type: "loading", payload: false});
+                navigate( "/advise/" + response.data.analysis_id);
+            })
+            .catch(error => {
+                dispatch({type: "loading", payload: false});
+                if (error?.response?.status === 400) {
+                    if (error?.response?.data?.error?.includes("Pipfile.lock")) {
+                        dispatch({type: "error", param: "pipfileLock", payload: error?.response?.data?.error})
+                    } else if (error?.response?.data?.error?.includes("Pipfile")) {
+                        dispatch({type: "error", param: "pipfile", payload: error?.response?.data?.error})
                     }
-                });
+                }
+            });
         }
     }
 
