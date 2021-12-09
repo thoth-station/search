@@ -14,7 +14,7 @@ import ProgressBar from "components/Elements/ProgressBar";
  */
 export const AdviseMetric = ({ metric }) => {
   const total = metric?.added + metric?.removed + metric?.version + metric?.unchanged;
-  const justTotal = Object.values(metric?.justification).reduce((a, b) => a + b);
+  const justTotal = Object.values(metric?.justification ?? {}).reduce((a, b) => a + b, 0);
 
   if(!metric) {
       return (
