@@ -7,9 +7,7 @@ import BookmarkIcon from "@material-ui/icons/Bookmark";
 
 // local
 import IconText from "components/Elements/IconText";
-import PropTypes from "prop-types";
 
-import {Node} from "utils/Node";
 
 /**
  * Graph hover model appears when you hover over a node on the graph.
@@ -18,12 +16,12 @@ const Popup = ({ node }) => {
   return (
     <div>
       <Grid container alignItems="center">
-        <Grid item sx={6}>
+        <Grid item xs={6}>
           <Typography variant="h6">
             <b>{node.value.id}</b>
           </Typography>
         </Grid>
-        <Grid item sx={6}>
+        <Grid item xs={6}>
           <Typography ml={2} variant="body1">
             v{node.value.version ?? "NaN"}
           </Typography>
@@ -59,8 +57,6 @@ const Popup = ({ node }) => {
 };
 
 Popup.propTypes = {
-    /** The graph node to display */
-    node: PropTypes.objectOf(Node).isRequired
 }
 
 export default Popup;

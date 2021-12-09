@@ -21,7 +21,6 @@ import { getComparator, stableSort } from "./utils";
 // local
 import EnhancedTableHead from "./EnhancedTableHead";
 import PropTypes from "prop-types";
-import {Graph} from "utils/Graph";
 import {SelectedPackageContext} from "../../routes/AdviseDetails";
 
 /**
@@ -171,6 +170,4 @@ export function AdviseTableView({
 AdviseTableView.propTypes = {
   /** the text value used to filter the cells in the table */
   search: PropTypes.string,
-  /** The graph used as input into the table */
-  filteredGraph: PropTypes.objectOf(Graph).isRequired,
 }

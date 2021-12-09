@@ -37,19 +37,21 @@ const NetworkGraph = ({ mergedGraph, ...props }) => {
 
   // create the graph
   useEffect(() => {
-    if (!selected || mergedGraph) {
+    if (!selected || !mergedGraph) {
       return;
     }
 
-    let nodes = mergedGraph.findAllNodesOnAllPaths(selected, "*App");
+    const selectedNode = mergedGraph.nodes.get(selected)
 
-    nodes.set("*App");
+    let nodes = mergedGraph.findAllNodesOnAllPaths(selectedNode, "*App");
+
+    nodes.set("*App", mergedGraph.nodes.get("*App"));
 
     // convert to vis graph format
     const convertedNodes = new DataSet();
     nodes.forEach(value => {
       // popup element
-      var popup = document.createElement("div");
+      const popup = document.createElement("div");
       ReactDOM.render(<Popup node={value} />, popup);
 
       // default colors
@@ -62,7 +64,7 @@ const NetworkGraph = ({ mergedGraph, ...props }) => {
         font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
       }
       // if selected node
-      else if (value.key === selected.key) {
+      else if (value.key === selectedNode.key) {
         color = "#f39200";
       }
 
@@ -70,7 +72,7 @@ const NetworkGraph = ({ mergedGraph, ...props }) => {
         ...value.value,
         color: color,
         title:
-          value.key === selected.key || value.key === "*App" ? undefined : popup,
+          value.key === selectedNode.key || value.key === "*App" ? undefined : popup,
         font: font
       });
     });
@@ -121,6 +123,7 @@ const NetworkGraph = ({ mergedGraph, ...props }) => {
         network.editNode(params.nodes[0]);
       }
     });
+
   }, [selected, mergedGraph]);
 
   return (
