@@ -2,7 +2,7 @@
   "name": "thoth-search",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://gkrumbach07.github.io/thoth-search",
+  "homepage": "https://thoth-station.github.io/search",
   "dependencies": {
     "@emotion/react": "^11.4.0",
     "@emotion/styled": "^11.3.0",
@@ -20,15 +20,12 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-error-boundary": "^3.1.4",
-    "react-graph-vis": "^1.0.7",
     "react-query": "^3.33.5",
     "react-router-dom": "^6.0.0-beta.8",
     "react-scripts": "4.0.3",
     "react-styleguidist": "^11.1.7",
-    "tiny-version-compare": "^3.0.1",
     "vis-data": "^7.1.2",
-    "vis-network": "^9.0.4",
-    "web-vitals": "^1.0.1"
+    "vis-network": "^9.0.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -61,10 +58,7 @@
     ]
   },
   "devDependencies": {
-    "docgen": "^0.0.1",
     "eslint": "^8.4.1",
-    "eslint-plugin-react": "^7.27.1",
-    "jsdoc": "^3.6.7",
-    "react-docgen": "^5.4.0"
+    "eslint-plugin-react": "^7.27.1"
   }
 }
