@@ -8,196 +8,195 @@ import {usePackagesDependencies} from "../api";
 import {usePackagesMetadata} from "features/misc/api";
 
 export function useGraph(data, knownRoots) {
-    const allMetadata = usePackagesMetadata(data);
-    const allDependencies = usePackagesDependencies(data);
+	const allMetadata = usePackagesMetadata(data);
+	const allDependencies = usePackagesDependencies(data);
 
-    const allMetadataStatus = useMemo(() => {
-        const status = {
-            loading: false,
-            error: false,
-            success: false
-        }
-        if(allMetadata.length > 0) {
-            allMetadata.forEach(query => {
-                switch (query.status) {
-                    case "error":
-                        status.error = true
-                        break;
-                    case "success":
-                        status.success = true
-                        break;
-                    default:
-                        status.loading = true;
-                }
-            })
-        }
-        else {
-            return "loading"
-        }
+	const allMetadataStatus = useMemo(() => {
+		const status = {
+			loading: false,
+			error: false,
+			success: false
+		};
+		if(allMetadata.length > 0) {
+			allMetadata.forEach(query => {
+				switch (query.status) {
+				case "error":
+					status.error = true;
+					break;
+				case "success":
+					status.success = true;
+					break;
+				default:
+					status.loading = true;
+				}
+			});
+		}
+		else {
+			return "loading";
+		}
 
-       if(status.error) {
-           return "error"
-       }
-       else if(status.loading) {
-           return "loading"
-       }
-       else {
-           return "success"
-       }
+		if(status.error) {
+			return "error";
+		}
+		else if(status.loading) {
+			return "loading";
+		}
+		else {
+			return "success";
+		}
 
-    }, [allMetadata])
+	}, [allMetadata]);
 
-    const allDependenciesStatus = useMemo(() => {
-        let isLoading = false;
+	const allDependenciesStatus = useMemo(() => {
+		let isLoading = false;
 
-        if(allDependencies.length > 0) {
-            allDependencies.forEach(query => {
-                if(query.status === "loading") {
-                    isLoading = true
-                }
-            })
-        }
-        else {
-            return "loading"
-        }
+		if(allDependencies.length > 0) {
+			allDependencies.forEach(query => {
+				if(query.status === "loading") {
+					isLoading = true;
+				}
+			});
+		}
+		else {
+			return "loading";
+		}
 
-        return isLoading ? "loading" : "success";
+		return isLoading ? "loading" : "success";
 
-    }, [allDependencies])
+	}, [allDependencies]);
 
-    const [graph, setGraph] = useState();
+	const [graph, setGraph] = useState();
 
-    useEffect(() => {
-        if(allMetadataStatus === "error") {
-            // handle error
-            return;
-        }
-        else if (allDependenciesStatus === "loading" || allMetadataStatus === "loading") {
-            // not done loading
-            return;
-        }
+	useEffect(() => {
+		if(allMetadataStatus === "error") {
+			// handle error
+			return;
+		}
+		else if (allDependenciesStatus === "loading" || allMetadataStatus === "loading") {
+			// not done loading
+			return;
+		}
 
-        // create graph
-        const tempGraph = new Graph();
+		// create graph
+		const tempGraph = new Graph();
 
-        // create dependencies object
-        const reformattedDeps = new Map();
-         allDependencies.forEach(query => {
-            if(query.isSuccess) {
-                reformattedDeps.set(query.data.data.parameters.name, query.data.data.dependencies)
-            }
-        })
+		// create dependencies object
+		const reformattedDeps = new Map();
+		allDependencies.forEach(query => {
+			if(query.isSuccess) {
+				reformattedDeps.set(query.data.data.parameters.name, query.data.data.dependencies);
+			}
+		});
 
-        // merge data together
-        allMetadata.forEach(query => {
-            const metadata = query.data.data.metadata ?? query.data.data.info;
+		// merge data together
+		allMetadata.forEach(query => {
+			const metadata = query.data.data.metadata ?? query.data.data.info;
 
-            const value = {
-                id: metadata.name.toLowerCase().replace(".", "-"),
-                label: metadata.name,
-                metadata: metadata
-            };
+			const value = {
+				id: metadata.name.toLowerCase().replace(".", "-"),
+				label: metadata.name,
+				metadata: metadata
+			};
 
-            // add package to graph
-            const node = tempGraph.addVertex(value.id, value);
-            node.parents = new Set();
-        })
+			// add package to graph
+			const node = tempGraph.addVertex(value.id, value);
+			node.parents = new Set();
+		});
 
-        const notRoot = [];
-         // cross check what dependencies the package has through thoth's database
-        // this is used to setup edges between nodes in the graph
-        Array.from(tempGraph.nodes.entries()).forEach(([key, value]) => {
-            // get dependencies from thoth
-            if(reformattedDeps.has(key)) {
-                reformattedDeps.get(key).forEach(dep => {
-                    const adjacentNode = tempGraph.nodes.get(dep.name);
+		const notRoot = [];
+		// cross check what dependencies the package has through thoth's database
+		// this is used to setup edges between nodes in the graph
+		Array.from(tempGraph.nodes.entries()).forEach(([key, value]) => {
+			// get dependencies from thoth
+			if(reformattedDeps.has(key)) {
+				reformattedDeps.get(key).forEach(dep => {
+					const adjacentNode = tempGraph.nodes.get(dep.name);
 
-                    // if package exists in lockfile
-                    if (adjacentNode) {
-                        // add edge connecting parent and dependency
-                        tempGraph.addEdge(key, adjacentNode.value.id);
-                        // set parent
-                        adjacentNode.parents.add(key);
-                        notRoot.push(adjacentNode.value.id);
-                    }
-                });
-            }
-            else {
-                // if no record in thoth, then use metadata dependencies
-                // these are not always as accurate
-                if (value?.value?.metadata?.requires_dist) {
-                    // for each dependency, parse to get name
-                    value.value.metadata.requires_dist.forEach(async adj => {
-                        const adjacentNode = tempGraph.nodes.get(
-                            adj
-                                .split(" ", 1)[0]
-                                .toLowerCase()
-                                .replace(".", "-")
-                        );
+					// if package exists in lockfile
+					if (adjacentNode) {
+						// add edge connecting parent and dependency
+						tempGraph.addEdge(key, adjacentNode.value.id);
+						// set parent
+						adjacentNode.parents.add(key);
+						notRoot.push(adjacentNode.value.id);
+					}
+				});
+			}
+			else {
+				// if no record in thoth, then use metadata dependencies
+				// these are not always as accurate
+				if (value?.value?.metadata?.requires_dist) {
+					// for each dependency, parse to get name
+					value.value.metadata.requires_dist.forEach(async adj => {
+						const adjacentNode = tempGraph.nodes.get(
+							adj
+								.split(" ", 1)[0]
+								.toLowerCase()
+								.replace(".", "-")
+						);
 
-                        // if package exists in lockfile
-                        if (adjacentNode) {
-                            // add edge connecting parent and dependency
-                            tempGraph.addEdge(key, adjacentNode.value.id);
-                            // set parent
-                            adjacentNode.parents.add(key);
-                            notRoot.push(adjacentNode.value.id);
-                        }
-                    });
-                }
-            }
-        })
+						// if package exists in lockfile
+						if (adjacentNode) {
+							// add edge connecting parent and dependency
+							tempGraph.addEdge(key, adjacentNode.value.id);
+							// set parent
+							adjacentNode.parents.add(key);
+							notRoot.push(adjacentNode.value.id);
+						}
+					});
+				}
+			}
+		});
 
-        /**
+		/**
          * Create graph using a traversal algorithm
          */
 
-        // add app node to graph
-        const app = tempGraph.addVertex("*App", {
-            id: "*App",
-            label: "App",
-            depth: -1
-        });
+		// add app node to graph
+		const app = tempGraph.addVertex("*App", {
+			id: "*App",
+			label: "App",
+			depth: -1
+		});
 
-        notRoot.push("*App");
+		notRoot.push("*App");
 
-        const visited = new Map();
-        const visitList = [];
+		const visited = new Map();
+		const visitList = [];
 
-        // get roots and connect to app
-        tempGraph.nodes.forEach((value, key, map) => {
-            if (!notRoot.includes(key) || Object.keys(knownRoots).includes(key)) {
-                const node = map.get(key);
-                node.value.depth = 0;
-                node.parents.add("*App");
-                visitList.push(node);
-                tempGraph.addEdge(app.key, node.key);
-            }
-        });
+		// get roots and connect to app
+		tempGraph.nodes.forEach((value, key, map) => {
+			if (!notRoot.includes(key) || Object.keys(knownRoots).includes(key)) {
+				const node = map.get(key);
+				node.value.depth = 0;
+				node.parents.add("*App");
+				visitList.push(node);
+				tempGraph.addEdge(app.key, node.key);
+			}
+		});
 
-        // set depth and parent packages using dfs
-        while (visitList.length !== 0) {
-            const node = visitList.pop();
-            if (node && !visited.has(node)) {
-                visited.set(node);
+		// set depth and parent packages using dfs
+		while (visitList.length !== 0) {
+			const node = visitList.pop();
+			if (node && !visited.has(node)) {
+				visited.set(node);
 
-                const adjs = node.getAdjacents();
+				const adjs = node.getAdjacents();
 
-                for (var i = 0; i < adjs.length; i++) {
-                    // update depth
-                    adjs[i].value.depth = Math.min(
-                        node.value.depth + 1,
-                        adjs[i].value.depth ?? node.value.depth + 2
-                    );
-                    visitList.push(adjs[i]);
-                }
-            }
-        }
+				for (var i = 0; i < adjs.length; i++) {
+					// update depth
+					adjs[i].value.depth = Math.min(
+						node.value.depth + 1,
+						adjs[i].value.depth ?? node.value.depth + 2
+					);
+					visitList.push(adjs[i]);
+				}
+			}
+		}
 
-        setGraph(tempGraph)
-// eslint-disable-next-line react-hooks/exhaustive-deps
-     }, [allMetadataStatus, allDependenciesStatus, knownRoots]);
+		setGraph(tempGraph);
+	}, [allMetadataStatus, allDependenciesStatus, knownRoots]);
 
-    return graph
+	return graph;
 
 }

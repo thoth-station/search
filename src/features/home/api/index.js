@@ -1,1 +1,1 @@
-export * from "./postAdvise"
+export * from "./postAdvise";

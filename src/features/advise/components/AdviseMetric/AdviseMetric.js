@@ -13,76 +13,78 @@ import ProgressBar from "components/Elements/ProgressBar";
  * graph and the Thoth made dependency graph.
  */
 export const AdviseMetric = ({ metric }) => {
-  const total = metric?.added + metric?.removed + metric?.version + metric?.unchanged;
-  const justTotal = Object.values(metric?.justification ?? {}).reduce((a, b) => a + b, 0);
+	const total = metric?.added + metric?.removed + metric?.version + metric?.unchanged;
+	const justTotal = Object.values(metric?.justification ?? {}).reduce((a, b) => a + b, 0);
 
-  if(!metric) {
-      return (
-          <Box>
-              <Skeleton />
-              <Skeleton />
-              <Skeleton width={"60%"}/>
-          </Box>
-      )
-  }
+	if(!metric) {
+		return (
+			<Box>
+				<Skeleton />
+				<Skeleton />
+				<Skeleton width={"60%"}/>
+			</Box>
+		);
+	}
 
-    return (
-    <>
-      <Typography variant="body2" gutterBottom>
-        {metric?.build}
-      </Typography>
-      <Typography variant="h6" gutterBottom mt={2}>
+	return (
+		<>
+			<Typography variant="body2" gutterBottom>
+				{metric?.build}
+			</Typography>
+			<Typography variant="h6" gutterBottom mt={2}>
         What Thoth Changed
-      </Typography>
-      <Divider mb={1} />
-      <ProgressBar
-        value={metric?.added ?? 0}
-        total={total}
-        label={"Added Packages"}
-        mb={1}
-      />
-      <ProgressBar
-        value={metric?.removed ?? 0}
-        total={total}
-        label={"Removed Packages"}
-        mb={1}
-      />
-      <ProgressBar
-        value={metric?.version ?? 0}
-        total={total}
-        label={"Version Changes"}
-      />
-      <Typography variant="h6" mt={3} gutterBottom>
+			</Typography>
+			<Divider mb={1} />
+			<ProgressBar
+				value={metric?.added ?? 0}
+				total={total}
+				label={"Added Packages"}
+				mb={1}
+			/>
+			<ProgressBar
+				value={metric?.removed ?? 0}
+				total={total}
+				label={"Removed Packages"}
+				mb={1}
+			/>
+			<ProgressBar
+				value={metric?.version ?? 0}
+				total={total}
+				label={"Version Changes"}
+			/>
+			<Typography variant="h6" mt={3} gutterBottom>
           Justification Counts
-      </Typography>
-      <Divider mb={1} />
-      {Object.entries(metric?.justification ?? {}).map(([key, value]) => {
-        return (
-            <ProgressBar
-                key={key}
-                value={value}
-                total={justTotal}
-                label={key}
-                mb={1}
-            />
-        );
-      })}
-    </>
-  );
+			</Typography>
+			<Divider mb={1} />
+			{Object.entries(metric?.justification ?? {}).map(([key, value]) => {
+				return (
+					<ProgressBar
+						key={key}
+						value={value}
+						total={justTotal}
+						label={key}
+						mb={1}
+					/>
+				);
+			})}
+		</>
+	);
 };
 
 AdviseMetric.propTypes = {
-    /** The metric object info of aggregated data */
-    metric: PropTypes.shape({
-        /** The number of new dependencies */
-        added: PropTypes.number,
-        /** The number of removed dependencies */
-        removed: PropTypes.number,
-        /** The number of dependencies whose version was changed*/
-        version: PropTypes.number,
-        /** The number of dependencies that did not change*/
-        unchanged: PropTypes.number,
-        /** The number Thoth justification (warnings) that were produced */
-        justification: PropTypes.object,
-    })
- };
+	/** The metric object info of aggregated data */
+	metric: PropTypes.shape({
+		/** The number of new dependencies */
+		added: PropTypes.number,
+		/** The number of removed dependencies */
+		removed: PropTypes.number,
+		/** The number of dependencies whose version was changed*/
+		version: PropTypes.number,
+		/** The number of dependencies that did not change*/
+		unchanged: PropTypes.number,
+		/** The number Thoth justification (warnings) that were produced */
+		justification: PropTypes.object,
+		/** which build is being displayed (new or old) */
+		build: PropTypes.string
+	})
+};

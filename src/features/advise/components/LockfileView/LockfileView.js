@@ -7,10 +7,10 @@ import { makeStyles } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
-  lockfile: {
-    overflow: "scroll",
-    paddingLeft: theme.spacing(1)
-  }
+	lockfile: {
+		overflow: "scroll",
+		paddingLeft: theme.spacing(1)
+	}
 }));
 
 /**
@@ -19,31 +19,31 @@ const useStyles = makeStyles(theme => ({
  *  scroll to certain spot in the lock file
  */
 export const LockfileView = ({ file }) => {
-  const classes = useStyles();
+	const classes = useStyles();
 
-  return (
-    <Typography variant="caption">
-      <pre>
-        <div
-          className={classes.lockfile}
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(file, undefined, 4)?.replaceAll(
-              new RegExp(
-                '("' + Object.keys(file?.default)?.join('"|"') + '")',
-                "g"
-              ),
-              match => {
-                return `<a id="${match.slice(1, -1)}">${match}</a>`;
-              }
-            )
-          }}
-        />
-      </pre>
-    </Typography>
-  );
+	return (
+		<Typography variant="caption">
+			<pre>
+				<div
+					className={classes.lockfile}
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify(file, undefined, 4)?.replaceAll(
+							new RegExp(
+								"(\"" + Object.keys(file?.default)?.join("\"|\"") + "\")",
+								"g"
+							),
+							match => {
+								return `<a id="${match.slice(1, -1)}">${match}</a>`;
+							}
+						)
+					}}
+				/>
+			</pre>
+		</Typography>
+	);
 };
 
 LockfileView.propTypes = {
-    /** The Pipfile.lock json object */
-  file: PropTypes.shape({ default: PropTypes.object.isRequired })
+	/** The Pipfile.lock json object */
+	file: PropTypes.shape({ default: PropTypes.object.isRequired })
 };
