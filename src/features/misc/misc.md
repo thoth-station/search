@@ -15,11 +15,11 @@ _delay_ - how often the function runs (seconds)
 Example
 
 ```jsx static
-import {useInterval} from "./useInterval";
+import { useInterval } from "./useInterval";
 
 function coolFunc() {
     // do something
 }
 
-useInterval(coolFunc, 10)
+useInterval(coolFunc, 10);
 ```

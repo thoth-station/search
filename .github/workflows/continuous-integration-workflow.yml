@@ -33,6 +33,15 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: test
+        run: yarn run test
+
+      - name: format
+        run: yarn run prettier
+
+      - name: lintadded pe
+        run: yarn run lint
+
       - name: Deploy
         run: |
           git config --global user.name $user_name

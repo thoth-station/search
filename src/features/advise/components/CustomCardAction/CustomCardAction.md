@@ -1,5 +1,4 @@
 ```jsx
-
 const [value, setValue] = React.useState("new");
 
 const handleChange = (event, newValue) => {
@@ -7,7 +6,7 @@ const handleChange = (event, newValue) => {
     if (newValue) {
         setValue(newValue);
     }
-}
+};
 
-<CustomCardAction onChange={handleChange} value={value} />
+<CustomCardAction onChange={handleChange} value={value} />;
 ```

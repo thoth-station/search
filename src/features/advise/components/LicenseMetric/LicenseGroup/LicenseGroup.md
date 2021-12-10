@@ -4,14 +4,14 @@
     name="MIT"
     packages={{
         six: {
-            depth: 1
+            depth: 1,
         },
         cachetools: {
-            depth: 0
+            depth: 0,
         },
     }}
     metadata={{
-        isOsiApproved: true
+        isOsiApproved: true,
     }}
 />
 ```
