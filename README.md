@@ -1,6 +1,7 @@
 # Thoth Search 
 ![CI/CD](https://github.com/thoth-station/thoth-search/workflows/CI/CD/badge.svg)
 
+
 This is a React powered web app for displaying Python package metadata and insights using Thoth Advise.
 You can check of the latest build here: [thoth-station.ninja/search](https://thoth-station.ninja/search)
 
