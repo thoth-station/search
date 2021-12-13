@@ -32,14 +32,14 @@ Everything from a feature should be exported from the `index.js` file which beha
 
 You should import stuff from other features only by using:
 
-``` js static
-import {AwesomeComponent} from "features/awesome-feature"
+```js static
+import { AwesomeComponent } from "features/awesome-feature";
 ```
 
 and not
 
-``` js static
-import {AwesomeComponent} from "features/awesome-feature/components/AwesomeComponent"
+```js static
+import { AwesomeComponent } from "features/awesome-feature/components/AwesomeComponent";
 ```
 
 This structure is taken from [github.com/alan2207/bulletproof-react](https://github.com/alan2207/bulletproof-react)

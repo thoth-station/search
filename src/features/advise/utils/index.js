@@ -1,3 +1,3 @@
-export * from "./formatLockfile"
-export * from "./calcTime"
-export * from "./discoverPackageChanges"
+export * from "./formatLockfile";
+export * from "./calcTime";
+export * from "./discoverPackageChanges";

@@ -1,27 +1,29 @@
 ```jsx
-<LicenseMetric metric={{
-    MIT: {
-        packages: {
-            six: {
-                depth: 1
+<LicenseMetric
+    metric={{
+        MIT: {
+            packages: {
+                six: {
+                    depth: 1,
+                },
+                cachetools: {
+                    depth: 0,
+                },
             },
-            cachetools: {
-                depth: 0
+            metadata: {
+                isOsiApproved: true,
             },
         },
-        metadata: {
-            isOsiApproved: true
-        }
-    },
-    Unknown: {
-        packages: {
-            unknownPackage: {
-                depth: 3
-            }
+        Unknown: {
+            packages: {
+                unknownPackage: {
+                    depth: 3,
+                },
+            },
+            metadata: {
+                isOsiApproved: false,
+            },
         },
-        metadata: {
-            isOsiApproved: false
-        }
-    }
-}}/>
+    }}
+/>
 ```

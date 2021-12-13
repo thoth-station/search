@@ -1,3 +1,3 @@
-export * from "./SelectedPackage"
-export * from "./Popup"
-export * from "./NetworkGraphView"
+export * from "./SelectedPackage";
+export * from "./Popup";
+export * from "./NetworkGraphView";

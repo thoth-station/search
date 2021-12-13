@@ -1,2 +1,2 @@
-export * from "./getPackageMetadata"
-export * from "./getFile"
+export * from "./getPackageMetadata";
+export * from "./getFile";

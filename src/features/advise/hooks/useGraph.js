@@ -1,11 +1,11 @@
-import {useMemo, useEffect, useState} from "react";
+import { useMemo, useEffect, useState } from "react";
 
 // utils
 import { Graph } from "utils/Graph";
 
 // api
-import {usePackagesDependencies} from "../api";
-import {usePackagesMetadata} from "features/misc/api";
+import { usePackagesDependencies } from "../api";
+import { usePackagesMetadata } from "features/misc/api";
 
 export function useGraph(data, knownRoots) {
     const allMetadata = usePackagesMetadata(data);
@@ -15,64 +15,60 @@ export function useGraph(data, knownRoots) {
         const status = {
             loading: false,
             error: false,
-            success: false
-        }
-        if(allMetadata.length > 0) {
+            success: false,
+        };
+        if (allMetadata.length > 0) {
             allMetadata.forEach(query => {
                 switch (query.status) {
                     case "error":
-                        status.error = true
+                        status.error = true;
                         break;
                     case "success":
-                        status.success = true
+                        status.success = true;
                         break;
                     default:
                         status.loading = true;
                 }
-            })
-        }
-        else {
-            return "loading"
+            });
+        } else {
+            return "loading";
         }
 
-       if(status.error) {
-           return "error"
-       }
-       else if(status.loading) {
-           return "loading"
-       }
-       else {
-           return "success"
-       }
-
-    }, [allMetadata])
+        if (status.error) {
+            return "error";
+        } else if (status.loading) {
+            return "loading";
+        } else {
+            return "success";
+        }
+    }, [allMetadata]);
 
     const allDependenciesStatus = useMemo(() => {
         let isLoading = false;
 
-        if(allDependencies.length > 0) {
+        if (allDependencies.length > 0) {
             allDependencies.forEach(query => {
-                if(query.status === "loading") {
-                    isLoading = true
+                if (query.status === "loading") {
+                    isLoading = true;
                 }
-            })
-        }
-        else {
-            return "loading"
+            });
+        } else {
+            return "loading";
         }
 
         return isLoading ? "loading" : "success";
-
-    }, [allDependencies])
+    }, [allDependencies]);
 
     const [graph, setGraph] = useState();
 
     useEffect(() => {
-        if(allMetadataStatus === "error") {
+        if (allMetadataStatus === "error") {
             // handle error
             return;
-        }
-        else if (allDependenciesStatus === "loading" || allMetadataStatus === "loading") {
+        } else if (
+            allDependenciesStatus === "loading" ||
+            allMetadataStatus === "loading"
+        ) {
             // not done loading
             return;
         }
@@ -82,11 +78,14 @@ export function useGraph(data, knownRoots) {
 
         // create dependencies object
         const reformattedDeps = new Map();
-         allDependencies.forEach(query => {
-            if(query.isSuccess) {
-                reformattedDeps.set(query.data.data.parameters.name, query.data.data.dependencies)
+        allDependencies.forEach(query => {
+            if (query.isSuccess) {
+                reformattedDeps.set(
+                    query.data.data.parameters.name,
+                    query.data.data.dependencies,
+                );
             }
-        })
+        });
 
         // merge data together
         allMetadata.forEach(query => {
@@ -95,20 +94,20 @@ export function useGraph(data, knownRoots) {
             const value = {
                 id: metadata.name.toLowerCase().replace(".", "-"),
                 label: metadata.name,
-                metadata: metadata
+                metadata: metadata,
             };
 
             // add package to graph
             const node = tempGraph.addVertex(value.id, value);
             node.parents = new Set();
-        })
+        });
 
         const notRoot = [];
-         // cross check what dependencies the package has through thoth's database
+        // cross check what dependencies the package has through thoth's database
         // this is used to setup edges between nodes in the graph
         Array.from(tempGraph.nodes.entries()).forEach(([key, value]) => {
             // get dependencies from thoth
-            if(reformattedDeps.has(key)) {
+            if (reformattedDeps.has(key)) {
                 reformattedDeps.get(key).forEach(dep => {
                     const adjacentNode = tempGraph.nodes.get(dep.name);
 
@@ -121,8 +120,7 @@ export function useGraph(data, knownRoots) {
                         notRoot.push(adjacentNode.value.id);
                     }
                 });
-            }
-            else {
+            } else {
                 // if no record in thoth, then use metadata dependencies
                 // these are not always as accurate
                 if (value?.value?.metadata?.requires_dist) {
@@ -132,7 +130,7 @@ export function useGraph(data, knownRoots) {
                             adj
                                 .split(" ", 1)[0]
                                 .toLowerCase()
-                                .replace(".", "-")
+                                .replace(".", "-"),
                         );
 
                         // if package exists in lockfile
@@ -146,7 +144,7 @@ export function useGraph(data, knownRoots) {
                     });
                 }
             }
-        })
+        });
 
         /**
          * Create graph using a traversal algorithm
@@ -156,7 +154,7 @@ export function useGraph(data, knownRoots) {
         const app = tempGraph.addVertex("*App", {
             id: "*App",
             label: "App",
-            depth: -1
+            depth: -1,
         });
 
         notRoot.push("*App");
@@ -166,7 +164,10 @@ export function useGraph(data, knownRoots) {
 
         // get roots and connect to app
         tempGraph.nodes.forEach((value, key, map) => {
-            if (!notRoot.includes(key) || Object.keys(knownRoots).includes(key)) {
+            if (
+                !notRoot.includes(key) ||
+                Object.keys(knownRoots).includes(key)
+            ) {
                 const node = map.get(key);
                 node.value.depth = 0;
                 node.parents.add("*App");
@@ -187,17 +188,15 @@ export function useGraph(data, knownRoots) {
                     // update depth
                     adjs[i].value.depth = Math.min(
                         node.value.depth + 1,
-                        adjs[i].value.depth ?? node.value.depth + 2
+                        adjs[i].value.depth ?? node.value.depth + 2,
                     );
                     visitList.push(adjs[i]);
                 }
             }
         }
 
-        setGraph(tempGraph)
-// eslint-disable-next-line react-hooks/exhaustive-deps
-     }, [allMetadataStatus, allDependenciesStatus, knownRoots]);
+        setGraph(tempGraph);
+    }, [allMetadataStatus, allDependenciesStatus, knownRoots]);
 
-    return graph
-
+    return graph;
 }

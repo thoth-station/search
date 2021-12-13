@@ -1,1 +1,1 @@
-export {SelectedPackage} from "./components"
+export { SelectedPackage } from "./components";

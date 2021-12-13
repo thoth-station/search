@@ -1,6 +1,7 @@
-import * as React from 'react';
-import {Tab, Tabs} from "@material-ui/core";
-import {Link as RouterLink, useLocation} from 'react-router-dom';
+import * as React from "react";
+import { Tab, Tabs } from "@material-ui/core";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
 
 /**
  * A layout used for the advise feature tabs. It formats the tabs as router links.
@@ -21,19 +22,22 @@ export const AdviseLayout = ({ children, header }) => {
                         label="Summary"
                         value={"summary"}
                         component={RouterLink}
-                        to="summary">
-                    </Tab>
+                        to="summary"
+                    />
                     <Tab
                         label="Advise Results"
                         value={"details"}
                         component={RouterLink}
-                        to="details">
-                    </Tab>
+                        to="details"
+                    />
                 </Tabs>
             </div>
-            <div>
-                {children}
-            </div>
+            <div>{children}</div>
         </>
     );
+};
+
+AdviseLayout.propTypes = {
+    children: PropTypes.node,
+    header: PropTypes.element,
 };

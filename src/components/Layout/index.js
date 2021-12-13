@@ -1,2 +1,2 @@
-export * from "./MainLayout"
-export * from "./AdviseLayout"
+export * from "./MainLayout";
+export * from "./AdviseLayout";

@@ -11,9 +11,7 @@ const whyRemoved = (start, packages) => {
         if (node && !visited.has(node)) {
             visited.set(node);
 
-            if (node.key === "*App") {
-                continue;
-            } else if (node.value.change === "version") {
+            if (node.value.change === "version") {
                 reasonNodes.push(node);
             } else {
                 node.parents.forEach(adj => {
@@ -30,22 +28,22 @@ const whyRemoved = (start, packages) => {
         const reason =
             node.value.change === "version"
                 ? " had its version changed to " +
-                node.value.version +
-                " from " +
-                node.value.oldVersion +
-                ". Version " +
-                node.value.oldVersion +
-                " of " +
-                node.key +
-                " included package " +
-                start.value.label +
-                " as a dependency, where version " +
-                node.value.version +
-                " does not. "
+                  node.value.version +
+                  " from " +
+                  node.value.oldVersion +
+                  ". Version " +
+                  node.value.oldVersion +
+                  " of " +
+                  node.key +
+                  " included package " +
+                  start.value.label +
+                  " as a dependency, where version " +
+                  node.value.version +
+                  " does not. "
                 : " did not have any dependents and was removed by the Thoth resolver.";
         return {
             package: node.key,
-            reason: reason
+            reason: reason,
         };
     });
 };
@@ -61,17 +59,19 @@ export const discoverPackageChanges = (nodes, justifications) => {
             if (justifiedPackages.has(justification.package_name)) {
                 justifiedPackages.set(justification.package_name, [
                     ...justifiedPackages.get(justification.package_name),
-                    justification
+                    justification,
                 ]);
             } else {
-                justifiedPackages.set(justification.package_name, [justification]);
+                justifiedPackages.set(justification.package_name, [
+                    justification,
+                ]);
             }
         }
     });
 
     nodes.forEach(node => {
         let justification = {
-            package: node.key
+            package: node.key,
         };
 
         if (node.value.change === "removed") {
@@ -111,7 +111,7 @@ export const discoverPackageChanges = (nodes, justifications) => {
             const reasons = justifiedPackages.get(node.key);
             justification = {
                 ...justification,
-                thoth: reasons
+                thoth: reasons,
             };
         }
 

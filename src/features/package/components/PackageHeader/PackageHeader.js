@@ -1,3 +1,5 @@
+import React from "react";
+
 // material-ui
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
@@ -13,61 +15,66 @@ import PropTypes from "prop-types";
 
 // component styling
 const useStyles = makeStyles(theme => ({
-  titleRow: {
-    display: "flex",
-    alignItems: "center"
-  },
-  marginLeft: {
-    marginLeft: theme.spacing(2)
-  },
-  linksRow: {
-    display: "flex"
-  }
+    titleRow: {
+        display: "flex",
+        alignItems: "center",
+    },
+    marginLeft: {
+        marginLeft: theme.spacing(2),
+    },
+    linksRow: {
+        display: "flex",
+    },
 }));
 
 /**
  * A header for package metadata.
  */
-export const PackageHeader = ({metadata}) => {
-  const classes = useStyles();
+export const PackageHeader = ({ metadata }) => {
+    const classes = useStyles();
 
-  return (
-    <div>
-      <div className={classes.titleRow}>
-        <Typography variant="h4">
-          <b>{metadata?.name}</b>
-        </Typography>
-        <Typography ml={2} variant="h6">
-          {metadata?.version ?? "NaN"}
-        </Typography>
-      </div>
+    return (
+        <div>
+            <div className={classes.titleRow}>
+                <Typography variant="h4">
+                    <b>{metadata?.name}</b>
+                </Typography>
+                <Typography ml={2} variant="h6">
+                    {metadata?.version ?? "NaN"}
+                </Typography>
+            </div>
 
-      <Typography gutterBottom variant="body1">
-        {metadata?.summary ?? "NaN"}
-      </Typography>
-      <div className={classes.linksRow}>
-        <IconText text={metadata?.license ?? "NaN"} icon={<GavelIcon />} />
-        <IconText
-          className={classes.marginLeft}
-          text={
-            "Latest version published " +
-            timeSince(
-              new Date(
-                  metadata?.all_versions?.[metadata?.latest_version]?.date
-              )
-            ) +
-            " ago."
-          }
-          icon={<BookmarkIcon />}
-        />
-      </div>
-    </div>
-  );
+            <Typography gutterBottom variant="body1">
+                {metadata?.summary ?? "NaN"}
+            </Typography>
+            <div className={classes.linksRow}>
+                <IconText
+                    text={metadata?.license ?? "NaN"}
+                    icon={<GavelIcon />}
+                />
+                <IconText
+                    className={classes.marginLeft}
+                    text={
+                        "Latest version published " +
+                        timeSince(
+                            new Date(
+                                metadata?.all_versions?.[
+                                    metadata?.latest_version
+                                ]?.date,
+                            ),
+                        ) +
+                        " ago."
+                    }
+                    icon={<BookmarkIcon />}
+                />
+            </div>
+        </div>
+    );
 };
 
 PackageHeader.propTypes = {
     /** Package metadata object.*/
-    package_data: PropTypes.shape({
+    metadata: PropTypes.shape({
         /** Name of package. */
         name: PropTypes.string.isRequired,
         /** Version of package. */
@@ -88,6 +95,6 @@ PackageHeader.propTypes = {
          * }
          * ```
          */
-        all_versions: PropTypes.object
-    })
-}
+        all_versions: PropTypes.object,
+    }),
+};

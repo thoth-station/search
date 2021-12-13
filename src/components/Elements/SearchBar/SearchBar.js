@@ -1,5 +1,7 @@
+import React from "react";
+
 // material ui
-import {Typography, Box, Paper, InputBase} from "@material-ui/core";
+import { Typography, Box, Paper, InputBase } from "@material-ui/core";
 
 // react
 import PropTypes from "prop-types";
@@ -16,7 +18,7 @@ const SearchBar = props => {
         boxprops,
         error = false,
         lefticon,
-        righticon
+        righticon,
     } = props;
 
     return (
@@ -36,7 +38,7 @@ const SearchBar = props => {
                     alignItems: "center",
                     borderColor: error ? "red" : undefined,
                     paddingLeft: 2,
-                    paddingRight: 2
+                    paddingRight: 2,
                 }}
                 {...boxprops}
             >
@@ -46,9 +48,9 @@ const SearchBar = props => {
                     placeholder={helpertext}
                     error={error}
                     onChange={e => onChange(e.target.value)}
-                    onKeyPress={(ev) => {
-                        if (ev.key === 'Enter') {
-                            onEnter()
+                    onKeyPress={ev => {
+                        if (ev.key === "Enter") {
+                            onEnter();
                             ev.preventDefault();
                         }
                     }}
@@ -59,7 +61,6 @@ const SearchBar = props => {
         </Box>
     );
 };
-
 
 SearchBar.propTypes = {
     /** The error text or default label text */
@@ -73,9 +74,11 @@ SearchBar.propTypes = {
     /** if there is an error or not */
     error: PropTypes.bool,
     /** icon displayed on the left of the text box */
-    lefticon: PropTypes.element,
+    lefticon: PropTypes.node,
     /** icon displayed on the right of the text box */
-    righticon: PropTypes.element
+    righticon: PropTypes.node,
+    /** Props added to the text box */
+    boxprops: PropTypes.any,
 };
 
 export default SearchBar;

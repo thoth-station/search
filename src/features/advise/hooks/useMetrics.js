@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export function useMetrics(oldGraph, newGraph, mergedGraph, adviseDocument) {
     const adviseMetric = useAdviseMetric(mergedGraph, adviseDocument);
@@ -10,9 +10,9 @@ export function useMetrics(oldGraph, newGraph, mergedGraph, adviseDocument) {
     return useMemo(() => {
         const base = {
             advise: null,
-            oldGraph: {dependencies: null, licenses: null},
-            newGraph: {dependencies: null, licenses: null}
-        }
+            oldGraph: { dependencies: null, licenses: null },
+            newGraph: { dependencies: null, licenses: null },
+        };
 
         if (adviseMetric) {
             base.advise = adviseMetric;
@@ -30,15 +30,18 @@ export function useMetrics(oldGraph, newGraph, mergedGraph, adviseDocument) {
             base.newGraph.licenses = newLicenseMetric;
         }
 
-        return base
-
-
-    }, [adviseMetric, oldDependencyMetric, oldLicenseMetric, newDependencyMetric, newLicenseMetric])
-
+        return base;
+    }, [
+        adviseMetric,
+        oldDependencyMetric,
+        oldLicenseMetric,
+        newDependencyMetric,
+        newLicenseMetric,
+    ]);
 }
 
-export const useDependencyMetric = (graph) => {
-    const [metric, setMetric] = useState()
+export const useDependencyMetric = graph => {
+    const [metric, setMetric] = useState();
 
     useEffect(() => {
         if (!graph) {
@@ -47,7 +50,7 @@ export const useDependencyMetric = (graph) => {
 
         let base = {
             all: {},
-            roots: {}
+            roots: {},
         };
 
         const roots = [];
@@ -79,34 +82,34 @@ export const useDependencyMetric = (graph) => {
                     node.value.depth === 0
                         ? "roots"
                         : node.value.depth === 1
-                            ? "direct"
-                            : "indirect";
+                        ? "direct"
+                        : "indirect";
 
                 // dependency metric
                 base = {
                     all: {
                         ...base.all,
-                        [depth]: (base.all[depth] ?? 0) + 1
+                        [depth]: (base.all[depth] ?? 0) + 1,
                     },
                     roots: {
                         ...base.roots,
                         [root]: {
                             ...(base.roots[root] ?? null),
-                            [depth]: (base.roots?.[root]?.[depth] ?? 0) + 1
-                        }
-                    }
+                            [depth]: (base.roots?.[root]?.[depth] ?? 0) + 1,
+                        },
+                    },
                 };
             });
         });
 
-        setMetric(base)
+        setMetric(base);
     }, [graph]);
 
     return metric;
-}
+};
 
-export const useLicenseMetric = (graph) => {
-    const [metric, setMetric] = useState()
+export const useLicenseMetric = graph => {
+    const [metric, setMetric] = useState();
 
     useEffect(() => {
         if (!graph) {
@@ -123,7 +126,6 @@ export const useLicenseMetric = (graph) => {
         });
 
         const visited = new Set();
-
 
         // for each starting node
         roots.forEach(root => {
@@ -154,15 +156,17 @@ export const useLicenseMetric = (graph) => {
                     if (parsed[0] === "License") {
                         if (parsed[1] === "OSI Approved") {
                             packageLicenses.push({
-                                generalLicense: parsed?.[2] ?? node.value.metadata.license,
+                                generalLicense:
+                                    parsed?.[2] ?? node.value.metadata.license,
                                 specificLicense: node.value.metadata.license,
-                                isOsiApproved: true
+                                isOsiApproved: true,
                             });
                         } else {
                             packageLicenses.push({
-                                generalLicense: parsed?.[1] ?? node.value.metadata.license,
+                                generalLicense:
+                                    parsed?.[1] ?? node.value.metadata.license,
                                 specificLicense: node.value.metadata.license,
-                                isOsiApproved: false
+                                isOsiApproved: false,
                             });
                         }
                     }
@@ -172,19 +176,19 @@ export const useLicenseMetric = (graph) => {
                     packageLicenses.push({
                         generalLicense: node.value.metadata.license,
                         specificLicense: node.value.metadata.license,
-                        isOsiApproved: null
+                        isOsiApproved: null,
                     });
                 }
 
                 // get specific classification
                 packageLicenses.forEach(license => {
-                    if(!base[license.generalLicense]) {
+                    if (!base[license.generalLicense]) {
                         base[license.generalLicense] = {
                             packages: {},
                             metadata: {
-                                isOsiApproved: license.isOsiApproved
-                            }
-                        }
+                                isOsiApproved: license.isOsiApproved,
+                            },
+                        };
                     }
 
                     base = {
@@ -192,31 +196,31 @@ export const useLicenseMetric = (graph) => {
                         [license.generalLicense]: {
                             ...base[license.generalLicense],
                             packages: {
-                                ...(base[license.generalLicense].packages ?? null),
+                                ...(base[license.generalLicense].packages ??
+                                    null),
                                 [node.value.label]: {
                                     depth: node.value.depth,
-                                    specific: license.specificLicense
+                                    specific: license.specificLicense,
                                 },
-                            }
-                        }
+                            },
+                        },
                     };
-
                 });
             });
         });
 
-        setMetric(base)
+        setMetric(base);
     }, [graph]);
 
-    return metric
-}
+    return metric;
+};
 
 export const useAdviseMetric = (graph, adviseDocument) => {
-    const [metric, setMetric] = useState()
+    const [metric, setMetric] = useState();
 
     useEffect(() => {
         if (!graph || !adviseDocument) {
-          return;
+            return;
         }
 
         const base = {
@@ -225,8 +229,8 @@ export const useAdviseMetric = (graph, adviseDocument) => {
             version: 0,
             unchanged: 0,
             justification: {},
-            build: null
-        }
+            build: null,
+        };
 
         // package changes
         graph.nodes.forEach(node => {
@@ -251,14 +255,15 @@ export const useAdviseMetric = (graph, adviseDocument) => {
         //justification counts
         adviseDocument?.result?.report?.products?.[0]?.justification.forEach(
             justification => {
-                base.justification[justification.type] = base.justification[justification.type]
+                base.justification[justification.type] = base.justification[
+                    justification.type
+                ]
                     ? base.justification[justification.type] + 1
                     : 1;
-            }
+            },
         );
-        setMetric(base)
-
+        setMetric(base);
     }, [graph, adviseDocument]);
 
-    return metric
-}
+    return metric;
+};

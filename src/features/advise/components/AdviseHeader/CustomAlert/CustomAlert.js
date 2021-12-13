@@ -1,3 +1,4 @@
+import React from "react";
 import { Button, Alert } from "@material-ui/core";
 import PropTypes from "prop-types";
 
@@ -5,19 +6,19 @@ import PropTypes from "prop-types";
  * A custom alert card.
  */
 const CustomAlert = ({ info, ...props }) => {
-  return (
-    <Alert
-      className={props?.className}
-      action={
-        <Button color="inherit" size="small" href={info?.link}>
-          DETAILS
-        </Button>
-      }
-      severity={info.type.toLowerCase()}
-    >
-      {info?.message}
-    </Alert>
-  );
+    return (
+        <Alert
+            className={props?.className}
+            action={
+                <Button color="inherit" size="small" href={info?.link}>
+                    DETAILS
+                </Button>
+            }
+            severity={info.type.toLowerCase()}
+        >
+            {info?.message}
+        </Alert>
+    );
 };
 
 CustomAlert.propTypes = {
@@ -28,10 +29,11 @@ CustomAlert.propTypes = {
         /** Text displayed in the alert. */
         message: PropTypes.string.isRequired,
         /** Severity (color) of alert: `["ERROR", "WARNING", "INFO", "SUCCESS"]`. */
-        type: PropTypes.oneOf(["ERROR", "WARNING", "INFO", "SUCCESS"]).isRequired
+        type: PropTypes.oneOf(["ERROR", "WARNING", "INFO", "SUCCESS"])
+            .isRequired,
     }).isRequired,
     /** The `material-ui` styling classname */
-    classname: PropTypes.string
-}
+    className: PropTypes.string,
+};
 
 export default CustomAlert;

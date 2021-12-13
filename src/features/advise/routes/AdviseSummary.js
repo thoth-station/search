@@ -1,10 +1,15 @@
 import React from "react";
-import {Grid} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import InfoCard from "components/Elements/InfoCard";
-import {DependenciesMetric, CustomCardAction, LicenseMetric, AdviseMetric} from "../components";
+import {
+    DependenciesMetric,
+    CustomCardAction,
+    LicenseMetric,
+    AdviseMetric,
+} from "../components";
+import PropTypes from "prop-types";
 
-
-export const AdviseSummary = ({metrics}) => {
+export const AdviseSummary = ({ metrics }) => {
     const [pipfile, setPipfile] = React.useState("newGraph");
 
     const handlePipfile = (event, newPipfile) => {
@@ -18,7 +23,7 @@ export const AdviseSummary = ({metrics}) => {
             <Grid item xs={12} md={6}>
                 <InfoCard
                     cardMeta={{
-                        title: "Thoth Advise Summary"
+                        title: "Thoth Advise Summary",
                     }}
                     cardBody={<AdviseMetric metric={metrics?.advise} />}
                 />
@@ -26,7 +31,7 @@ export const AdviseSummary = ({metrics}) => {
             <Grid item xs={12} md={6}>
                 <InfoCard
                     cardMeta={{
-                        title: "Dependencies Summary"
+                        title: "Dependencies Summary",
                     }}
                     cardBody={
                         <DependenciesMetric
@@ -35,23 +40,33 @@ export const AdviseSummary = ({metrics}) => {
                         />
                     }
                     cardAction={
-                        <CustomCardAction value={pipfile} onChange={handlePipfile} />
+                        <CustomCardAction
+                            value={pipfile}
+                            onChange={handlePipfile}
+                        />
                     }
                 />
             </Grid>
             <Grid item xs={12} md={6}>
                 <InfoCard
                     cardMeta={{
-                        title: "Licenses Summary"
+                        title: "Licenses Summary",
                     }}
                     cardBody={
                         <LicenseMetric metric={metrics?.[pipfile]?.licenses} />
                     }
                     cardAction={
-                        <CustomCardAction value={pipfile} onChange={handlePipfile} />
+                        <CustomCardAction
+                            value={pipfile}
+                            onChange={handlePipfile}
+                        />
                     }
                 />
             </Grid>
         </Grid>
     );
+};
+
+AdviseSummary.propTypes = {
+    metrics: PropTypes.object,
 };

@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // material-ui
-import {Typography, Divider, Skeleton, Box} from "@material-ui/core";
+import { Typography, Divider, Skeleton, Box } from "@material-ui/core";
 
 // local
 import ProgressBar from "components/Elements/ProgressBar";
@@ -13,62 +13,66 @@ import ProgressBar from "components/Elements/ProgressBar";
  * graph and the Thoth made dependency graph.
  */
 export const AdviseMetric = ({ metric }) => {
-  const total = metric?.added + metric?.removed + metric?.version + metric?.unchanged;
-  const justTotal = Object.values(metric?.justification ?? {}).reduce((a, b) => a + b, 0);
+    const total =
+        metric?.added + metric?.removed + metric?.version + metric?.unchanged;
+    const justTotal = Object.values(metric?.justification ?? {}).reduce(
+        (a, b) => a + b,
+        0,
+    );
 
-  if(!metric) {
-      return (
-          <Box>
-              <Skeleton />
-              <Skeleton />
-              <Skeleton width={"60%"}/>
-          </Box>
-      )
-  }
+    if (!metric) {
+        return (
+            <Box>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton width={"60%"} />
+            </Box>
+        );
+    }
 
     return (
-    <>
-      <Typography variant="body2" gutterBottom>
-        {metric?.build}
-      </Typography>
-      <Typography variant="h6" gutterBottom mt={2}>
-        What Thoth Changed
-      </Typography>
-      <Divider mb={1} />
-      <ProgressBar
-        value={metric?.added ?? 0}
-        total={total}
-        label={"Added Packages"}
-        mb={1}
-      />
-      <ProgressBar
-        value={metric?.removed ?? 0}
-        total={total}
-        label={"Removed Packages"}
-        mb={1}
-      />
-      <ProgressBar
-        value={metric?.version ?? 0}
-        total={total}
-        label={"Version Changes"}
-      />
-      <Typography variant="h6" mt={3} gutterBottom>
-          Justification Counts
-      </Typography>
-      <Divider mb={1} />
-      {Object.entries(metric?.justification ?? {}).map(([key, value]) => {
-        return (
+        <>
+            <Typography variant="body2" gutterBottom>
+                {metric?.build}
+            </Typography>
+            <Typography variant="h6" gutterBottom mt={2}>
+                What Thoth Changed
+            </Typography>
+            <Divider mb={1} />
             <ProgressBar
-                key={key}
-                value={value}
-                total={justTotal}
-                label={key}
+                value={metric?.added ?? 0}
+                total={total}
+                label={"Added Packages"}
                 mb={1}
             />
-        );
-      })}
-    </>
-  );
+            <ProgressBar
+                value={metric?.removed ?? 0}
+                total={total}
+                label={"Removed Packages"}
+                mb={1}
+            />
+            <ProgressBar
+                value={metric?.version ?? 0}
+                total={total}
+                label={"Version Changes"}
+            />
+            <Typography variant="h6" mt={3} gutterBottom>
+                Justification Counts
+            </Typography>
+            <Divider mb={1} />
+            {Object.entries(metric?.justification ?? {}).map(([key, value]) => {
+                return (
+                    <ProgressBar
+                        key={key}
+                        value={value}
+                        total={justTotal}
+                        label={key}
+                        mb={1}
+                    />
+                );
+            })}
+        </>
+    );
 };
 
 AdviseMetric.propTypes = {
@@ -84,5 +88,7 @@ AdviseMetric.propTypes = {
         unchanged: PropTypes.number,
         /** The number Thoth justification (warnings) that were produced */
         justification: PropTypes.object,
-    })
- };
+        /** which build is being displayed (new or old) */
+        build: PropTypes.string,
+    }),
+};

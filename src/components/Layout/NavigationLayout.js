@@ -1,6 +1,7 @@
-import * as React from 'react';
-import {useNavigate} from 'react-router-dom';
-import {Button} from "@material-ui/core";
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@material-ui/core";
+import PropTypes from "prop-types";
 
 /**
  * Layout is used in most of the app and allows for backwards navigation.
@@ -11,9 +12,11 @@ export const NavigationLayout = ({ children }) => {
     return (
         <>
             <Button onClick={() => navigate("/")}>go back</Button>
-            <div>
-                {children}
-            </div>
+            <div>{children}</div>
         </>
     );
+};
+
+NavigationLayout.propTypes = {
+    children: PropTypes.node,
 };

@@ -1,10 +1,10 @@
-import {useEffect, useState} from "react";
-import {useTheme} from "@material-ui/core/styles";
-import {Graph} from "utils/Graph";
-import {discoverPackageChanges} from "../utils";
+import { useEffect, useState } from "react";
+import { useTheme } from "@material-ui/core/styles";
+import { Graph } from "utils/Graph";
+import { discoverPackageChanges } from "../utils";
 
 export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
-    const [graph, setGraph] = useState()
+    const [graph, setGraph] = useState();
     const theme = useTheme();
 
     useEffect(() => {
@@ -26,15 +26,17 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                     ...combinedNode.value,
                     change: "added",
                     label:
-                        value.value.label + " " + (value?.value?.metadata?.version ?? ""),
+                        value.value.label +
+                        " " +
+                        (value?.value?.metadata?.version ?? ""),
                     font: {
-                        color: theme.palette.success.main
+                        color: theme.palette.success.main,
                     },
                     color: theme.palette.success.main,
                     version: value?.value?.metadata?.version ?? "",
                     dependencies: value.adjacents.size,
                     license: value?.value?.metadata?.license ?? "",
-                    lockfile: ["new"]
+                    lockfile: ["new"],
                 };
             }
             // if the graph is not new then it is either equal or the version changed
@@ -43,10 +45,12 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                 combinedNode.value = {
                     ...combinedNode.value,
                     label:
-                        value.value.label + " " + (value?.value?.metadata?.version ?? ""),
+                        value.value.label +
+                        " " +
+                        (value?.value?.metadata?.version ?? ""),
                     dependencies: value.adjacents.size,
                     license: value?.value?.metadata?.license ?? "",
-                    lockfile: ["new", "old"]
+                    lockfile: ["new", "old"],
                 };
                 // if the nodes are equal (version are the same)
                 if (
@@ -56,7 +60,7 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                     combinedNode.value = {
                         ...combinedNode.value,
                         version: value?.value?.metadata?.version ?? "",
-                        change: "unchanged"
+                        change: "unchanged",
                     };
                 }
                 // if the version changed
@@ -65,17 +69,19 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                         ...combinedNode.value,
                         change: "version",
                         version: value?.value?.metadata?.version ?? "",
-                        oldVersion: oldGraph.nodes.get(key)?.value?.metadata?.version ?? "",
+                        oldVersion:
+                            oldGraph.nodes.get(key)?.value?.metadata?.version ??
+                            "",
                         font: {
-                            color: theme.palette.success.main
-                        }
+                            color: theme.palette.success.main,
+                        },
                     };
 
                     combinedNode.parents = [
                         ...new Set([
                             ...combinedNode.parents,
-                            ...oldGraph.nodes.get(key)?.parents
-                        ])
+                            ...(oldGraph.nodes.get(key)?.parents ?? []),
+                        ]),
                     ];
 
                     // merge the dependencies because they could be different
@@ -103,15 +109,17 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                     ...combinedNode.value,
                     change: "removed",
                     label:
-                        value.value.label + " " + (value?.value?.metadata?.version ?? ""),
+                        value.value.label +
+                        " " +
+                        (value?.value?.metadata?.version ?? ""),
                     font: {
-                        color: theme.palette.error.main
+                        color: theme.palette.error.main,
                     },
                     color: theme.palette.error.main,
                     version: value?.value?.metadata?.version ?? "",
                     dependencies: value.adjacents.size,
                     license: value?.value?.metadata?.license ?? "",
-                    lockfile: ["old"]
+                    lockfile: ["old"],
                 };
 
                 mergedGraph.nodes.set(key, combinedNode);
@@ -119,38 +127,40 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
         });
 
         // add edges from old graph
-        oldGraph.nodes.forEach((value) => {
+        oldGraph.nodes.forEach(value => {
             // set package edges
             value.adjacents.forEach(adj => {
                 visGraphEdges.push({
                     to: value.value.id,
                     from: adj.value.id,
-                    lockfile: "old"
+                    lockfile: "old",
                 });
             });
         });
 
         // add edges from new graph
-        newGraph.nodes.forEach((value) => {
+        newGraph.nodes.forEach(value => {
             // set package edges
             value.adjacents.forEach(adj => {
                 visGraphEdges.push({
                     to: value.value.id,
                     from: adj.value.id,
-                    lockfile: "new"
+                    lockfile: "new",
                 });
             });
         });
 
         // set justifications
-        discoverPackageChanges(mergedGraph.nodes, adviseDocument.result.report?.products?.[0]?.justification);
+        discoverPackageChanges(
+            mergedGraph.nodes,
+            adviseDocument.result.report?.products?.[0]?.justification,
+        );
 
         // add edges to merged graph Object
         mergedGraph["visEdges"] = visGraphEdges;
 
-        setGraph(mergedGraph)
-    }, [oldGraph, newGraph, adviseDocument, theme])
+        setGraph(mergedGraph);
+    }, [oldGraph, newGraph, adviseDocument, theme]);
 
-
-    return graph
-}
+    return graph;
+};

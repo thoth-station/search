@@ -1,1 +1,1 @@
-export * from "./useInterval"
+export * from "./useInterval";

@@ -1,8 +1,9 @@
 # Thoth Search
-![CI/CD](https://github.com/gkrumbach07/thoth-search/workflows/CI/CD/badge.svg)
+![CI/CD](https://github.com/thoth-station/thoth-search/workflows/CI/CD/badge.svg)
+
 
 This is a React powered web app for displaying Python package metadata and insights using Thoth Advise.
-You can check of the latest build here: [gkrumbach07.github.io/thoth-search](https://gkrumbach07.github.io/thoth-search)
+You can check of the latest build here: [thoth-station.ninja/search](https://thoth-station.ninja/search)
 
 ## See a bug?
 Create an issue describing the bug and how to reproduce it. It helps if you include the advisor ID or package name and version with your issue.

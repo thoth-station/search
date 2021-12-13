@@ -4,7 +4,10 @@ export function getGitHubFileText(githubRepo, fileName) {
 
     if (url.hostname === "github.com") {
         return fetch(
-            "https://raw.githubusercontent.com" + url.pathname + "/master/" + fileName
+            "https://raw.githubusercontent.com" +
+                url.pathname +
+                "/master/" +
+                fileName,
         )
             .then(response => response.text())
             .then(response => {

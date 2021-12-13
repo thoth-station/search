@@ -1,5 +1,5 @@
 ```jsx
-import {useState} from "react";
+import { useState } from "react";
 
 const [order, setOrder] = useState("asc");
 const [orderBy, setOrderBy] = React.useState("name");
@@ -14,5 +14,5 @@ const handleRequestSort = (event, property) => {
     orderBy={orderBy}
     order={order}
     onRequestSort={handleRequestSort}
-/>
+/>;
 ```

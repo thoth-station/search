@@ -1,6 +1,7 @@
-import * as React from 'react';
-import {makeStyles} from "@material-ui/styles";
-import {Footer} from "../Footer";
+import * as React from "react";
+import { makeStyles } from "@material-ui/styles";
+import { Footer } from "../Footer";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -12,7 +13,6 @@ const useStyles = makeStyles(theme => ({
         marginBottom: theme.spacing(15),
         minHeight: "100vh",
     },
-
 }));
 
 /**
@@ -23,11 +23,12 @@ export const MainLayout = ({ children }) => {
 
     return (
         <>
-            <div className={classes.root}>
-                {children}
-            </div>
+            <div className={classes.root}>{children}</div>
             <Footer />
         </>
-
     );
+};
+
+MainLayout.propTypes = {
+    children: PropTypes.node,
 };

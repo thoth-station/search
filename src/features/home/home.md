@@ -2,6 +2,7 @@ The home feature scopes for the landing page off the app. The core functionaliti
 package and searching/building a Thoth Advise report.
 
 ### 📄 Pages
+
 There is only one page but it can be split into two tabs: **package search** and **advise report search**.
 
 The **package search** tab consists of a single search bar which invokes the `usePackageMetadata` hook.
@@ -11,6 +12,7 @@ an advise report. Searching redirects to the advise feature and building invokes
 to start the Thoth Advise process server side.
 
 ### 📡 API
+
 **usePostAdivse** :: starts up an advise report build.
 
 _pipfile_ - (string) the raw pipfile contents
@@ -18,6 +20,7 @@ _pipfile_ - (string) the raw pipfile contents
 _pipfileLock_ - (string) the raw pipfile.lock contents
 
 _runtime_environment_ - (object) an object with runtime environment settings
+
 ```js static
 {
     operating_system: {
@@ -35,4 +38,3 @@ _runtime_environment_ - (object) an object with runtime environment settings
     openmpi_version: "",
 }
 ```
-
