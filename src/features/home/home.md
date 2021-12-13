@@ -1,5 +1,5 @@
 The home feature scopes for the landing page off the app. The core functionalities include searching for a
-package and searching/building a Thoth Advise report. 
+package and searching/building a Thoth Advise report.
 
 ### 📄 Pages
 There is only one page but it can be split into two tabs: **package search** and **advise report search**.
