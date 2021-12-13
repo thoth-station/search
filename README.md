@@ -1,4 +1,4 @@
-# Thoth Search 
+# Thoth Search
 ![CI/CD](https://github.com/thoth-station/thoth-search/workflows/CI/CD/badge.svg)
 
 
