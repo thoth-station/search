@@ -39,7 +39,7 @@ jobs:
       - name: format
         run: yarn run prettier
 
-      - name: lintadded pe
+      - name: lint
         run: yarn run lint
 
       - name: Deploy
