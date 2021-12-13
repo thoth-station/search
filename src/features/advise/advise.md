@@ -18,7 +18,7 @@ graph2 = useGraph(formatted_data2) // repeat
 ↓
 mergedGraph = useMergeGraphs(graph1, graph2) // combine two graphs and mark the differences
 ↓
-metrics = useMetrics(mergedGraph) // run analysis on differences 
+metrics = useMetrics(mergedGraph) // run analysis on differences
 ```
 
 Specifics on the hooks used to get and mutate data are described later in the documentation.
