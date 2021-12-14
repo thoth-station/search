@@ -2,7 +2,7 @@
     "name": "thoth-search",
     "version": "0.1.0",
     "private": true,
-    "homepage": "https://thoth-station.github.io/search",
+    "homepage": "https://thoth-station.github.io/thoth-search",
     "dependencies": {
         "@emotion/react": "^11.4.0",
         "@emotion/styled": "^11.3.0",
