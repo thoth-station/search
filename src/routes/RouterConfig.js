@@ -7,7 +7,7 @@ import { PackageRoutes } from "features/package";
 
 export const RouterConfig = () => {
     return (
-        <BrowserRouter basename={"/search"}>
+        <BrowserRouter basename={"/thoth-search"}>
             <Routes>
                 <Route exact path={"/"} element={<Home />} />
                 <Route
