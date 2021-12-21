@@ -7,24 +7,23 @@ export const getPackageMetadata = async (
     version,
     index = "https://pypi.org/simple",
 ) => {
-    return axios
-        .get(THOTH_URL + "/python/package/metadata", {
-            params: {
-                name: name,
-                version: version,
-                index: index,
-            },
-            headers: {
-                accept: "application/json",
-            },
-        })
-        .catch(e => {
-            if (e?.response?.status === 404 || e?.isAxiosError) {
-                return getPackageMetadataPyPi(name, version);
-            } else {
-                throw e;
-            }
-        });
+    return axios.get(THOTH_URL + "/python/package/metadata", {
+        params: {
+            name: name,
+            version: version,
+            index: index,
+        },
+        headers: {
+            accept: "application/json",
+        },
+    });
+    // .catch(e => {
+    //     if (e?.response?.status === 404 || e?.isAxiosError) {
+    //         return getPackageMetadataPyPi(name, version);
+    //     } else {
+    //         throw e;
+    //     }
+    // });
 };
 
 export const getPackageMetadataPyPi = (name, version) => {
@@ -35,11 +34,11 @@ export const getPackageMetadataPyPi = (name, version) => {
         });
 };
 
-export const usePackageMetadata = (name, version, config) => {
+export const usePackageMetadata = (name, version, index, config) => {
     return useQuery({
         ...config,
-        queryKey: ["packageMetadata", name, version],
-        queryFn: () => getPackageMetadata(name, version),
+        queryKey: ["packageMetadata", name, version, index],
+        queryFn: () => getPackageMetadata(name, version, index),
     });
 };
 

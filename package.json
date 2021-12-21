@@ -32,7 +32,7 @@
         "vis-network": "^9.0.4"
     },
     "scripts": {
-        "start": "reacat-scripts start",
+        "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --passWithNoTests",
         "eject": "react-scripts eject",

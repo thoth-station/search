@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useMemo } from "react";
 
 // material-ui
 import { Typography } from "@material-ui/core";
@@ -8,10 +8,13 @@ import BookmarkIcon from "@material-ui/icons/Bookmark";
 
 // local
 import IconText from "components/Elements/IconText";
+import { VersionDropdown } from "components/Elements/VersionDropdown";
 
 // utils
 import timeSince from "utils/timeSince";
 import PropTypes from "prop-types";
+import { useAllPackageVersions } from "../../api";
+import { SpecContext } from "../../routes/PackageOverview";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -32,6 +35,73 @@ const useStyles = makeStyles(theme => ({
  */
 export const PackageHeader = ({ metadata }) => {
     const classes = useStyles();
+    const versions = useAllPackageVersions(metadata?.name);
+    const specs = useContext(SpecContext);
+    console.log(specs);
+
+    // const env = [
+    //     {
+    //         index_url: "http://pypi.org/simple",
+    //         os_name: "rhel",
+    //         os_version: "8",
+    //         python_version: "3.8",
+    //     },
+    //     {
+    //         index_url: "http://pypi.org/simple",
+    //         os_name: "fedora",
+    //         os_version: "3.4",
+    //         python_version: "3.9",
+    //     },
+    //     {
+    //         index_url:
+    //             "https://tensorflow.pypi.thoth-station.ninja/index/manylinux2010/AVX2/simple",
+    //         os_name: "rhel",
+    //         os_version: "8",
+    //         python_version: "3.8",
+    //     },
+    //     {
+    //         index_url:
+    //             "https://tensorflow.pypi.thoth-station.ninja/index/manylinux2010/AVX2/simple",
+    //         os_name: "fedora",
+    //         os_version: "3.4",
+    //         python_version: "3.9",
+    //     },
+    // ];
+
+    const versionOptions = useMemo(() => {
+        if (versions.hasNextPage) {
+            if (!versions.isFetchingNextPage) {
+                versions.fetchNextPage().then();
+            }
+            return;
+        }
+        if (versions.isSuccess) {
+            let merged = [];
+            versions.data.pages.forEach(page => {
+                merged = [...merged, ...page.data.versions];
+            });
+            merged = merged.reverse();
+
+            const noDup = new Set();
+            return merged
+                .filter(version => {
+                    if (noDup.has(version.package_version)) {
+                        return false;
+                    }
+                    noDup.add(version.package_version);
+                    return true;
+                })
+                .map(version => {
+                    return {
+                        value: version.package_version,
+                        isThoth: true,
+                        isDefault: false,
+                    };
+                });
+        } else {
+            return [];
+        }
+    }, [versions]);
 
     return (
         <div>
@@ -39,9 +109,19 @@ export const PackageHeader = ({ metadata }) => {
                 <Typography variant="h4">
                     <b>{metadata?.name}</b>
                 </Typography>
-                <Typography ml={2} variant="h6">
-                    {metadata?.version ?? "NaN"}
-                </Typography>
+                {versionOptions === undefined ||
+                versionOptions?.length === 0 ? (
+                    <Typography ml={2} variant="h6">
+                        {metadata?.version ?? "NaN"}
+                    </Typography>
+                ) : (
+                    <VersionDropdown
+                        sx={{ marginLeft: 2, minWidth: 120 }}
+                        options={versionOptions ?? []}
+                        label="Versions"
+                        type="package_version"
+                    />
+                )}
             </div>
 
             <Typography gutterBottom variant="body1">

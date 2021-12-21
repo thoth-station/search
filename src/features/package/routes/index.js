@@ -5,12 +5,11 @@ import { Route, Routes, useParams } from "react-router-dom";
 // material-ui
 import { CircularProgress } from "@material-ui/core";
 
-//api
 import { usePackageMetadata } from "features/misc/api";
 import { PackageOverview } from "./PackageOverview";
 import { NotFound } from "features/misc";
 import { PackageNotFound } from "./PackageNotFound";
-import { NavigationLayout } from "../../../components/Layout/NavigationLayout";
+import { NavigationLayout } from "components/Layout/NavigationLayout";
 
 // The page that displays all analysis data
 export const PackageRoutes = () => {
@@ -37,6 +36,28 @@ export const PackageRoutes = () => {
     return (
         <NavigationLayout>
             <Routes>
+                <Route
+                    path="/:package_version/:os_name/:os_version/:index_url"
+                    element={
+                        <PackageOverview
+                            metadata={
+                                metadata.data.data.metadata ??
+                                metadata.data.data.info
+                            }
+                        />
+                    }
+                />
+                <Route
+                    path="/:package_version/:os_name/:os_version"
+                    element={
+                        <PackageOverview
+                            metadata={
+                                metadata.data.data.metadata ??
+                                metadata.data.data.info
+                            }
+                        />
+                    }
+                />
                 <Route
                     path="/:package_version"
                     element={
