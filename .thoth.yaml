@@ -1,0 +1,20 @@
+host: khemenu.thoth-station.ninja
+tls_verify: false
+
+managers:
+  - name: update
+    configuration:
+      labels: [bot]
+  - name: info
+  - name: version
+    configuration:
+      maintainers:
+        - sesheta
+        - goern
+        - fridex
+        - gkrumbach07
+      assignees:
+        - sesheta
+      labels: [bot]
+      changelog_file: true
+      changelog_smart: true
