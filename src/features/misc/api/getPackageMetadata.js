@@ -7,7 +7,10 @@ export const getPackageMetadata = async (
     version,
     index = "https://pypi.org/simple",
 ) => {
-    return axios.get(THOTH_URL + "/python/package/metadata", {
+    if (!name || !version) {
+        return;
+    }
+    return await axios.get(THOTH_URL + "/python/package/metadata", {
         params: {
             name: name,
             version: version,
@@ -17,13 +20,6 @@ export const getPackageMetadata = async (
             accept: "application/json",
         },
     });
-    // .catch(e => {
-    //     if (e?.response?.status === 404 || e?.isAxiosError) {
-    //         return getPackageMetadataPyPi(name, version);
-    //     } else {
-    //         throw e;
-    //     }
-    // });
 };
 
 export const getPackageMetadataPyPi = (name, version) => {

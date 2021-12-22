@@ -92,6 +92,6 @@ ComboBox.propTypes = {
     help: PropTypes.string,
     required: PropTypes.bool,
     error: PropTypes.any,
-    value: PropTypes.object,
+    value: PropTypes.string,
     setValue: PropTypes.func,
 };

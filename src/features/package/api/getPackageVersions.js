@@ -22,7 +22,7 @@ export const usePackageVersions = (name, config) => {
     });
 };
 
-export const useAllPackageVersions = (name, config) => {
+export const useInfinitePackageVersions = (name, config) => {
     return useInfiniteQuery({
         ...config,
         queryKey: ["packageVersions", name],

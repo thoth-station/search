@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 
 // material-ui
 import { Typography } from "@material-ui/core";
@@ -13,8 +13,6 @@ import { VersionDropdown } from "components/Elements/VersionDropdown";
 // utils
 import timeSince from "utils/timeSince";
 import PropTypes from "prop-types";
-import { useAllPackageVersions } from "../../api";
-import { SpecContext } from "../../routes/PackageOverview";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -33,11 +31,8 @@ const useStyles = makeStyles(theme => ({
 /**
  * A header for package metadata.
  */
-export const PackageHeader = ({ metadata }) => {
+export const PackageHeader = ({ metadata, allVersions }) => {
     const classes = useStyles();
-    const versions = useAllPackageVersions(metadata?.name);
-    const specs = useContext(SpecContext);
-    console.log(specs);
 
     // const env = [
     //     {
@@ -69,21 +64,9 @@ export const PackageHeader = ({ metadata }) => {
     // ];
 
     const versionOptions = useMemo(() => {
-        if (versions.hasNextPage) {
-            if (!versions.isFetchingNextPage) {
-                versions.fetchNextPage().then();
-            }
-            return;
-        }
-        if (versions.isSuccess) {
-            let merged = [];
-            versions.data.pages.forEach(page => {
-                merged = [...merged, ...page.data.versions];
-            });
-            merged = merged.reverse();
-
+        if (allVersions) {
             const noDup = new Set();
-            return merged
+            return allVersions
                 .filter(version => {
                     if (noDup.has(version.package_version)) {
                         return false;
@@ -101,7 +84,7 @@ export const PackageHeader = ({ metadata }) => {
         } else {
             return [];
         }
-    }, [versions]);
+    }, [allVersions]);
 
     return (
         <div>
@@ -136,13 +119,7 @@ export const PackageHeader = ({ metadata }) => {
                     className={classes.marginLeft}
                     text={
                         "Latest version published " +
-                        timeSince(
-                            new Date(
-                                metadata?.all_versions?.[
-                                    metadata?.latest_version
-                                ]?.date,
-                            ),
-                        ) +
+                        timeSince(new Date(Date.now())) +
                         " ago."
                     }
                     icon={<BookmarkIcon />}
@@ -165,16 +142,7 @@ PackageHeader.propTypes = {
         summary: PropTypes.string,
         /** License of package */
         license: PropTypes.string,
-        /** specific all versions object with each key being a version and having a param of date.
-         *
-         * ```
-         * all_versions: {
-         *     1.2.3: {
-         *         date: "12-2-2020"
-         *     }
-         * }
-         * ```
-         */
-        all_versions: PropTypes.object,
     }),
+    /** list of all versions of a package **/
+    allVersions: PropTypes.array.isRequired,
 };
