@@ -2,14 +2,7 @@ import axios from "axios";
 import { THOTH_URL, PYPI_URL } from "config";
 import { useQueries, useQuery } from "react-query";
 
-export const getPackageMetadata = async (
-    name,
-    version,
-    index = "https://pypi.org/simple",
-) => {
-    if (!name || !version) {
-        return;
-    }
+export const getPackageMetadata = async (name, version, index) => {
     return await axios.get(THOTH_URL + "/python/package/metadata", {
         params: {
             name: name,

@@ -15,8 +15,12 @@ export const useAllVersions = package_name => {
                 versions.data.pages.forEach(page => {
                     merged = [...merged, ...page.data.versions];
                 });
-                merged = merged.reverse();
-                setAllVersions(merged);
+                if (merged.length > 0) {
+                    merged = merged.reverse();
+                    setAllVersions(merged);
+                } else {
+                    setAllVersions(undefined);
+                }
             }
         }
     }, [versions.data]);

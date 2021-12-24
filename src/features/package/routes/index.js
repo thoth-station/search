@@ -12,11 +12,19 @@ export const PackageRoutes = () => {
         <NavigationLayout>
             <Routes>
                 <Route
-                    path="/:package_version/:os_name/:os_version/:index_url"
+                    path="/:package_version/:index_url/:os_name/:os_version/:python_version"
                     element={<PackageOverview />}
                 />
                 <Route
-                    path="/:package_version/:os_name/:os_version"
+                    path="/:package_version/:index_url/:os_name"
+                    element={<PackageOverview />}
+                />
+                <Route
+                    path="/:package_version/:index_url/:os_name/:os_version"
+                    element={<PackageOverview />}
+                />
+                <Route
+                    path="/:package_version/:index_url"
                     element={<PackageOverview />}
                 />
                 <Route path="/:package_version" element={<PackageOverview />} />
