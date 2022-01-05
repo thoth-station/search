@@ -5,7 +5,6 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { AdviseTableView } from "../components";
 import { SelectedPackage } from "../features";
 import PropTypes from "prop-types";
-import { Graph } from "utils/Graph";
 
 export const SelectedPackageContext = React.createContext();
 
@@ -57,5 +56,5 @@ export const AdviseDetails = ({ mergedGraph }) => {
 };
 
 AdviseDetails.propTypes = {
-    mergedGraph: PropTypes.objectOf(Graph),
+    mergedGraph: PropTypes.any,
 };

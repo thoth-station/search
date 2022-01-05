@@ -2,12 +2,22 @@ import axios from "axios";
 import { THOTH_URL, PYPI_URL } from "config";
 import { useQueries, useQuery } from "react-query";
 
-export const getPackageMetadata = async (name, version, index) => {
-    return await axios.get(THOTH_URL + "/python/package/metadata", {
+export const getPackageMetadata = async (
+    name,
+    version,
+    index,
+    os_name,
+    os_version,
+    python_version,
+) => {
+    return await axios.get(THOTH_URL + "/python/package/version/metadata", {
         params: {
             name: name,
             version: version,
             index: index,
+            os_name: os_name,
+            os_version: os_version,
+            python_version: python_version,
         },
         headers: {
             accept: "application/json",
@@ -23,11 +33,35 @@ export const getPackageMetadataPyPi = (name, version) => {
         });
 };
 
-export const usePackageMetadata = (name, version, index, config) => {
+export const usePackageMetadata = (
+    name,
+    version,
+    index,
+    os_name,
+    os_version,
+    python_version,
+    config,
+) => {
     return useQuery({
         ...config,
-        queryKey: ["packageMetadata", name, version, index],
-        queryFn: () => getPackageMetadata(name, version, index),
+        queryKey: [
+            "packageMetadata",
+            name,
+            version,
+            index,
+            os_name,
+            os_version,
+            python_version,
+        ],
+        queryFn: () =>
+            getPackageMetadata(
+                name,
+                version,
+                index,
+                os_name,
+                os_version,
+                python_version,
+            ),
     });
 };
 
@@ -36,8 +70,24 @@ export const usePackagesMetadata = (packages, config) => {
         packages.map(p => {
             return {
                 ...config,
-                queryKey: ["packageMetadata", p.name, p.version],
-                queryFn: () => getPackageMetadata(p.name, p.version),
+                queryKey: [
+                    "packageMetadata",
+                    p.name,
+                    p.version,
+                    p.index,
+                    p.os_name,
+                    p.os_version,
+                    p.python_version,
+                ],
+                queryFn: () =>
+                    getPackageMetadata(
+                        p.name,
+                        p.version,
+                        p.index,
+                        p.os_name,
+                        p.os_version,
+                        p.python_version,
+                    ),
             };
         }),
     );

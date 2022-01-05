@@ -55,6 +55,7 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
     }, [allVersions]);
 
     const indexUrlOptions = useMemo(() => {
+        const dups = new Set();
         return allVersions
             .filter(version => {
                 if (specs.package_version) {
@@ -64,6 +65,13 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
                         defaultSpecs.package_version === version.package_version
                     );
                 }
+            })
+            .filter(version => {
+                if (!dups.has(version.index_url)) {
+                    dups.add(version.index_url);
+                    return true;
+                }
+                return false;
             })
             .map(version => {
                 return {
@@ -79,25 +87,34 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
                     value: env.os_name,
                 };
             });
-            const version = allEnvironments.map(env => {
-                return {
-                    value: env.os_version,
-                };
-            });
-            const pyVersion = allEnvironments.map(env => {
-                return {
-                    value: env.python_version,
-                };
-            });
+            const version = allEnvironments
+                .filter(env => !specs.os_name || specs.os_name === env.os_name)
+                .map(env => {
+                    return {
+                        value: env.os_version,
+                    };
+                });
+            const pyVersion = allEnvironments
+                .filter(
+                    env =>
+                        (!specs.os_name || specs.os_name === env.os_name) &&
+                        (!specs.os_version ||
+                            specs.os_version === env.os_version),
+                )
+                .map(env => {
+                    return {
+                        value: env.python_version,
+                    };
+                });
             return [name, version, pyVersion];
-        }, [allEnvironments]);
+        }, [allEnvironments, specs]);
 
     return (
         <div>
             <Grid container alignItems="flex-end" spacing={1}>
                 <Grid item>
                     <Typography variant="h4" mr={2}>
-                        <b>{metadata?.name}</b>
+                        <b>{metadata?.Name}</b>
                     </Typography>
                 </Grid>
                 <Grid item>
@@ -157,11 +174,11 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
             </Grid>
 
             <Typography gutterBottom variant="body1">
-                {metadata?.summary ?? "NaN"}
+                {metadata?.Summary ?? "NaN"}
             </Typography>
             <div className={classes.linksRow}>
                 <IconText
-                    text={metadata?.license ?? "NaN"}
+                    text={metadata?.License ?? "NaN"}
                     icon={<GavelIcon />}
                 />
             </div>
@@ -173,15 +190,11 @@ PackageHeader.propTypes = {
     /** Package metadata object.*/
     metadata: PropTypes.shape({
         /** Name of package. */
-        name: PropTypes.string.isRequired,
-        /** Version of package. */
-        version: PropTypes.string.isRequired,
-        /** The latest version of the package. (used to calculate the time sense last update) */
-        latest_version: PropTypes.string,
+        Name: PropTypes.string.isRequired,
         /** Description of package. */
-        summary: PropTypes.string,
+        Summary: PropTypes.string,
         /** License of package */
-        license: PropTypes.string,
+        License: PropTypes.string,
     }),
     /** list of all versions of a package **/
     allVersions: PropTypes.array.isRequired,

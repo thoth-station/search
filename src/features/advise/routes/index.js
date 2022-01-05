@@ -43,17 +43,14 @@ export const AdviseRoutes = () => {
             return false;
         },
     });
-
     // format init graph data
     const initGraphData = useMemo(() => {
         if (
             adviseDocument.isSuccess &&
             adviseDocument.data.data?.result?.parameters?.project
-                ?.requirements_locked
         ) {
             return formatLockfile(
-                adviseDocument.data.data.result.parameters.project
-                    .requirements_locked,
+                adviseDocument.data.data.result.parameters.project,
             );
         }
     }, [adviseDocument]);
@@ -63,11 +60,9 @@ export const AdviseRoutes = () => {
         if (
             adviseDocument.isSuccess &&
             adviseDocument.data.data?.result?.report?.products?.[0]?.project
-                ?.requirements_locked
         ) {
             return formatLockfile(
-                adviseDocument.data.data.result.report.products[0].project
-                    .requirements_locked,
+                adviseDocument.data.data.result.report.products[0].project,
             );
         }
     }, [adviseDocument]);
@@ -80,8 +75,8 @@ export const AdviseRoutes = () => {
     );
     const adviseGraph = useGraph(
         adviseGraphData ?? [],
-        adviseDocument.data?.data?.result?.report?.products?.[0]
-            ?.dependency_graph,
+        adviseDocument.data?.data?.result?.report?.products?.[0]?.project
+            ?.requirements,
     );
 
     // merge graphs based on added, removed, changed packages

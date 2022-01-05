@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { SpecContext } from "features/package/routes/PackageOverview";
 
-export const ParamDropdown = ({ options, type, label, ...props }) => {
+export const ParamDropdown = ({ options, type, label, disabled, ...props }) => {
     const navigate = useNavigate();
     const { specs, defaultSpecs } = useContext(SpecContext);
 
@@ -73,6 +73,7 @@ export const ParamDropdown = ({ options, type, label, ...props }) => {
                 onChange={handleChange}
                 size="small"
                 variant="outlined"
+                disabled={disabled}
                 renderValue={value => {
                     if (!value) {
                         return (
@@ -104,5 +105,6 @@ ParamDropdown.propTypes = {
     options: PropTypes.array.isRequired,
     type: PropTypes.string.isRequired,
     label: PropTypes.string,
+    disabled: PropTypes.bool,
     props: PropTypes.any,
 };
