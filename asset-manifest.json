@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.js": "/thoth-search/static/js/main.bb2772a6.chunk.js",
-    "main.js.map": "/thoth-search/static/js/main.bb2772a6.chunk.js.map",
-    "runtime-main.js": "/thoth-search/static/js/runtime-main.002f5e34.js",
-    "runtime-main.js.map": "/thoth-search/static/js/runtime-main.002f5e34.js.map",
-    "static/js/2.040da7e9.chunk.js": "/thoth-search/static/js/2.040da7e9.chunk.js",
-    "static/js/2.040da7e9.chunk.js.map": "/thoth-search/static/js/2.040da7e9.chunk.js.map",
-    "index.html": "/thoth-search/index.html",
-    "static/js/2.040da7e9.chunk.js.LICENSE.txt": "/thoth-search/static/js/2.040da7e9.chunk.js.LICENSE.txt",
-    "static/media/thoth-logo.1a28a729.png": "/thoth-search/static/media/thoth-logo.1a28a729.png"
+    "main.js": "/search/static/js/main.c4fea2ca.chunk.js",
+    "main.js.map": "/search/static/js/main.c4fea2ca.chunk.js.map",
+    "runtime-main.js": "/search/static/js/runtime-main.c4734c94.js",
+    "runtime-main.js.map": "/search/static/js/runtime-main.c4734c94.js.map",
+    "static/js/2.f6af5e82.chunk.js": "/search/static/js/2.f6af5e82.chunk.js",
+    "static/js/2.f6af5e82.chunk.js.map": "/search/static/js/2.f6af5e82.chunk.js.map",
+    "index.html": "/search/index.html",
+    "static/js/2.f6af5e82.chunk.js.LICENSE.txt": "/search/static/js/2.f6af5e82.chunk.js.LICENSE.txt",
+    "static/media/thoth-logo.1a28a729.png": "/search/static/media/thoth-logo.1a28a729.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.002f5e34.js",
-    "static/js/2.040da7e9.chunk.js",
-    "static/js/main.bb2772a6.chunk.js"
+    "static/js/runtime-main.c4734c94.js",
+    "static/js/2.f6af5e82.chunk.js",
+    "static/js/main.c4fea2ca.chunk.js"
   ]
 }
