@@ -44,7 +44,7 @@ jobs:
           git config --global user.name $user_name
           git config --global user.email $user_email
           git remote set-url origin https://${github_token}@github.com/${stage_repository}
-          gh-pages -d build -r https://github.com/${stage_repository}
+          yarn run gh-pages -d build -r https://github.com/${stage_repository}
         env:
           user_name: "github-actions[bot]"
           user_email: "github-actions[bot]@users.noreply.github.com"
