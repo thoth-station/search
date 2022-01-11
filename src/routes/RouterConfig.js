@@ -7,7 +7,13 @@ import { PackageRoutes } from "features/package";
 
 export const RouterConfig = () => {
     return (
-        <BrowserRouter basename={process.env.REACT_APP_BASENAME ?? "/search"}>
+        <BrowserRouter
+            basename={
+                process.env.REACT_APP_DEPLOYMENT === "STAGE"
+                    ? "/search-stage"
+                    : "/search"
+            }
+        >
             <Routes>
                 <Route exact path={"/"} element={<Home />} />
                 <Route

@@ -1,5 +1,5 @@
 # Thoth Search
-![CI/CD](https://github.com/thoth-station/thoth-search/workflows/CI/CD/badge.svg)
+![CI/CD](https://github.com/thoth-station/search/workflows/CI/CD/badge.svg)
 
 
 This is a React powered web app for displaying Python package metadata and insights using Thoth Advise.

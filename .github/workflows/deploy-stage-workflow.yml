@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Stage
 
 on:
   push:
@@ -32,12 +32,12 @@ jobs:
         run: yarn
 
       - name: Set Deployment Basename
-        run: |
-          export REACT_APP_BASENAME=search-stage
-          yarn run json -I -f package.json -e 'this.homepage="https://thoth-station.github.io/search-stage"'
+        run: yarn run json -I -f package.json -e 'this.homepage="https://thoth-station.github.io/search-stage"'
 
       - name: Build
         run: yarn run build
+        env:
+          REACT_APP_DEPLOYMENT: "STAGE"
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.2.2
