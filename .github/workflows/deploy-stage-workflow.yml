@@ -34,7 +34,7 @@ jobs:
       - name: Set Deployment Basename
         run: |
           export REACT_APP_BASENAME=search-stage
-          json -I -f package.json -e 'this.homepage="https://thoth-station.github.io/search-stage"'
+          yarn run json -I -f package.json -e 'this.homepage="https://thoth-station.github.io/search-stage"'
 
       - name: Build
         run: yarn run build
