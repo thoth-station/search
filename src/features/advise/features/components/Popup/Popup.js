@@ -29,12 +29,12 @@ const Popup = ({ node }) => {
                 </Grid>
             </Grid>
             <Typography gutterBottom variant="body2">
-                {node.value?.metadata?.summary ?? "NaN"}
+                {node.value?.metadata?.Summary ?? "NaN"}
             </Typography>
             <Grid container spacing={2}>
                 <Grid item>
                     <IconText
-                        text={node.value?.metadata?.license ?? "NaN"}
+                        text={node.value?.metadata?.License ?? "NaN"}
                         icon={<GavelIcon />}
                     />
                 </Grid>

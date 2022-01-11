@@ -32,10 +32,10 @@ export function useGraphKnownEdges(data, dependency_graph) {
             return "loading";
         }
 
-        if (status.error) {
-            return "error";
-        } else if (status.loading) {
+        if (status.loading) {
             return "loading";
+        } else if (status.error) {
+            return "error";
         } else {
             return "success";
         }
@@ -44,7 +44,7 @@ export function useGraphKnownEdges(data, dependency_graph) {
     const [graph, setGraph] = useState();
 
     useEffect(() => {
-        if (allMetadataStatus !== "success") {
+        if (allMetadataStatus === "loading") {
             // handle error
             return;
         }
@@ -54,13 +54,22 @@ export function useGraphKnownEdges(data, dependency_graph) {
 
         // merge data together
         allMetadata.forEach(query => {
-            const metadata = query.data.data.metadata ?? query.data.data.info;
-
-            const value = {
-                id: metadata.name.toLowerCase(),
-                label: metadata.name,
-                metadata: metadata,
-            };
+            let value;
+            if (query.status === "error") {
+                const params = query.error.response.data.parameters;
+                value = {
+                    id: params.name.toLowerCase(),
+                    label: params.name,
+                    metadata: null,
+                };
+            } else {
+                const metadata = query.data.data.metadata;
+                value = {
+                    id: metadata.package_name.toLowerCase(),
+                    label: metadata.package_name,
+                    metadata: metadata.importlib_metadata.metadata,
+                };
+            }
 
             // add package to graph
             const node = tempGraph.addVertex(value.id, value);
@@ -84,27 +93,31 @@ export function useGraphKnownEdges(data, dependency_graph) {
             const fromNode = tempGraph.nodes.get(
                 dependency_graph.nodes[edge[0]].toLowerCase(),
             );
+
             // add edge connecting parent and dependency
-            tempGraph.addEdge(fromNode, toNode);
+            tempGraph.addEdge(fromNode.key, toNode.key);
             // set parent
-            toNode.parents.add(dependency_graph.nodes[edge][0].toLowerCase());
+            toNode.parents.add(fromNode.key);
         });
+
+        const visited = new Set();
+        const visitList = [];
 
         roots.forEach(root => {
             const toNode = tempGraph.nodes.get(
                 dependency_graph.nodes[root].toLowerCase(),
             );
 
+            visitList.push(toNode);
+            toNode.value.depth = 0;
+
             // add edge connecting parent and dependency
-            tempGraph.addEdge(app, toNode);
+            tempGraph.addEdge(app.key, toNode.key);
             // set parent
             toNode.parents.add(app.key);
         });
 
-        const visited = new Set();
-        const visitList = [];
-
-        // set depth  using dfs
+        // set depth using dfs
         while (visitList.length !== 0) {
             const node = visitList.pop();
             if (node && !visited.has(node)) {
@@ -124,7 +137,6 @@ export function useGraphKnownEdges(data, dependency_graph) {
         }
 
         setGraph(tempGraph);
-        console.log(tempGraph);
     }, [allMetadataStatus]);
 
     return graph;

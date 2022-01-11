@@ -15,8 +15,11 @@ const whyRemoved = (start, packages) => {
                 reasonNodes.push(node);
             } else {
                 node.parents.forEach(adj => {
-                    if (adj === "*App" && node.key !== start.key) {
-                        reasonNodes.push(node);
+                    if (adj === "*App") {
+                        if (node.key !== start.key) {
+                            reasonNodes.push(node);
+                        }
+                        return;
                     }
                     visitList.push(packages.get(adj));
                 });

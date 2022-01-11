@@ -147,25 +147,22 @@ export const useLicenseMetric = graph => {
                 const packageLicenses = [];
 
                 // get general classification
-                (
-                    node?.value?.metadata?.classifier ??
-                    node?.value?.metadata?.classifiers
-                )?.forEach(classifier => {
+                node?.value?.metadata?.Classifier?.forEach(classifier => {
                     const parsed = classifier.split(" :: ");
 
                     if (parsed[0] === "License") {
                         if (parsed[1] === "OSI Approved") {
                             packageLicenses.push({
                                 generalLicense:
-                                    parsed?.[2] ?? node.value.metadata.license,
-                                specificLicense: node.value.metadata.license,
+                                    parsed?.[2] ?? node.value.metadata.License,
+                                specificLicense: node.value.metadata.License,
                                 isOsiApproved: true,
                             });
                         } else {
                             packageLicenses.push({
                                 generalLicense:
-                                    parsed?.[1] ?? node.value.metadata.license,
-                                specificLicense: node.value.metadata.license,
+                                    parsed?.[1] ?? node.value.metadata.License,
+                                specificLicense: node.value.metadata.License,
                                 isOsiApproved: false,
                             });
                         }
@@ -174,8 +171,9 @@ export const useLicenseMetric = graph => {
 
                 if (packageLicenses.length === 0) {
                     packageLicenses.push({
-                        generalLicense: node.value.metadata.license,
-                        specificLicense: node.value.metadata.license,
+                        generalLicense: node?.value?.metadata?.License ?? "N/A",
+                        specificLicense:
+                            node?.value?.metadata?.License ?? "N/A",
                         isOsiApproved: null,
                     });
                 }

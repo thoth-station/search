@@ -17,10 +17,10 @@ const useStyles = makeStyles(() => ({
 /**
  * Text with an icon to the right of it.
  */
-const IconText = ({ text, icon, link, ...props }) => {
+const IconText = ({ text, icon, link, className, ...props }) => {
     const classes = useStyles();
     return (
-        <div className={`${classes.root} ${props.className}`}>
+        <div className={`${classes.root} ${className}`} {...props}>
             {icon}
             <Typography href={link ? link : null} variant="body2" marginLeft>
                 {text}

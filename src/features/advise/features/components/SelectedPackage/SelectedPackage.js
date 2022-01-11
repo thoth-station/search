@@ -45,25 +45,25 @@ export const SelectedPackage = ({ mergedGraph }) => {
                 <Grid container alignItems="center" mb={1}>
                     <Grid item>
                         <Typography variant="h3">
-                            <b>{selectedPackage?.value?.metadata?.name}</b>
+                            <b>{selectedPackage?.value?.metadata?.Name}</b>
                         </Typography>
                     </Grid>
                     <Grid item>
                         <Typography ml={2} variant="h6">
                             v
-                            {selectedPackage?.value?.metadata?.version ?? "NaN"}
+                            {selectedPackage?.value?.metadata?.Version ?? "NaN"}
                         </Typography>
                     </Grid>
                 </Grid>
 
                 <Typography gutterBottom variant="body1">
-                    {selectedPackage?.value?.metadata?.summary ?? "NaN"}
+                    {selectedPackage?.value?.metadata?.Summary ?? "NaN"}
                 </Typography>
                 <Grid container spacing={2}>
                     <Grid item>
                         <IconText
                             text={
-                                selectedPackage?.value?.metadata?.license ??
+                                selectedPackage?.value?.metadata?.License ??
                                 "NaN"
                             }
                             icon={<GavelIcon />}

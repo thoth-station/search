@@ -4,6 +4,7 @@ const queryConfig = {
     queries: {
         useErrorBoundary: true,
         refetchOnWindowFocus: false,
+        refetchOnMount: false,
         retry: false,
     },
 };

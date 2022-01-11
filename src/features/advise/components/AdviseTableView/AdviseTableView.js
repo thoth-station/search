@@ -56,10 +56,10 @@ export function AdviseTableView({ search = "", filteredGraph }) {
                 key: node.key,
                 warnings: [],
                 depth: node.value?.depth ?? -1,
-                license: node?.value?.metadata?.license,
+                license: node?.value?.metadata?.License,
                 dependencies: node.adjacents.size,
                 change: node.value?.change,
-                summary: node?.value?.metadata?.summary,
+                summary: node?.value?.metadata?.Summary,
             });
         });
         setRows(newRows);

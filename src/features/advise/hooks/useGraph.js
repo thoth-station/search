@@ -4,12 +4,10 @@ import { useMemo, useEffect, useState } from "react";
 import { Graph } from "utils/Graph";
 
 // api
-import { usePackagesDependencies } from "../api";
 import { usePackagesMetadata } from "features/misc/api";
 
 export function useGraph(data, knownRoots) {
     const allMetadata = usePackagesMetadata(data);
-    const allDependencies = usePackagesDependencies(data);
 
     const allMetadataStatus = useMemo(() => {
         const status = {
@@ -34,121 +32,82 @@ export function useGraph(data, knownRoots) {
             return "loading";
         }
 
-        if (status.error) {
-            return "error";
-        } else if (status.loading) {
+        if (status.loading) {
             return "loading";
+        } else if (status.error) {
+            return "error";
         } else {
             return "success";
         }
     }, [allMetadata]);
 
-    const allDependenciesStatus = useMemo(() => {
-        let isLoading = false;
-
-        if (allDependencies.length > 0) {
-            allDependencies.forEach(query => {
-                if (query.status === "loading") {
-                    isLoading = true;
-                }
-            });
-        } else {
-            return "loading";
-        }
-
-        return isLoading ? "loading" : "success";
-    }, [allDependencies]);
-
     const [graph, setGraph] = useState();
 
     useEffect(() => {
-        if (allMetadataStatus === "error") {
-            // handle error
-            return;
-        } else if (
-            allDependenciesStatus === "loading" ||
-            allMetadataStatus === "loading"
-        ) {
-            // not done loading
+        if (allMetadataStatus === "loading") {
             return;
         }
 
         // create graph
         const tempGraph = new Graph();
-
-        // create dependencies object
-        const reformattedDeps = new Map();
-        allDependencies.forEach(query => {
-            if (query.isSuccess) {
-                reformattedDeps.set(
-                    query.data.data.parameters.name,
-                    query.data.data.dependencies,
-                );
-            }
-        });
-
-        // merge data together
-        allMetadata.forEach(query => {
-            const metadata = query.data.data.metadata ?? query.data.data.info;
-
-            const value = {
-                id: metadata.name.toLowerCase().replace(".", "-"),
-                label: metadata.name,
-                metadata: metadata,
-            };
-
-            // add package to graph
-            const node = tempGraph.addVertex(value.id, value);
-            node.parents = new Set();
-        });
-
         const notRoot = [];
-        // cross check what dependencies the package has through thoth's database
-        // this is used to setup edges between nodes in the graph
-        Array.from(tempGraph.nodes.entries()).forEach(([key, value]) => {
-            // get dependencies from thoth
-            if (reformattedDeps.has(key)) {
-                reformattedDeps.get(key).forEach(dep => {
-                    const adjacentNode = tempGraph.nodes.get(dep.name);
 
-                    // if package exists in lockfile
-                    if (adjacentNode) {
-                        // add edge connecting parent and dependency
-                        tempGraph.addEdge(key, adjacentNode.value.id);
-                        // set parent
-                        adjacentNode.parents.add(key);
-                        notRoot.push(adjacentNode.value.id);
-                    }
-                });
-            } else {
-                // if no record in thoth, then use metadata dependencies
-                // these are not always as accurate
-                if (value?.value?.metadata?.requires_dist) {
-                    // for each dependency, parse to get name
-                    value.value.metadata.requires_dist.forEach(async adj => {
-                        const adjacentNode = tempGraph.nodes.get(
-                            adj
-                                .split(" ", 1)[0]
-                                .toLowerCase()
-                                .replace(".", "-"),
-                        );
+        // add data to graph
+        allMetadata.forEach(query => {
+            // if could not find metadata
+            if (query.status === "error") {
+                const params = query.error.response.data.parameters;
+                const value = {
+                    id: params.name.toLowerCase(),
+                    label: params.name,
+                    metadata: null,
+                };
 
-                        // if package exists in lockfile
-                        if (adjacentNode) {
-                            // add edge connecting parent and dependency
-                            tempGraph.addEdge(key, adjacentNode.value.id);
-                            // set parent
-                            adjacentNode.parents.add(key);
-                            notRoot.push(adjacentNode.value.id);
-                        }
-                    });
-                }
+                // add package to graph
+                const node = tempGraph.addVertex(value.id, value);
+                node.parents = new Set();
+            }
+            // metadata was found
+            else {
+                const metadata = query.data.data.metadata;
+                const value = {
+                    id: metadata.package_name.toLowerCase(),
+                    label: metadata.package_name,
+                    metadata: metadata.importlib_metadata.metadata,
+                };
+
+                // add package to graph
+                const node = tempGraph.addVertex(value.id, value);
+                node.parents = new Set();
             }
         });
 
-        /**
-         * Create graph using a traversal algorithm
-         */
+        // set edges
+        allMetadata.forEach(query => {
+            if (query.status === "error") {
+                return;
+            }
+
+            const currentNode = tempGraph.nodes.get(
+                query.data.data.metadata.package_name.toLowerCase(),
+            );
+
+            Object.keys(query.data.data.metadata.dependencies).forEach(dep => {
+                const adjacentNode = tempGraph.nodes.get(dep);
+
+                // if package exists in lockfile
+                if (adjacentNode) {
+                    // add edge connecting parent and dependency
+                    tempGraph.addEdge(
+                        currentNode.value.id,
+                        adjacentNode.value.id,
+                    );
+                    // set parent
+                    adjacentNode.parents.add(currentNode.value.id);
+                    notRoot.push(adjacentNode.value.id);
+                }
+            });
+        });
 
         // add app node to graph
         const app = tempGraph.addVertex("*App", {
@@ -184,7 +143,7 @@ export function useGraph(data, knownRoots) {
 
                 const adjs = node.getAdjacents();
 
-                for (var i = 0; i < adjs.length; i++) {
+                for (let i = 0; i < adjs.length; i++) {
                     // update depth
                     adjs[i].value.depth = Math.min(
                         node.value.depth + 1,
@@ -196,7 +155,7 @@ export function useGraph(data, knownRoots) {
         }
 
         setGraph(tempGraph);
-    }, [allMetadataStatus, allDependenciesStatus, knownRoots]);
+    }, [allMetadataStatus, knownRoots]);
 
     return graph;
 }
