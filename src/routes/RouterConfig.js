@@ -7,7 +7,7 @@ import { PackageRoutes } from "features/package";
 
 export const RouterConfig = () => {
     return (
-        <BrowserRouter basename={"/thoth-search"}>
+        <BrowserRouter basename={process.env.REACT_APP_BASENAME ?? "/search"}>
             <Routes>
                 <Route exact path={"/"} element={<Home />} />
                 <Route

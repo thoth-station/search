@@ -2,7 +2,7 @@
     "name": "thoth-search",
     "version": "0.1.0",
     "private": true,
-    "homepage": "https://thoth-station.github.io/thoth-search",
+    "homepage": "https://thoth-station.github.io/search",
     "dependencies": {
         "@emotion/react": "^11.4.0",
         "@emotion/styled": "^11.3.0",
@@ -18,6 +18,7 @@
         "axios": "^0.21.1",
         "gh-pages": "^3.2.0",
         "husky": "^7.0.4",
+        "json": "^11.0.0",
         "lint-staged": "^12.1.2",
         "prettier": "^2.5.1",
         "react": "^17.0.2",
@@ -32,7 +33,7 @@
         "vis-network": "^9.0.4"
     },
     "scripts": {
-        "start": "reacat-scripts start",
+        "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --passWithNoTests",
         "eject": "react-scripts eject",
