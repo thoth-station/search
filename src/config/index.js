@@ -1,5 +1,8 @@
 export const PYPI_URL = "https://pypi.org/pypi";
-export const THOTH_URL = "https://khemenu.thoth-station.ninja/api/v1";
+export const THOTH_URL =
+    process.env.REACT_APP_DEPLOYMENT === "STAGE"
+        ? "https://stage.thoth-station.ninja/api/v1"
+        : "https://khemenu.thoth-station.ninja/api/v1";
 export const LICENSES_URL =
     "https://raw.githubusercontent.com/spdx/license-list-data/master/json/licenses.json";
 
