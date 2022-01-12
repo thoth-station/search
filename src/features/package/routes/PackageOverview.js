@@ -12,7 +12,7 @@ import { useParams } from "react-router-dom";
 import { usePackageMetadata } from "features/misc/api";
 import { PackageNotFound } from "./PackageNotFound";
 import { useAllVersions } from "../hooks";
-import { useAllEnvironments } from "../hooks/useAllEnvironments";
+import { usePackageEnvironments } from "../api";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -59,10 +59,11 @@ export const PackageOverview = () => {
     const allVersions = useAllVersions(specs.package_name);
 
     // get environments for specific package, version, index
-    const allEnvironments = useAllEnvironments(
+    const allEnvironments = usePackageEnvironments(
         specs.package_name,
         specs.package_version ?? defaultSpecs.package_version,
         specs.index_url ?? defaultSpecs.index_url,
+        { useErrorBoundary: false },
     );
 
     // some params are optional but still need a default value
@@ -75,24 +76,20 @@ export const PackageOverview = () => {
             python_version: undefined,
         };
 
-        if (defaultSpecs === d) {
-            return;
-        }
-
         // get default package version and index
         // needs package name and versions list
         if (specs.package_name && allVersions && allVersions.length > 0) {
             d.package_version = allVersions.at(0).package_version;
             d.index_url = allVersions.at(0).index_url;
-        } else {
-            setDefaultSpecs(d);
-            return;
         }
 
         // get default environment
         // needs list of environments
-        if (allEnvironments && allEnvironments.length > 0) {
-            const filtered = allEnvironments.filter(
+        if (
+            allEnvironments.data &&
+            allEnvironments.data.data.environments.length > 0
+        ) {
+            const filtered = allEnvironments.data.data.environments.filter(
                 env =>
                     (!specs.os_name || specs.os_name === env.os_name) &&
                     (!specs.os_version || specs.os_version === env.os_version),
@@ -100,12 +97,11 @@ export const PackageOverview = () => {
             d.os_name = filtered.at(0).os_name;
             d.os_version = filtered.at(0).os_version;
             d.python_version = filtered.at(0).python_version;
-        } else {
-            setDefaultSpecs(d);
-            return;
         }
 
-        setDefaultSpecs(d);
+        if (Object.entries(defaultSpecs).some(([key, val]) => d[key] !== val)) {
+            setDefaultSpecs(d);
+        }
     }, [allVersions, allEnvironments, specs]);
 
     // get package metadata
@@ -149,7 +145,7 @@ export const PackageOverview = () => {
                                 .metadata
                         }
                         allVersions={allVersions}
-                        allEnvironments={allEnvironments}
+                        allEnvironments={allEnvironments.data.data.environments}
                     />
                 </Grid>
             </Grid>

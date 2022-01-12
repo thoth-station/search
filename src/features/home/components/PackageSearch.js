@@ -2,8 +2,8 @@ import { Button, Grid, Typography } from "@material-ui/core";
 import SearchBar from "../../../components/Elements/SearchBar";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import React, { useState } from "react";
-import { getPackageMetadataPyPi } from "../../misc/api";
 import { useNavigate } from "react-router-dom";
+import { getPackageExists } from "../api";
 
 export const PackageSearch = () => {
     const navigate = useNavigate();
@@ -16,13 +16,13 @@ export const PackageSearch = () => {
             return;
         }
 
-        getPackageMetadataPyPi(searchQuery)
-            .then(response => {
-                navigate("/package/" + response.data.info.name);
-            })
-            .catch(() => {
-                setSearchError("Package does not exist");
-            });
+        const exists = await getPackageExists(searchQuery);
+
+        if (exists) {
+            navigate("/package/" + searchQuery);
+        } else {
+            setSearchError("Thoth does not know about that package");
+        }
     };
 
     const handleChange = e => {
