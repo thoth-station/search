@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {  useInfinitePackageVersions } from "../api";
+import { useInfinitePackageVersions } from "../api";
 
 export const useAllVersions = package_name => {
     const versions = useInfinitePackageVersions(package_name);

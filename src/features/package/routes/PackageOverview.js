@@ -76,7 +76,6 @@ export const PackageOverview = () => {
             python_version: undefined,
         };
 
-
         // get default package version and index
         // needs package name and versions list
         if (specs.package_name && allVersions && allVersions.length > 0) {
@@ -86,7 +85,10 @@ export const PackageOverview = () => {
 
         // get default environment
         // needs list of environments
-        if (allEnvironments.data && allEnvironments.data.data.environments.length > 0) {
+        if (
+            allEnvironments.data &&
+            allEnvironments.data.data.environments.length > 0
+        ) {
             const filtered = allEnvironments.data.data.environments.filter(
                 env =>
                     (!specs.os_name || specs.os_name === env.os_name) &&
@@ -97,10 +99,9 @@ export const PackageOverview = () => {
             d.python_version = filtered.at(0).python_version;
         }
 
-        if(Object.entries(defaultSpecs).some(([key, val]) => d[key] !== val)) {
+        if (Object.entries(defaultSpecs).some(([key, val]) => d[key] !== val)) {
             setDefaultSpecs(d);
         }
-
     }, [allVersions, allEnvironments, specs]);
 
     // get package metadata

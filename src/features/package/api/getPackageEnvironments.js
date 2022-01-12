@@ -2,11 +2,7 @@ import axios from "axios";
 import { THOTH_URL } from "config";
 import { useQuery } from "react-query";
 
-export const getPackageEnvironments = async (
-    name,
-    version,
-    index,
-) => {
+export const getPackageEnvironments = async (name, version, index) => {
     return axios.get(THOTH_URL + "/python/package/version/environments", {
         params: {
             name: name,

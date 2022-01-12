@@ -18,10 +18,9 @@ export const PackageSearch = () => {
 
         const exists = await getPackageExists(searchQuery);
 
-        if(exists) {
+        if (exists) {
             navigate("/package/" + searchQuery);
-        }
-        else {
+        } else {
             setSearchError("Thoth does not know about that package");
         }
     };

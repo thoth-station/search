@@ -2,12 +2,12 @@ import axios from "axios";
 import { THOTH_URL } from "config";
 import { useQuery, useInfiniteQuery } from "react-query";
 
-export const getPackageVersions = async (name, page = 0, per_page=100) => {
+export const getPackageVersions = async (name, page = 0, per_page = 100) => {
     return axios.get(THOTH_URL + "/python/package/versions", {
         params: {
             name: name,
             page: page,
-            per_page: per_page
+            per_page: per_page,
         },
         headers: {
             accept: "application/json",
