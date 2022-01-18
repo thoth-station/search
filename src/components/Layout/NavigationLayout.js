@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+ import { useNavigate } from "react-router-dom";
 import { Button } from "@material-ui/core";
 import PropTypes from "prop-types";
 
@@ -11,7 +11,7 @@ export const NavigationLayout = ({ children }) => {
 
     return (
         <>
-            <Button onClick={() => navigate("/")}>go back</Button>
+            <Button onClick={() => navigate(-1)}>go back</Button>
             <div>{children}</div>
         </>
     );

@@ -1,61 +1,108 @@
 // react
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 
-// local
-import ProgressBar from "components/Elements/ProgressBar";
-
 // material-ui
-import { makeStyles } from "@material-ui/styles";
+import InfoCard from "components/Elements/InfoCard";
+import { Box, Divider, Grid, Skeleton, Typography } from "@material-ui/core";
+import { VersionDropdown } from "./VersionDropdown";
 
-const useStyles = makeStyles(theme => ({
-    bar: {
-        marginBottom: theme.spacing(1),
-    },
-}));
 
 /**
  * A metric card displaying dependency information of a single package.
  */
-export const PackageDependencies = ({ metric }) => {
-    const classes = useStyles();
-    const totalDependencies =
-        (metric.all.direct ?? 0) + (metric.all.indirect ?? 0);
+export const PackageDependencies = ({ graph }) => {
+    const metric = useMemo(() => {
+        if(!graph) {
+            return;
+        }
+
+        const bfs = graph.graphSearch(graph.nodes.get("*App"));
+        const visitedOrder = Array.from(bfs);
+
+        const metric = []
+
+        visitedOrder.forEach(node => {
+            if (node.key !== "*App" && !node.value.metadata) {
+                metric.push({
+                    name: node.value.label,
+                    versions: node.value.versions,
+                    specifier: node.value.specifier,
+                    extra: node.value.extra,
+                })
+            }
+        })
+
+        return metric
+    }, [graph])
+
+
+    if (!metric) {
+        return (
+            <Box>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton width={"60%"} />
+            </Box>
+        );
+    }
 
     return (
-        <div>
-            <ProgressBar
-                value={metric.all.direct ?? 0}
-                total={totalDependencies}
-                label={"Direct"}
-                className={classes.bar}
-            />
-
-            <ProgressBar
-                value={metric.all.indirect ?? 0}
-                total={totalDependencies}
-                label={"Indirect"}
-            />
-        </div>
+        <InfoCard
+            cardMeta={{
+                title: "Dependencies",
+            }}
+            cardBody={
+                <div>
+                    <Grid container>
+                        <Grid item xs>
+                            <Typography variant="h6" gutterBottom>
+                                Package
+                            </Typography>
+                        </Grid>
+                        <Grid item xs>
+                            <Typography variant="h6" gutterBottom>
+                                Versions
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Typography variant="h6" gutterBottom>
+                                Extra
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    <Divider />
+                    <Grid container rowSpacing={2} mt={1}>
+                        {metric.map(node => {
+                            return (
+                                <Grid container item xs={12} key={node.name}>
+                                    <Grid item xs>
+                                        <Typography variant="body1" gutterBottom>
+                                            {node.name}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <VersionDropdown node={node}/>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <Typography variant="body1" gutterBottom>
+                                            {node.extra?.join(", ")}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            )
+                        })}
+                    </Grid>
+                </div>
+            }
+        />
     );
 };
 
 PackageDependencies.propTypes = {
     /** An object holding metric info. */
-    metric: PropTypes.shape({
-        /**
-         * ```
-         * all: {
-         *     direct: 6,
-         *     indirect: 22
-         * }
-         * ```
-         */
-        all: PropTypes.shape({
-            /** Direct dependencies of the package. */
-            direct: PropTypes.number,
-            /** Indirect dependencies of the package (dependencies of direct and indirect packages) */
-            indirect: PropTypes.number,
-        }),
+    graph: PropTypes.shape({
+        graphSearch: PropTypes.func,
+        nodes: PropTypes.instanceOf(Map)
     }),
 };

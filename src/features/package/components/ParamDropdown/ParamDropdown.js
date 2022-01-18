@@ -14,7 +14,6 @@ export const ParamDropdown = ({ options, type, label, disabled, ...props }) => {
             case "package_version":
                 navigate(
                     `/package/${specs.package_name}/${event.target.value}`,
-                    { replace: true },
                 );
                 break;
             case "index_url":
@@ -22,7 +21,6 @@ export const ParamDropdown = ({ options, type, label, disabled, ...props }) => {
                     `/package/${specs.package_name}/${
                         specs.package_version ?? defaultSpecs.package_version
                     }/${encodeURIComponent(event.target.value)}`,
-                    { replace: true },
                 );
                 break;
             case "os_name":
@@ -32,7 +30,6 @@ export const ParamDropdown = ({ options, type, label, disabled, ...props }) => {
                     }/${encodeURIComponent(
                         specs.index_url ?? defaultSpecs.index_url,
                     )}/${event.target.value}`,
-                    { replace: true },
                 );
 
                 break;
@@ -45,7 +42,6 @@ export const ParamDropdown = ({ options, type, label, disabled, ...props }) => {
                     )}/${specs.os_name ?? defaultSpecs.os_name}/${
                         event.target.value
                     }`,
-                    { replace: true },
                 );
                 break;
             case "python_version":
@@ -57,7 +53,6 @@ export const ParamDropdown = ({ options, type, label, disabled, ...props }) => {
                     )}/${specs.os_name ?? defaultSpecs.os_name}/${
                         specs.os_version ?? defaultSpecs.os_version
                     }/${event.target.value}`,
-                    { replace: true },
                 );
                 break;
         }
