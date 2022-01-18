@@ -116,7 +116,7 @@ export const PackageOverview = () => {
         { useErrorBoundary: false },
     );
 
-    const graph = useSimpleGraph(metadata)
+    const graph = useSimpleGraph(metadata);
 
     if (metadata.isLoading || allVersions?.length === 0) {
         return (
@@ -152,7 +152,7 @@ export const PackageOverview = () => {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <PackageDependencies graph={graph}/>
+                    <PackageDependencies graph={graph} />
                 </Grid>
             </Grid>
         </SpecContext.Provider>

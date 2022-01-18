@@ -7,20 +7,19 @@ import InfoCard from "components/Elements/InfoCard";
 import { Box, Divider, Grid, Skeleton, Typography } from "@material-ui/core";
 import { VersionDropdown } from "./VersionDropdown";
 
-
 /**
  * A metric card displaying dependency information of a single package.
  */
 export const PackageDependencies = ({ graph }) => {
     const metric = useMemo(() => {
-        if(!graph) {
+        if (!graph) {
             return;
         }
 
         const bfs = graph.graphSearch(graph.nodes.get("*App"));
         const visitedOrder = Array.from(bfs);
 
-        const metric = []
+        const metric = [];
 
         visitedOrder.forEach(node => {
             if (node.key !== "*App" && !node.value.metadata) {
@@ -29,13 +28,12 @@ export const PackageDependencies = ({ graph }) => {
                     versions: node.value.versions,
                     specifier: node.value.specifier,
                     extra: node.value.extra,
-                })
+                });
             }
-        })
+        });
 
-        return metric
-    }, [graph])
-
+        return metric;
+    }, [graph]);
 
     if (!metric) {
         return (
@@ -77,20 +75,26 @@ export const PackageDependencies = ({ graph }) => {
                             return (
                                 <Grid container item xs={12} key={node.name}>
                                     <Grid item xs>
-                                        <Typography variant="body1" gutterBottom>
+                                        <Typography
+                                            variant="body1"
+                                            gutterBottom
+                                        >
                                             {node.name}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs>
-                                        <VersionDropdown node={node}/>
+                                        <VersionDropdown node={node} />
                                     </Grid>
                                     <Grid item xs={2}>
-                                        <Typography variant="body1" gutterBottom>
+                                        <Typography
+                                            variant="body1"
+                                            gutterBottom
+                                        >
                                             {node.extra?.join(", ")}
                                         </Typography>
                                     </Grid>
                                 </Grid>
-                            )
+                            );
                         })}
                     </Grid>
                 </div>
@@ -103,6 +107,6 @@ PackageDependencies.propTypes = {
     /** An object holding metric info. */
     graph: PropTypes.shape({
         graphSearch: PropTypes.func,
-        nodes: PropTypes.instanceOf(Map)
+        nodes: PropTypes.instanceOf(Map),
     }),
 };
