@@ -51,9 +51,9 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
                 return {
                     value: version.package_version,
                 };
-            }).sort((a, b) => a.value.split(".") > b.value.split(".") ? 1 : -1);
+            })
+            .sort((a, b) => (a.value.split(".") > b.value.split(".") ? 1 : -1));
     }, [allVersions]);
-
 
     const indexUrlOptions = useMemo(() => {
         const dups = new Set();
@@ -174,7 +174,7 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
                 </Grid>
             </Grid>
 
-            <Typography gutterBottom variant="body1">
+            <Typography gutterBottom variant="body1" mt={2}>
                 {metadata?.Summary ?? "NaN"}
             </Typography>
             <div className={classes.linksRow}>

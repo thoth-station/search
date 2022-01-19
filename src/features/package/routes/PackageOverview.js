@@ -141,7 +141,7 @@ export const PackageOverview = () => {
     return (
         <SpecContext.Provider value={{ specs, defaultSpecs }}>
             <Grid container className={classes.root}>
-                <Grid item xs={12}>
+                <Grid item xs={12} mb={3}>
                     <PackageHeader
                         metadata={
                             metadata.data.data.metadata.importlib_metadata
