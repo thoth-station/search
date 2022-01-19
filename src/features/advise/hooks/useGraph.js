@@ -6,6 +6,9 @@ import { Graph } from "utils/Graph";
 // api
 import { usePackagesMetadata } from "features/misc/api";
 
+/**
+ * Given a list of packages, create a graph using metadata information.
+ */
 export function useGraph(data, knownRoots) {
     const allMetadata = usePackagesMetadata(data);
 

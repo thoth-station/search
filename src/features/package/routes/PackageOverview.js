@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 // local
-import { PackageHeader } from "../components";
+import { PackageDependencies, PackageHeader } from "../components";
 
 // material-ui
 import { CircularProgress, Grid } from "@material-ui/core";
@@ -13,6 +13,7 @@ import { usePackageMetadata } from "features/misc/api";
 import { PackageNotFound } from "./PackageNotFound";
 import { useAllVersions } from "../hooks";
 import { usePackageEnvironments } from "../api";
+import { useSimpleGraph } from "../hooks/useSimpleGraph";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -115,6 +116,8 @@ export const PackageOverview = () => {
         { useErrorBoundary: false },
     );
 
+    const graph = useSimpleGraph(metadata);
+
     if (metadata.isLoading || allVersions?.length === 0) {
         return (
             <div
@@ -138,7 +141,7 @@ export const PackageOverview = () => {
     return (
         <SpecContext.Provider value={{ specs, defaultSpecs }}>
             <Grid container className={classes.root}>
-                <Grid item xs={12}>
+                <Grid item xs={12} mb={3}>
                     <PackageHeader
                         metadata={
                             metadata.data.data.metadata.importlib_metadata
@@ -147,6 +150,9 @@ export const PackageOverview = () => {
                         allVersions={allVersions}
                         allEnvironments={allEnvironments.data.data.environments}
                     />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <PackageDependencies graph={graph} />
                 </Grid>
             </Grid>
         </SpecContext.Provider>

@@ -11,7 +11,7 @@ export const NavigationLayout = ({ children }) => {
 
     return (
         <>
-            <Button onClick={() => navigate("/")}>go back</Button>
+            <Button onClick={() => navigate(-1)}>go back</Button>
             <div>{children}</div>
         </>
     );
