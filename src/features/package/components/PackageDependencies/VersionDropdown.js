@@ -11,15 +11,39 @@ export const VersionDropdown = ({ node }) => {
 
     const versionOptions = useMemo(() => {
         const versionOptions = {};
+        const distribution = [0, 0]
+        const noDup = new Set()
         node.versions.forEach(version => {
             const split = version.split(".");
-            const key = split[0] + "." + split[1];
+            const key = split[0] + "." + (split[1] ?? "");
 
             if (versionOptions[key] === undefined) {
                 versionOptions[key] = [];
+                distribution[0] += 1
             }
-            versionOptions[key].push(version);
+            if(!noDup.has(version)) {
+                versionOptions[key].push(version);
+                distribution[1] += 1
+                noDup.add(version)
+            }
         });
+
+        // check if there are too many buckets
+        if(distribution[0] / distribution[1] > .25) {
+            // merge buckets
+            const buckets = Math.ceil(distribution[0] * 0.25)
+            const fixedVersionOptions = {}
+            let currentKey;
+            Object.keys(versionOptions).forEach((key, index, array) => {
+                if(index % buckets === 0) {
+                    currentKey = `${key} - ${array[index + buckets - 1] ?? array.at(-1)}`
+                    fixedVersionOptions[currentKey] = []
+                }
+                fixedVersionOptions[currentKey].push(...versionOptions[array[index]]);
+            })
+            return fixedVersionOptions
+        }
+
         return versionOptions;
     }, [node]);
 
@@ -60,7 +84,7 @@ export const VersionDropdown = ({ node }) => {
                                     mt={2}
                                     disabled
                                     divider
-                                >{`${key}.*`}</MenuItem>
+                                >{key}</MenuItem>
                                 {value.map(version => {
                                     return (
                                         <MenuItem

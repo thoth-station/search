@@ -51,8 +51,9 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
                 return {
                     value: version.package_version,
                 };
-            });
+            }).sort((a, b) => a.value.split(".") > b.value.split(".") ? 1 : -1);
     }, [allVersions]);
+
 
     const indexUrlOptions = useMemo(() => {
         const dups = new Set();
