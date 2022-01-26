@@ -1,8 +1,13 @@
 import React from "react";
-import { AppProvider } from "./providers/app";
+import { AppProvider } from "providers/app";
+import RouterConfig from "routes/RouterConfig";
 
 function App() {
-    return <AppProvider />;
+    return (
+        <AppProvider>
+            <RouterConfig />
+        </AppProvider>
+    );
 }
 
 export default App;
