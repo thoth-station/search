@@ -53,6 +53,11 @@
             "react-app/jest"
         ]
     },
+    "jest": {
+        "transformIgnorePatterns": [
+            "node_modules/?!(vis-network)"
+        ]
+    },
     "browserslist": {
         "production": [
             ">0.2%",
@@ -65,5 +70,8 @@
             "last 1 safari version"
         ]
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "core-js": "^3.20.3",
+        "eslint-plugin-jest": "^26.0.0"
+    }
 }

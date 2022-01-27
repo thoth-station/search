@@ -37,7 +37,7 @@ export const PackageDependencies = ({ graph }) => {
 
     if (!metric) {
         return (
-            <Box>
+            <Box data-testid="package-dependencies-not-loaded">
                 <Skeleton />
                 <Skeleton />
                 <Skeleton width={"60%"} />
@@ -51,7 +51,7 @@ export const PackageDependencies = ({ graph }) => {
                 title: "Dependencies",
             }}
             cardBody={
-                <div>
+                <div data-testid="package-dependencies-loaded">
                     <Grid container>
                         <Grid item xs>
                             <Typography variant="h6" gutterBottom>
