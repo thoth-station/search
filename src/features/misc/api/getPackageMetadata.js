@@ -10,6 +10,16 @@ export const getPackageMetadata = async (
     os_version,
     python_version,
 ) => {
+    if (
+        !name ||
+        !version ||
+        !index ||
+        !os_name ||
+        !os_version ||
+        !python_version
+    ) {
+        return;
+    }
     return await axios.get(THOTH_URL + "/python/package/version/metadata", {
         params: {
             name: name,

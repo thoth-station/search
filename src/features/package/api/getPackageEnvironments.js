@@ -3,6 +3,10 @@ import { THOTH_URL } from "config";
 import { useQuery } from "react-query";
 
 export const getPackageEnvironments = async (name, version, index) => {
+    if (!name || !version || !index) {
+        return;
+    }
+
     return axios.get(THOTH_URL + "/python/package/version/environments", {
         params: {
             name: name,

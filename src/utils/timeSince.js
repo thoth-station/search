@@ -28,5 +28,6 @@ export default function timeSince(date) {
         return num + " minute" + (num !== 1 ? "s" : "");
     }
     const num = Math.floor(seconds);
+
     return num + " second" + (num !== 1 ? "s" : "");
 }

@@ -2,14 +2,9 @@ import axios from "axios";
 import { THOTH_URL } from "config";
 import { useQuery, useInfiniteQuery } from "react-query";
 
-export const getPackageVersions = async (name, page = 0, per_page = 100) => {
-    if (!name) {
-        return;
-    }
-
-    return axios.get(THOTH_URL + "/python/package/versions", {
+export const getContainerImages = async (name, page = 0, per_page = 100) => {
+    return axios.get(THOTH_URL + "/container-images", {
         params: {
-            name: name,
             page: page,
             per_page: per_page,
         },
@@ -19,20 +14,20 @@ export const getPackageVersions = async (name, page = 0, per_page = 100) => {
     });
 };
 
-export const usePackageVersions = (name, config) => {
+export const useContainerImages = config => {
     return useQuery({
         ...config,
-        queryKey: ["packageVersions", name],
-        queryFn: () => getPackageVersions(name),
+        queryKey: ["container-images"],
+        queryFn: () => getContainerImages(),
     });
 };
 
-export const useInfinitePackageVersions = (name, config) => {
+export const useInfiniteContainerImages = config => {
     return useInfiniteQuery({
         ...config,
-        queryKey: ["packageVersions", name],
+        queryKey: ["container-images"],
         queryFn: input => {
-            return getPackageVersions(name, input.pageParam);
+            return getContainerImages(input.pageParam);
         },
         getNextPageParam: lastPage => {
             return lastPage.data.versions.length === 0
