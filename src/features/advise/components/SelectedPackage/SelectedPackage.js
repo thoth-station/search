@@ -10,7 +10,7 @@ import IconText from "components/Elements/IconText";
 import NetworkGraphView from "../NetworkGraphView";
 
 // redux
-import { SelectedPackageContext } from "../../../routes/AdviseDetails";
+import { SelectedPackageContext } from "../../routes/AdviseDetails";
 import PropTypes from "prop-types";
 import { Graph } from "utils/Graph";
 

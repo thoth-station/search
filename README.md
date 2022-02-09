@@ -44,7 +44,7 @@ src
 
 ### Adding a new metric card
 A commom new feature is adding a new metric card to either the package dashboard or advise summary dashboard.
-Advise metrics are contained in the `src/features/advise` (read up on what a feature is in the docs or [here](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md)). The metrics themsleves are defined in the `src/features/advise/hooks/useMetrics.js` hook and its UI in `src/features/advise/components/{metric_name}Metric`. Follow the structure of one of the already created metrics. Metrics are finally placed in `routes/AdviseSummary` inside the feature.
+Advise metrics are contained in the `src/features/advise` (read up on what a feature is in the docs or [here](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md)). The metrics themsleves are defined in the `src/features/advise/hooks/useMetrics.js` hook and its UI in `src/features/advise/components/{metric_name}Metric`. Follow the structure of one of the already created metrics. Metrics are finally placed in `routes/ImageSummary` inside the feature.
 
 This same process is the same for metrics for a package but now under the `package` feature.
 

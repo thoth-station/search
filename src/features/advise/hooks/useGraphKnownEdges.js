@@ -4,7 +4,7 @@ import { useMemo, useEffect, useState } from "react";
 import { Graph } from "utils/Graph";
 
 // api
-import { usePackagesMetadata } from "features/misc/api";
+import { usePackagesMetadata } from "api";
 
 export function useGraphKnownEdges(data, dependency_graph) {
     const allMetadata = usePackagesMetadata(data);

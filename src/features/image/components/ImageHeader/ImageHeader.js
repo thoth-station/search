@@ -1,23 +1,20 @@
 // React
 import React, { useMemo } from "react";
+import PropTypes from "prop-types";
 
 // material-ui
 import { Typography, Chip, Button, Collapse } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import FeedRoundedIcon from "@mui/icons-material/FeedRounded";
+
 // local
 import IconText from "components/Elements/IconText";
 
 // utils
 import { calcTime } from "utils/calcTime";
 
-// local
-import CustomAlert from "./CustomAlert";
-import PropTypes from "prop-types";
-
 // component styling
-
 const useStyles = makeStyles(theme => ({
     titleRow: {
         display: "flex",
@@ -46,49 +43,34 @@ const useStyles = makeStyles(theme => ({
  * displays any errors, info, or warnings that came up
  * in the document generation.
  */
-export const AdviseHeader = ({ adviseDocument, logs }) => {
+export const ImageHeader = ({ imageDocument, logs }) => {
     const classes = useStyles();
-    const [expandAlerts, setExpandAlerts] = React.useState(false);
     const [showLogs, setShowLogs] = React.useState(false);
     const [selectedLine, setSelectedLine] = React.useState();
 
     // get status of the report
     const [statusText, statusColor] = useMemo(() => {
         // if report is done
-        if (adviseDocument?.result?.report) {
-            if (adviseDocument.result.report.ERROR) {
+        if (imageDocument?.result) {
+            if (imageDocument.result.error) {
                 return ["ERROR", "error"];
             } else {
                 return ["COMPLETE", "success"];
             }
-        } else if (adviseDocument?.result?.error) {
-            return ["ERROR", "error"];
         }
         // if report is not done
-        else if (adviseDocument?.status?.state) {
-            return [adviseDocument.status.state.toUpperCase(), "info"];
+        else if (imageDocument?.status?.state) {
+            return [imageDocument.status.state.toUpperCase(), "info"];
         } else {
             return ["UNKNOWN", undefined];
         }
-    }, [adviseDocument]);
-
-    // get alerts from report
-    const alerts = useMemo(() => {
-        if (adviseDocument?.result?.report) {
-            return adviseDocument?.result?.report?.stack_info
-                ? adviseDocument?.result?.report.stack_info.filter(alert => {
-                      return alert.type === "ERROR";
-                  })
-                : null;
-        }
-    }, [adviseDocument]);
+    }, [imageDocument]);
 
     return (
         <div>
-            <Typography variant="h4">
+            <Typography variant="h4" mb={2}>
                 <b>
-                    {adviseDocument?.metadata?.document_id ??
-                        adviseDocument?.parameters?.analysis_id}
+                    {imageDocument?.metadata?.document_id ?? imageDocument.parameters.analysis_id}
                 </b>
             </Typography>
             <div className={classes.linksRow}>
@@ -96,9 +78,9 @@ export const AdviseHeader = ({ adviseDocument, logs }) => {
                 <IconText
                     className={classes.marginLeft}
                     text={calcTime(
-                        adviseDocument?.status?.finished_at,
-                        adviseDocument?.status?.started_at,
-                        adviseDocument?.metadata?.datetime,
+                        imageDocument?.status?.finished_at,
+                        imageDocument?.status?.started_at,
+                        imageDocument?.metadata?.datetime,
                     )}
                     icon={<AccessTimeIcon />}
                 />
@@ -110,39 +92,8 @@ export const AdviseHeader = ({ adviseDocument, logs }) => {
                 </Button>
             </div>
             <Typography variant={"subtitle2"}>
-                {adviseDocument?.result?.report?.ERROR ??
-                    adviseDocument?.error ??
-                    adviseDocument?.result?.error_msg}
+                {imageDocument?.error ?? imageDocument?.result?.error_msg}
             </Typography>
-            {alerts?.length > 0 ? (
-                <div>
-                    <CustomAlert info={alerts[0]} />
-                    <Collapse in={expandAlerts} timeout="auto" unmountOnExit>
-                        {alerts?.slice(1).map((info, i) => {
-                            return (
-                                <CustomAlert
-                                    key={i}
-                                    info={info}
-                                    className={classes.alert}
-                                />
-                            );
-                        })}
-                    </Collapse>
-
-                    <Button
-                        color="inherit"
-                        size="small"
-                        onClick={() => setExpandAlerts(!expandAlerts)}
-                    >
-                        {alerts?.length > 1
-                            ? expandAlerts
-                                ? "LESS"
-                                : "MORE"
-                            : null}
-                    </Button>
-                </div>
-            ) : null}
-
             <Collapse in={showLogs}>
                 {logs?.split("\n").map((line, i) => {
                     return (
@@ -167,23 +118,14 @@ export const AdviseHeader = ({ adviseDocument, logs }) => {
                             {line}
                         </Typography>
                     );
-                }) ?? "Advisor log is not available."}
+                }) ?? "Image log is not available."}
             </Collapse>
-
-            {statusText === "COMPLETE" ? (
-                <Typography variant="body1" sx={{ color: "text.secondary" }}>
-                    Thoth has added and removed packages from the original
-                    Pipfile.lock, resulting in a <i>new</i> Pipfile.lock. Switch
-                    between the new and old Python environments to see the
-                    differences.
-                </Typography>
-            ) : null}
         </div>
     );
 };
 
-AdviseHeader.propTypes = {
+ImageHeader.propTypes = {
     /** the Advise document id*/
-    adviseDocument: PropTypes.object.isRequired,
+    imageDocument: PropTypes.object.isRequired,
     logs: PropTypes.string,
 };

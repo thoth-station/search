@@ -13,7 +13,7 @@ import { makeStyles } from "@material-ui/styles";
 
 // local
 import Popup from "../Popup";
-import { SelectedPackageContext } from "../../../routes/AdviseDetails";
+import { SelectedPackageContext } from "../../routes/AdviseDetails";
 import PropTypes from "prop-types";
 import { Graph } from "utils/Graph";
 

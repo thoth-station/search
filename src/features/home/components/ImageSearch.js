@@ -33,30 +33,36 @@ export const initState = {
     error: {},
     loading: false,
     lookupType: "id",
+    id: ""
 };
 
 export const ImageSearch = () => {
     const navigate = useNavigate();
     const [state, dispatch] = useReducer(reducer, initState);
 
-    const handleAnalyze = async selected_image => {
+    const handleAnalyze = async () => {
         if (state.loading) {
             return;
         }
 
+        if(state.id.includes("package-extract")) {
+            navigate("/image/" + state.id);
+            return
+        }
+
         dispatch({ type: "loading", payload: true });
 
-        postImageAnalyze(selected_image)
+        postImageAnalyze(state.id)
             .then(response => {
                 dispatch({ type: "loading", payload: false });
-                navigate("/image/" + response.data.analysis_id);
+                navigate("/image/" + response.data.analysis_id, {state: {image_name: state.id}});
             })
             .catch(error => {
                 dispatch({ type: "loading", payload: false });
                 if (error?.response?.status === 400) {
                     dispatch({
                         type: "error",
-                        param: "pipfile",
+                        param: "id",
                         payload:
                             error?.response?.data?.error ??
                             "An unknown error occurred",
@@ -64,6 +70,7 @@ export const ImageSearch = () => {
                 }
             });
     };
+
 
     return (
         <>
@@ -90,7 +97,7 @@ export const ImageSearch = () => {
                                             payload: e.target.value,
                                         })
                                     }
-                                    helpertext={"Analysis ID"}
+                                    helpertext={"Analysis ID or image name"}
                                     type="search"
                                     boxprops={{ mr: 2 }}
                                     lefticon={<SearchRoundedIcon />}
@@ -100,7 +107,7 @@ export const ImageSearch = () => {
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    onClick={() => handleAnalyze()}
+                                    onClick={handleAnalyze}
                                     sx={{ minHeight: "100%", minWidth: "100%" }}
                                 >
                                     <b>Analyze</b>

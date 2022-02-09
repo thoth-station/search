@@ -1,9 +1,10 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Home } from "features/home";
-import { NotFound } from "features/misc";
+import { NotFound } from "routes/NotFound";
 import { AdviseRoutes } from "features/advise";
 import { PackageRoutes } from "features/package";
+import { ImageRoutes } from "features/image";
 
 export const RouterConfig = () => {
     return (
@@ -24,6 +25,10 @@ export const RouterConfig = () => {
                 <Route
                     path={"package/:package_name/*"}
                     element={<PackageRoutes />}
+                />
+                <Route
+                    path={"image/:analysis_id/*"}
+                    element={<ImageRoutes />}
                 />
                 <Route path="*" status={404} element={<NotFound />} />
             </Routes>

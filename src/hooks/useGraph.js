@@ -1,53 +1,24 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo } from "react";
 
 // utils
 import { Graph } from "utils/Graph";
 
 // api
-import { usePackagesMetadata } from "features/misc/api";
+import { usePackagesMetadata } from "api";
 
 /**
  * Given a list of packages, create a graph using metadata information.
  */
-export function useGraph(data, knownRoots) {
+export function useGraph(data=[], knownRoots) {
     const allMetadata = usePackagesMetadata(data);
 
-    const allMetadataStatus = useMemo(() => {
-        const status = {
-            loading: false,
-            error: false,
-            success: false,
-        };
-        if (allMetadata.length > 0) {
-            allMetadata.forEach(query => {
-                switch (query.status) {
-                    case "error":
-                        status.error = true;
-                        break;
-                    case "success":
-                        status.success = true;
-                        break;
-                    default:
-                        status.loading = true;
-                }
-            });
-        } else {
-            return "loading";
-        }
-
-        if (status.loading) {
-            return "loading";
-        } else if (status.error) {
-            return "error";
-        } else {
-            return "success";
-        }
+    const isLoading = useMemo(() => {
+        return allMetadata.some(query => query.isLoading)
     }, [allMetadata]);
 
-    const [graph, setGraph] = useState();
 
-    useEffect(() => {
-        if (allMetadataStatus === "loading") {
+    return useMemo(() => {
+        if (isLoading) {
             return;
         }
 
@@ -128,7 +99,7 @@ export function useGraph(data, knownRoots) {
         tempGraph.nodes.forEach((value, key, map) => {
             if (
                 !notRoot.includes(key) ||
-                Object.keys(knownRoots).includes(key)
+                Object.keys(knownRoots ?? {}).includes(key)
             ) {
                 const node = map.get(key);
                 node.value.depth = 0;
@@ -156,9 +127,7 @@ export function useGraph(data, knownRoots) {
                 }
             }
         }
+        return tempGraph
 
-        setGraph(tempGraph);
-    }, [allMetadataStatus, knownRoots]);
-
-    return graph;
+    }, [isLoading, knownRoots]);
 }

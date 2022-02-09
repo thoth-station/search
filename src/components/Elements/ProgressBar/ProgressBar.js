@@ -50,7 +50,7 @@ const ProgressBar = ({ value, total, label, action }) => {
                     {label}
                 </Typography>
             </Grid>
-            <Grid item xs={1.75}>
+            <Grid item xs={2}>
                 <Typography className={classes.value} variant="body2">
                     {value}
                 </Typography>

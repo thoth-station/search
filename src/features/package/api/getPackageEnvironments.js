@@ -22,6 +22,7 @@ export const getPackageEnvironments = async (name, version, index) => {
 export const usePackageEnvironments = (name, version, index, config) => {
     return useQuery({
         ...config,
+        enabled: !!name && !!version && !!index,
         queryKey: ["packageEnvironments", name, version, index],
         queryFn: () => getPackageEnvironments(name, version, index),
     });

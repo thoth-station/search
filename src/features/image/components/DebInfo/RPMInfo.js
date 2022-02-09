@@ -1,0 +1,58 @@
+// react
+import React  from "react";
+import PropTypes from "prop-types";
+import { DataGrid } from '@mui/x-data-grid';
+
+
+// material-ui
+import { Box, Skeleton } from "@material-ui/core";
+
+const columns = [
+    { field: 'name', headerName: 'Package Name', flex: 1},
+    { field: 'version', headerName: 'Version', flex: .5},
+    { field: 'release', headerName: 'Release', flex: .25},
+    { field: 'dependencies', headerName: 'Dependencies',
+        flex: .5, valueGetter: (params) => params.row?.dependencies?.length ?? 0, sortable: false,},
+    { field: 'epoch', headerName: 'Epoch', flex: .5},
+    { field: 'arch', headerName: 'Architecture', flex: .5},
+];
+
+/**
+ * A metric card displaying dependency information of a single package.
+ */
+export const RPMInfo = ({ imageDocument }) => {
+
+    if (!imageDocument) {
+        return (
+            <Box>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton width={"60%"} />
+            </Box>
+        );
+    }
+
+    return (
+        <div style={{ height: 400, width: '100%' }}>
+            <DataGrid
+                disableSelectionOnClick
+                disableColumnSelector
+                hideFooterSelectedRowCount
+                getRowId={row => row.package_identifier}
+                density="compact"
+                rows={imageDocument?.result?.["rpm-dependencies"]}
+                columns={columns}
+                pageSize={50}
+                rowsPerPageOptions={[25, 50, 100]}
+            />
+        </div>
+    );
+};
+
+RPMInfo.propTypes = {
+    /** An object holding metric info. */
+    imageDocument: PropTypes.shape({
+        result: PropTypes.object,
+        metadata: PropTypes.object
+    })
+};

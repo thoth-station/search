@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useContainerImages } from "../api";
 import { useMemo } from "react";
 import { CircularProgress } from "@material-ui/core";
-import { NotFound } from "../../misc";
+import { NotFound } from "routes/NotFound";
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -38,7 +38,7 @@ function getComparator(order, orderBy) {
 const headCells = [
     {
         id: "environment_name",
-        label: "Environment Name",
+        label: "Image Name",
     },
     {
         id: "os_name",
@@ -106,7 +106,6 @@ export default function ImageTable() {
     const rows = useMemo(() => {
         if (images?.data?.data?.container_images) {
             return images?.data?.data?.container_images.map(image => {
-                image["name"] = image.environment_name.split("/").at(-1);
                 image["date"] = timeSince(new Date(image.datetime)) + " ago";
                 return image;
             });
@@ -132,8 +131,8 @@ export default function ImageTable() {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const handleAnalyze = package_extract_document_id => {
-        navigate("/image/" + package_extract_document_id);
+    const handleAnalyze = (package_extract_document_id, environment_name) => {
+        navigate("/image/" + package_extract_document_id, {state: {image_name: environment_name}});
     };
 
     if (images.isError) {
@@ -174,14 +173,14 @@ export default function ImageTable() {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
-                                            key={row.name + index}
+                                            key={row.environment_name + index}
                                         >
                                             <TableCell
                                                 component="th"
                                                 id={labelId}
                                                 scope="row"
                                             >
-                                                {row.name}
+                                                {row.environment_name}
                                             </TableCell>
                                             <TableCell align="left">
                                                 {row.os_name}
@@ -200,6 +199,7 @@ export default function ImageTable() {
                                                     onClick={() =>
                                                         handleAnalyze(
                                                             row.package_extract_document_id,
+                                                            row.environment_name
                                                         )
                                                     }
                                                 >
