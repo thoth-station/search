@@ -11,9 +11,8 @@ import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { usePackageMetadata } from "api";
 import { PackageNotFound } from "./PackageNotFound";
-import { useAllVersions } from "../hooks";
+import { useAllVersions, useSimpleGraph } from "../hooks";
 import { usePackageEnvironments } from "../api";
-import { useSimpleGraph } from "../hooks/useSimpleGraph";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -95,9 +94,11 @@ export const PackageOverview = () => {
                     (!specs.os_name || specs.os_name === env.os_name) &&
                     (!specs.os_version || specs.os_version === env.os_version),
             );
-            d.os_name = filtered.at(0).os_name;
-            d.os_version = filtered.at(0).os_version;
-            d.python_version = filtered.at(0).python_version;
+            if (filtered.length > 0) {
+                d.os_name = filtered.at(0).os_name;
+                d.os_version = filtered.at(0).os_version;
+                d.python_version = filtered.at(0).python_version;
+            }
         }
 
         if (Object.entries(defaultSpecs).some(([key, val]) => d[key] !== val)) {

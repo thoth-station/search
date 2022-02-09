@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from "react";
 
 // material-ui
-import { Grid, IconButton, Typography } from "@material-ui/core";
+import { Box, Grid, IconButton, Skeleton, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
@@ -32,7 +32,11 @@ const useStyles = makeStyles(theme => ({
 /**
  * A header for package metadata.
  */
-export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
+export const PackageHeader = ({
+    metadata,
+    allVersions = [],
+    allEnvironments = [],
+}) => {
     const classes = useStyles();
     const { defaultSpecs, specs } = useContext(SpecContext);
     const [showEnvParams, setShowEnvParams] = useState(false);
@@ -110,6 +114,16 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
             return [name, version, pyVersion];
         }, [allEnvironments, specs]);
 
+    if (!metadata) {
+        return (
+            <Box data-testid="package-header-not-loaded">
+                <Skeleton />
+                <Skeleton />
+                <Skeleton width={"60%"} />
+            </Box>
+        );
+    }
+
     return (
         <div>
             <Grid container alignItems="flex-end" spacing={1}>
@@ -164,6 +178,7 @@ export const PackageHeader = ({ metadata, allVersions, allEnvironments }) => {
                 <Grid item xs={1}>
                     <IconButton
                         onClick={() => setShowEnvParams(!showEnvParams)}
+                        data-testid="package-header-expand-button"
                     >
                         {showEnvParams ? (
                             <ArrowLeftIcon fontSize="large" />
@@ -198,7 +213,7 @@ PackageHeader.propTypes = {
         License: PropTypes.string,
     }),
     /** list of all versions of a package **/
-    allVersions: PropTypes.array.isRequired,
+    allVersions: PropTypes.array,
     /** list of all environments of a package, version, index **/
-    allEnvironments: PropTypes.array.isRequired,
+    allEnvironments: PropTypes.array,
 };

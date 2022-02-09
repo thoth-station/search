@@ -2,11 +2,11 @@ import * as React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { QueryClientProvider } from "react-query";
 import { queryClient } from "lib/react-query";
-import RouterConfig from "routes/RouterConfig";
 import { Button } from "@material-ui/core";
 import Theme from "styles/Theme";
 import Global from "stores/Global";
 import { MainLayout } from "components/Layout";
+import PropTypes from "prop-types";
 
 const ErrorFallback = () => {
     return (
@@ -21,18 +21,20 @@ const ErrorFallback = () => {
     );
 };
 
-export const AppProvider = () => {
+export const AppProvider = ({ children }) => {
     return (
         <Theme>
             <Global>
                 <ErrorBoundary FallbackComponent={ErrorFallback}>
                     <QueryClientProvider client={queryClient}>
-                        <MainLayout>
-                            <RouterConfig />
-                        </MainLayout>
+                        <MainLayout>{children}</MainLayout>
                     </QueryClientProvider>
                 </ErrorBoundary>
             </Global>
         </Theme>
     );
+};
+
+AppProvider.propTypes = {
+    children: PropTypes.node,
 };
