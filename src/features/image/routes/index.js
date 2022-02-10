@@ -53,8 +53,13 @@ export const ImageRoutes = () => {
     const graphData = useMemo(() => {
         if (imageDocument.data?.data?.metadata) {
             const os = {
-                name: imageDocument.data.data.result?.["operating-system"]?.id ?? "rhel",
-                version: imageDocument.data.data.result?.["operating-system"]?.version_id?.split(".")[0] ?? "8",
+                name:
+                    imageDocument.data.data.result?.["operating-system"]?.id ??
+                    "rhel",
+                version:
+                    imageDocument.data.data.result?.[
+                        "operating-system"
+                    ]?.version_id?.split(".")[0] ?? "8",
                 python_version:
                     imageDocument.data.data.metadata.python.major +
                     "." +
