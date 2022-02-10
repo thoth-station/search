@@ -3,7 +3,11 @@ import { Grid } from "@material-ui/core";
 import InfoCard from "components/Elements/InfoCard";
 import { CustomCardAction } from "../components";
 import PropTypes from "prop-types";
-import { AdviseMetric, DependenciesMetric, LicenseMetric } from "components/Metrics";
+import {
+    AdviseMetric,
+    DependenciesMetric,
+    LicenseMetric,
+} from "components/Metrics";
 
 export const AdviseSummary = ({ metrics }) => {
     const [pipfile, setPipfile] = React.useState("newGraph");

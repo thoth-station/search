@@ -9,13 +9,12 @@ import { usePackagesMetadata } from "api";
 /**
  * Given a list of packages, create a graph using metadata information.
  */
-export function useGraph(data=[], knownRoots) {
+export function useGraph(data = [], knownRoots) {
     const allMetadata = usePackagesMetadata(data);
 
     const isLoading = useMemo(() => {
-        return allMetadata.some(query => query.isLoading)
+        return allMetadata.some(query => query.isLoading);
     }, [allMetadata]);
-
 
     return useMemo(() => {
         if (isLoading) {
@@ -127,7 +126,6 @@ export function useGraph(data=[], knownRoots) {
                 }
             }
         }
-        return tempGraph
-
+        return tempGraph;
     }, [isLoading, knownRoots]);
 }

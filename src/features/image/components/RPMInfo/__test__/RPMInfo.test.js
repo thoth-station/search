@@ -12,7 +12,7 @@ let imageDocument = null;
 jest.mock("react-router-dom");
 
 beforeAll(() => {
-    imageDocument = generateImageDocument()
+    imageDocument = generateImageDocument();
 });
 
 beforeEach(() => {
@@ -29,14 +29,17 @@ afterEach(() => {
 });
 
 it("renders without any documents", async () => {
-    await render_with_overlay(<RPMInfo/>, container);
+    await render_with_overlay(<RPMInfo />, container);
 
     const exists = await findByTestId(container, "rpm-info-not-loaded");
     expect(exists).toBeTruthy();
 });
 
 it("renders with the document", async () => {
-    await render_with_overlay(<RPMInfo imageDocument={imageDocument}/>, container);
+    await render_with_overlay(
+        <RPMInfo imageDocument={imageDocument} />,
+        container,
+    );
 
     const exists = await findByTestId(container, "rpm-info-loaded");
     expect(exists).toBeTruthy();

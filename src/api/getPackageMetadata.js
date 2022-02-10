@@ -54,7 +54,13 @@ export const usePackageMetadata = (
 ) => {
     return useQuery({
         ...config,
-        enabled: !!name && !!version && !!index && !!os_name && !!os_version && !!python_version,
+        enabled:
+            !!name &&
+            !!version &&
+            !!index &&
+            !!os_name &&
+            !!os_version &&
+            !!python_version,
         queryKey: [
             "packageMetadata",
             name,
@@ -81,7 +87,13 @@ export const usePackagesMetadata = (packages, config) => {
         packages.map(p => {
             return {
                 ...config,
-                enabled: !!p.name && !!p.version && !!p.index && !!p.os_name && !!p.os_version && !!p.python_version,
+                enabled:
+                    !!p.name &&
+                    !!p.version &&
+                    !!p.index &&
+                    !!p.os_name &&
+                    !!p.os_version &&
+                    !!p.python_version,
                 queryKey: [
                     "packageMetadata",
                     p.name,

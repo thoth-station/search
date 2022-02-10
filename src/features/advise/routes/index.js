@@ -13,7 +13,7 @@ import { useAdviseDocument, useAdviseLogs } from "../api";
 import { formatLockfile } from "utils/formatLockfile";
 import { AdviseHeader } from "../components";
 import { useMergeGraphs, useMetrics } from "../hooks";
-import { useGraph} from "hooks";
+import { useGraph } from "hooks";
 
 // misc
 import { CircularProgress } from "@material-ui/core";

@@ -1,2 +1,2 @@
-export * from "./generateImageDocument"
-export * from "./generateImageMetadata"
+export * from "./generateImageDocument";
+export * from "./generateImageMetadata";

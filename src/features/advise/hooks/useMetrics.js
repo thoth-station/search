@@ -1,5 +1,9 @@
 import { useMemo } from "react";
-import {useLicenseMetric, useDependencyMetric, useAdviseMetric} from "hooks/metrics"
+import {
+    useLicenseMetric,
+    useDependencyMetric,
+    useAdviseMetric,
+} from "hooks/metrics";
 
 export function useMetrics(oldGraph, newGraph, mergedGraph, adviseDocument) {
     const adviseMetric = useAdviseMetric(mergedGraph, adviseDocument);

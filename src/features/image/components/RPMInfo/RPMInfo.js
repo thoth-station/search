@@ -1,27 +1,30 @@
 // react
-import React  from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { DataGrid } from '@mui/x-data-grid';
-
+import { DataGrid } from "@mui/x-data-grid";
 
 // material-ui
 import { Box, Skeleton } from "@material-ui/core";
 
 const columns = [
-    { field: 'name', headerName: 'Package Name', flex: 1},
-    { field: 'version', headerName: 'Version', flex: .5},
-    { field: 'release', headerName: 'Release', flex: .25},
-    { field: 'dependencies', headerName: 'Dependencies',
-        flex: .5, valueGetter: (params) => params.row?.dependencies?.length ?? 0, sortable: false,},
-    { field: 'epoch', headerName: 'Epoch', flex: .5},
-    { field: 'arch', headerName: 'Architecture', flex: .5},
+    { field: "name", headerName: "Package Name", flex: 1 },
+    { field: "version", headerName: "Version", flex: 0.5 },
+    { field: "release", headerName: "Release", flex: 0.25 },
+    {
+        field: "dependencies",
+        headerName: "Dependencies",
+        flex: 0.5,
+        valueGetter: params => params.row?.dependencies?.length ?? 0,
+        sortable: false,
+    },
+    { field: "epoch", headerName: "Epoch", flex: 0.5 },
+    { field: "arch", headerName: "Architecture", flex: 0.5 },
 ];
 
 /**
  * A metric card displaying dependency information of a single package.
  */
 export const RPMInfo = ({ imageDocument }) => {
-
     if (!imageDocument) {
         return (
             <Box data-testid="rpm-info-not-loaded">
@@ -33,7 +36,10 @@ export const RPMInfo = ({ imageDocument }) => {
     }
 
     return (
-        <div style={{ height: 400, width: '100%' }} data-testid="rpm-info-loaded">
+        <div
+            style={{ height: 400, width: "100%" }}
+            data-testid="rpm-info-loaded"
+        >
             <DataGrid
                 disableSelectionOnClick
                 disableColumnSelector
@@ -53,6 +59,6 @@ RPMInfo.propTypes = {
     /** An object holding metric info. */
     imageDocument: PropTypes.shape({
         result: PropTypes.object,
-        metadata: PropTypes.object
-    })
+        metadata: PropTypes.object,
+    }),
 };

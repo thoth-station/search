@@ -42,8 +42,8 @@ export const useDependencyMetric = graph => {
                     node.value.depth === 0
                         ? "roots"
                         : node.value.depth === 1
-                            ? "direct"
-                            : "indirect";
+                        ? "direct"
+                        : "indirect";
 
                 // dependency metric
                 base = {

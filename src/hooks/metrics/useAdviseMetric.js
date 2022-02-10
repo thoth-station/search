@@ -42,7 +42,7 @@ export const useAdviseMetric = (graph, adviseDocument) => {
             justification => {
                 base.justification[justification.type] = base.justification[
                     justification.type
-                    ]
+                ]
                     ? base.justification[justification.type] + 1
                     : 1;
             },

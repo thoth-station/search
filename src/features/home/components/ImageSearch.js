@@ -33,7 +33,7 @@ export const initState = {
     error: {},
     loading: false,
     lookupType: "id",
-    id: ""
+    id: "",
 };
 
 export const ImageSearch = () => {
@@ -45,9 +45,9 @@ export const ImageSearch = () => {
             return;
         }
 
-        if(state.id.includes("package-extract")) {
+        if (state.id.includes("package-extract")) {
             navigate("/image/" + state.id);
-            return
+            return;
         }
 
         dispatch({ type: "loading", payload: true });
@@ -55,7 +55,9 @@ export const ImageSearch = () => {
         postImageAnalyze(state.id)
             .then(response => {
                 dispatch({ type: "loading", payload: false });
-                navigate("/image/" + response.data.analysis_id, {state: {image_name: state.id}});
+                navigate("/image/" + response.data.analysis_id, {
+                    state: { image_name: state.id },
+                });
             })
             .catch(error => {
                 dispatch({ type: "loading", payload: false });
@@ -70,7 +72,6 @@ export const ImageSearch = () => {
                 }
             });
     };
-
 
     return (
         <>

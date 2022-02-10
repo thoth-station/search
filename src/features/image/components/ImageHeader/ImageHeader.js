@@ -70,7 +70,8 @@ export const ImageHeader = ({ imageDocument, logs }) => {
         <div>
             <Typography variant="h4" mb={2}>
                 <b>
-                    {imageDocument?.metadata?.document_id ?? imageDocument.parameters.analysis_id}
+                    {imageDocument?.metadata?.document_id ??
+                        imageDocument.parameters.analysis_id}
                 </b>
             </Typography>
             <div className={classes.linksRow}>

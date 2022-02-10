@@ -132,7 +132,9 @@ export default function ImageTable() {
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const handleAnalyze = (package_extract_document_id, environment_name) => {
-        navigate("/image/" + package_extract_document_id, {state: {image_name: environment_name}});
+        navigate("/image/" + package_extract_document_id, {
+            state: { image_name: environment_name },
+        });
     };
 
     if (images.isError) {
@@ -199,7 +201,7 @@ export default function ImageTable() {
                                                     onClick={() =>
                                                         handleAnalyze(
                                                             row.package_extract_document_id,
-                                                            row.environment_name
+                                                            row.environment_name,
                                                         )
                                                     }
                                                 >

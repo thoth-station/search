@@ -12,7 +12,7 @@ let imageDocument = null;
 jest.mock("react-router-dom");
 
 beforeAll(() => {
-    imageDocument = generateImageDocument()
+    imageDocument = generateImageDocument();
 });
 
 beforeEach(() => {
@@ -29,22 +29,31 @@ afterEach(() => {
 });
 
 it("renders without any documents", async () => {
-    await render_with_overlay(<PythonInfo/>, container);
+    await render_with_overlay(<PythonInfo />, container);
 
     const exists = await findByTestId(container, "python-info-not-loaded");
     expect(exists).toBeTruthy();
 });
 
 it("renders with the document", async () => {
-    await render_with_overlay(<PythonInfo imageDocument={imageDocument}/>, container);
+    await render_with_overlay(
+        <PythonInfo imageDocument={imageDocument} />,
+        container,
+    );
 
     const exists = await findByTestId(container, "python-info-loaded");
     expect(exists).toBeTruthy();
 });
 
 it("renders correct number of Python files", async () => {
-    await render_with_overlay(<PythonInfo imageDocument={imageDocument}/>, container);
+    await render_with_overlay(
+        <PythonInfo imageDocument={imageDocument} />,
+        container,
+    );
 
-    const exists = await findByText(container, imageDocument.result["python-files"].length);
+    const exists = await findByText(
+        container,
+        imageDocument.result["python-files"].length,
+    );
     expect(exists).toBeTruthy();
 });

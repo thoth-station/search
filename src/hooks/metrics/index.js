@@ -1,3 +1,3 @@
-export * from "./useAdviseMetric"
-export * from "./useDependencyMetric"
-export * from "./useLicenseMetric"
+export * from "./useAdviseMetric";
+export * from "./useDependencyMetric";
+export * from "./useLicenseMetric";

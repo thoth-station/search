@@ -3,7 +3,7 @@ import InfoCard from "components/Elements/InfoCard";
 import { DependenciesMetric, LicenseMetric } from "components/Metrics";
 import PropTypes from "prop-types";
 import { Masonry } from "@mui/lab";
-import { DebInfo, PythonInfo, ImageInfo, RPMInfo} from "../components";
+import { DebInfo, PythonInfo, ImageInfo, RPMInfo } from "../components";
 
 export const ImageSummary = ({ metrics, imageDocument, imageMetadata }) => {
     return (
@@ -14,52 +14,50 @@ export const ImageSummary = ({ metrics, imageDocument, imageMetadata }) => {
                         title: "Image Details",
                     }}
                     cardBody={
-                        <ImageInfo imageDocument={imageDocument} imageMetadata={imageMetadata}/>
+                        <ImageInfo
+                            imageDocument={imageDocument}
+                            imageMetadata={imageMetadata}
+                        />
                     }
                 />
             </div>
 
-                {imageDocument?.result?.["python-interpreters"]?.length > 0
-                    ?  <div><InfoCard
+            {imageDocument?.result?.["python-interpreters"]?.length > 0 ? (
+                <div>
+                    <InfoCard
                         cardMeta={{
                             title: "Python Details",
                         }}
-                        cardBody={
-                            <PythonInfo imageDocument={imageDocument} />
-                        }
-                    /></div>
-                    : undefined
-                }
+                        cardBody={<PythonInfo imageDocument={imageDocument} />}
+                    />
+                </div>
+            ) : undefined}
 
-
-                {imageDocument?.result?.["rpm-dependencies"]?.length > 0
-                    ? <div><InfoCard
+            {imageDocument?.result?.["rpm-dependencies"]?.length > 0 ? (
+                <div>
+                    <InfoCard
                         cardMeta={{
                             title: "RPM Details",
                         }}
-                        cardBody={
-                            <RPMInfo imageDocument={imageDocument} />
-                        }
-                    /></div>
-                    : undefined
-                }
+                        cardBody={<RPMInfo imageDocument={imageDocument} />}
+                    />
+                </div>
+            ) : undefined}
 
-
-                {imageDocument.result?.deb?.length > 0
-                    ? <div><InfoCard
+            {imageDocument.result?.deb?.length > 0 ? (
+                <div>
+                    <InfoCard
                         cardMeta={{
                             title: "Debian Details",
                         }}
-                        cardBody={
-                            <DebInfo imageDocument={imageDocument} />
-                        }
-                    /> </div>
-                    : undefined
-                }
+                        cardBody={<DebInfo imageDocument={imageDocument} />}
+                    />{" "}
+                </div>
+            ) : undefined}
 
-
-                {Object.keys(metrics?.dependencies?.all ?? {}).length !== 0
-                ?  <div><InfoCard
+            {Object.keys(metrics?.dependencies?.all ?? {}).length !== 0 ? (
+                <div>
+                    <InfoCard
                         cardMeta={{
                             title: "Python Packages Dependencies",
                         }}
@@ -69,24 +67,20 @@ export const ImageSummary = ({ metrics, imageDocument, imageMetadata }) => {
                                 roots={metrics?.dependencies?.roots}
                             />
                         }
-                    /></div>
-                : undefined
-                }
+                    />
+                </div>
+            ) : undefined}
 
-
-                {Object.keys(metrics?.licenses ?? {}).length !== 0
-                ?  <div><InfoCard
+            {Object.keys(metrics?.licenses ?? {}).length !== 0 ? (
+                <div>
+                    <InfoCard
                         cardMeta={{
                             title: "Python Packages Licenses",
                         }}
-                        cardBody={
-                            <LicenseMetric metric={metrics?.licenses} />
-                        }
-                    /> </div>
-                : undefined
-                }
-
-
+                        cardBody={<LicenseMetric metric={metrics?.licenses} />}
+                    />{" "}
+                </div>
+            ) : undefined}
         </Masonry>
     );
 };
@@ -94,5 +88,5 @@ export const ImageSummary = ({ metrics, imageDocument, imageMetadata }) => {
 ImageSummary.propTypes = {
     metrics: PropTypes.object,
     imageDocument: PropTypes.object,
-    imageMetadata: PropTypes.object
+    imageMetadata: PropTypes.object,
 };

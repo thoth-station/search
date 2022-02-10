@@ -1,2 +1,2 @@
 export * from "./useInterval";
-export * from "./useGraph"
+export * from "./useGraph";

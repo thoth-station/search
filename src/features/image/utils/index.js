@@ -1,1 +1,1 @@
-export * from "./formatImagePackages"
+export * from "./formatImagePackages";

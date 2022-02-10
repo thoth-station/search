@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import {useLicenseMetric, useDependencyMetric} from "hooks/metrics"
+import { useLicenseMetric, useDependencyMetric } from "hooks/metrics";
 
 export function useMetrics(graph) {
     const dependencyMetric = useDependencyMetric(graph);
@@ -8,7 +8,7 @@ export function useMetrics(graph) {
     return useMemo(() => {
         const base = {
             dependencies: null,
-            licenses: null
+            licenses: null,
         };
 
         if (dependencyMetric) {
