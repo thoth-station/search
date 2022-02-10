@@ -29,9 +29,9 @@ export const ImageInfo = ({ imageDocument, imageMetadata }) => {
         }
     }, [imageDocument, imageMetadata])
 
-    if (!imageDocument) {
+    if (!params) {
         return (
-            <Box>
+            <Box data-testid="image-info-not-loaded">
                 <Skeleton />
                 <Skeleton />
                 <Skeleton width={"60%"} />

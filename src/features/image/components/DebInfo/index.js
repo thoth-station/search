@@ -1,1 +1,1 @@
-export * from "./RPMInfo";
+export * from "./DebInfo";

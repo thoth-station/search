@@ -24,7 +24,7 @@ export const RPMInfo = ({ imageDocument }) => {
 
     if (!imageDocument) {
         return (
-            <Box>
+            <Box data-testid="rpm-info-not-loaded">
                 <Skeleton />
                 <Skeleton />
                 <Skeleton width={"60%"} />
@@ -33,7 +33,7 @@ export const RPMInfo = ({ imageDocument }) => {
     }
 
     return (
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{ height: 400, width: '100%' }} data-testid="rpm-info-loaded">
             <DataGrid
                 disableSelectionOnClick
                 disableColumnSelector

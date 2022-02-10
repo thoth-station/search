@@ -13,7 +13,7 @@ export const PythonInfo = ({ imageDocument }) => {
 
     if (!imageDocument) {
         return (
-            <Box>
+            <Box data-testid="python-info-not-loaded">
                 <Skeleton />
                 <Skeleton />
                 <Skeleton width={"60%"} />
@@ -54,13 +54,13 @@ export const PythonInfo = ({ imageDocument }) => {
                     <Typography variant={"h6"}>Python interpreters: </Typography>
                     {interpreters.map((interpreter, i) => {
                         return (
-                            <Chip key={interpreter.version + i} label={interpreter.version} />
+                            <Chip data-testid="python-info-chip" key={interpreter.version + i} label={interpreter.version} />
                         )
                     })}
                 </Stack>
             : undefined
             }
-            <div>
+            <div data-testid="python-info-loaded">
                 <Stack direction="row" spacing={1} mb={1} alignItems={"center"}>
                     <Typography variant={"h6"}>Total number of Python files: </Typography>
                     <Typography variant={"body1"}>{files.reduce((prev, cur) => prev + cur.count, 0)}</Typography>

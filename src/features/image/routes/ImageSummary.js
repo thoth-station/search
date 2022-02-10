@@ -3,11 +3,9 @@ import InfoCard from "components/Elements/InfoCard";
 import { DependenciesMetric, LicenseMetric } from "components/Metrics";
 import PropTypes from "prop-types";
 import { Masonry } from "@mui/lab";
-import { DebInfo, PythonInfo, ImageInfo} from "../components";
-import { RPMInfo } from "../components/DebInfo";
+import { DebInfo, PythonInfo, ImageInfo, RPMInfo} from "../components";
 
 export const ImageSummary = ({ metrics, imageDocument, imageMetadata }) => {
-    console.log(metrics)
     return (
         <Masonry columns={{ xs: 1, md: 2 }} spacing={3} mb={3} mt={1}>
             <div>
