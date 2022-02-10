@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Grid, Paper, Typography } from "@material-ui/core";
 import SearchBar from "components/Elements/SearchBar";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import { AdviseTableView } from "../components";
-import { SelectedPackage } from "../features";
+import { AdviseTableView, SelectedPackage } from "../components";
 import PropTypes from "prop-types";
 
 export const SelectedPackageContext = React.createContext();

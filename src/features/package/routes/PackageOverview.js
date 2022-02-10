@@ -9,7 +9,7 @@ import { CircularProgress, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
-import { usePackageMetadata } from "features/misc/api";
+import { usePackageMetadata } from "api";
 import { PackageNotFound } from "./PackageNotFound";
 import { useAllVersions, useSimpleGraph } from "../hooks";
 import { usePackageEnvironments } from "../api";

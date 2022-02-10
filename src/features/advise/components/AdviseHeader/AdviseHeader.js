@@ -10,7 +10,7 @@ import FeedRoundedIcon from "@mui/icons-material/FeedRounded";
 import IconText from "components/Elements/IconText";
 
 // utils
-import { calcTime } from "../../utils";
+import { calcTime } from "utils/calcTime";
 
 // local
 import CustomAlert from "./CustomAlert";

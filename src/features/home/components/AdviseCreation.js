@@ -229,7 +229,7 @@ export const AdviseCreation = () => {
 
             <Collapse in={state.lookupType === "manual"}>
                 <>
-                    <Typography variant={"h6"} mt={3}>
+                    <Typography variant={"h6"} mt={3} mb={1} ml={2}>
                         Advise Parameters
                     </Typography>
                     <Paper

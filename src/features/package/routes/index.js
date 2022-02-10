@@ -3,7 +3,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 
 import { PackageOverview } from "./PackageOverview";
-import { NotFound } from "features/misc";
+import { NotFound } from "routes/NotFound";
 import { NavigationLayout } from "components/Layout/NavigationLayout";
 
 // The page that displays all analysis data

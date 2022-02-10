@@ -38,14 +38,14 @@ The **details** page visualizes the output of dthe `useMergeGraphs()` hook. This
 The api in the scope of the advise feature includes getting an advise document and getting package dependencies.
 The calls to Thoth User API are abstracted through `react-query` useQuery hook. More info on this usage later in the docs.
 
-**getAdviseDocument()** :: An async function that returns a promise for `{base_url}/advise/python`.
+**getImageDocument()** :: An async function that returns a promise for `{base_url}/advise/python`.
 
 _analysis_id_ - the advise document id
 
 Examples
 
 ```jsx static
-import { useAdviseDocument } from "./getAdviseDocument";
+import { useAdviseDocument } from "./getImageDocument";
 
 const doc = useAdviseDocument("adviser-211112223258-38af1a4746733b53");
 ```
@@ -118,7 +118,7 @@ Example
 
 ```jsx static
 import { useGraph } from "./useGraph";
-import { useAdviseDocument } from "./getAdviseDocument";
+import { useAdviseDocument } from "./getImageDocument";
 import { useMergeGraphs } from "./useMergeGraphs";
 
 const adviseDocument = useAdviseDocument("id");
@@ -145,7 +145,7 @@ Example
 
 ```jsx static
 import { useGraph } from "./useGraph";
-import { useAdviseDocument } from "./getAdviseDocument";
+import { useAdviseDocument } from "./getImageDocument";
 import { useMergeGraphs } from "./useMergeGraphs";
 import { useMetrics } from "./useMetrics";
 

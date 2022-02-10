@@ -1,5 +1,5 @@
 ```jsx
-<PackageDependencies
+<DebInfo
     metric={{
         all: {
             direct: 6,

@@ -18,11 +18,11 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import TabPanel from "components/Elements/TabPanel";
 import logo from "assets/thoth-logo.png";
 
-import { PackageSearch, AdviseCreation } from "../components";
+import { PackageSearch, AdviseCreation, ImageSearch } from "../components";
 
 export const Home = () => {
     // utility states
-    const [mode, setMode] = useState("multiple");
+    const [mode, setMode] = useState("package");
 
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up("sm"));
@@ -118,22 +118,28 @@ export const Home = () => {
                             onChange={handleMode}
                             size={!matches ? "small" : "large"}
                         >
-                            <ToggleButton value="single">
-                                <b>single package analysis</b>
+                            <ToggleButton value="package">
+                                <b>package</b>
                             </ToggleButton>
-                            <ToggleButton value="multiple">
-                                <b>Python application analysis</b>
+                            <ToggleButton value="environment">
+                                <b>environment</b>
+                            </ToggleButton>
+                            <ToggleButton value="image">
+                                <b>image</b>
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Grid>
 
                     <Grid item xs={12}>
                         <Divider sx={{ marginBottom: 3 }} />
-                        <TabPanel value={mode} index="single">
+                        <TabPanel value={mode} index="package">
                             <PackageSearch />
                         </TabPanel>
-                        <TabPanel value={mode} index={"multiple"}>
+                        <TabPanel value={mode} index="environment">
                             <AdviseCreation />
+                        </TabPanel>
+                        <TabPanel value={mode} index="image">
+                            <ImageSearch />
                         </TabPanel>
                     </Grid>
                 </Grid>

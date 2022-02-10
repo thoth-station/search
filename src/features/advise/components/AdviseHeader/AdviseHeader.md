@@ -1,6 +1,6 @@
 ```jsx
-<AdviseHeader
-    adviseDocument={{
+<ImageHeader
+    imageDocument={{
         status: {
             finished_at: "2021-10-05T14:48:00.000Z",
         },

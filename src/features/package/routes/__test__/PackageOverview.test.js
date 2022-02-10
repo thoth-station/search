@@ -5,9 +5,9 @@ import { render_with_overlay } from "tests/test-utils";
 import { PackageOverview } from "../PackageOverview";
 import { useAllVersions, useSimpleGraph } from "../../hooks";
 import { usePackageEnvironments } from "../../api";
-import { usePackageMetadata } from "../../../misc/api";
 import { useParams } from "react-router-dom";
 import { waitFor } from "@testing-library/react";
+import { usePackageMetadata } from "api";
 
 let container = null;
 
@@ -19,7 +19,7 @@ jest.mock("../../hooks/useSimpleGraph");
 
 jest.mock("../../api/getPackageEnvironments");
 
-jest.mock("../../../misc/api/getPackageMetadata");
+jest.mock("../../../../api/getPackageMetadata");
 
 beforeEach(() => {
     // setup a DOM element as a render target

@@ -3,6 +3,10 @@ import { THOTH_URL } from "config";
 import { useQuery, useInfiniteQuery } from "react-query";
 
 export const getPackageVersions = async (name, page = 0, per_page = 100) => {
+    if (!name) {
+        return;
+    }
+
     return axios.get(THOTH_URL + "/python/package/versions", {
         params: {
             name: name,
