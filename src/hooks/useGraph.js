@@ -28,8 +28,11 @@ export function useGraph(data = [], knownRoots) {
         // add data to graph
         allMetadata.forEach(query => {
             // if could not find metadata
+            console.log(query);
             if (query.status === "error") {
-                const params = query.error.response.data.parameters;
+                const params =
+                    query?.error?.response?.data?.parameters ??
+                    query?.error?.response?.config?.params;
                 const value = {
                     id: params.name.toLowerCase(),
                     label: params.name,

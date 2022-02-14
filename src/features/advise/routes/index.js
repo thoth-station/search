@@ -35,6 +35,8 @@ export const AdviseRoutes = () => {
         },
     });
 
+    console.log(adviseDocument);
+
     const logs = useAdviseLogs(analysis_id, {
         useErrorBoundary: false,
         refetchInterval: () => {

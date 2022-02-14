@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from "@material-ui/core";
-import SearchBar from "../../../components/Elements/SearchBar";
+import SearchBar from "components/Elements/SearchBar";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -52,6 +52,7 @@ export const PackageSearch = () => {
                         type="search"
                         boxprops={{ mr: 2 }}
                         lefticon={<SearchRoundedIcon />}
+                        onEnter={handleAnalyze}
                     />
                 </Grid>
                 <Grid item xs={12} md={2}>

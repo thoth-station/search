@@ -141,7 +141,9 @@ export const AdviseCreation = () => {
             postAdvise(state.pipfile, state.pipfileLock, runtime_environment)
                 .then(response => {
                     dispatch({ type: "loading", payload: false });
-                    navigate("/advise/" + response.data.analysis_id);
+                    navigate(
+                        "/advise/" + response.data.analysis_id + "/summary",
+                    );
                 })
                 .catch(error => {
                     dispatch({ type: "loading", payload: false });
@@ -199,6 +201,7 @@ export const AdviseCreation = () => {
                                     type="search"
                                     boxprops={{ mr: 2 }}
                                     lefticon={<SearchRoundedIcon />}
+                                    onEnter={handleAnalyze}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>

@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 export const useAdviseMetric = (graph, adviseDocument) => {
     const [metric, setMetric] = useState();
 
+    console.log(graph, adviseDocument);
+
     useEffect(() => {
-        if (!graph || !adviseDocument) {
+        if (!graph || !adviseDocument?.metadata) {
             return;
         }
 

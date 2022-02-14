@@ -1,5 +1,4 @@
 import React from "react";
-import { Grid } from "@material-ui/core";
 import InfoCard from "components/Elements/InfoCard";
 import { CustomCardAction } from "../components";
 import PropTypes from "prop-types";
@@ -8,6 +7,7 @@ import {
     DependenciesMetric,
     LicenseMetric,
 } from "components/Metrics";
+import { Masonry } from "@mui/lab";
 
 export const AdviseSummary = ({ metrics }) => {
     const [pipfile, setPipfile] = React.useState("newGraph");
@@ -19,16 +19,16 @@ export const AdviseSummary = ({ metrics }) => {
     };
 
     return (
-        <Grid container spacing={3} mb={3} mt={1}>
-            <Grid item xs={12} md={6}>
+        <Masonry columns={{ xs: 1, md: 2 }} spacing={3} mb={3} mt={1}>
+            <div>
                 <InfoCard
                     cardMeta={{
                         title: "Thoth Advise Summary",
                     }}
                     cardBody={<AdviseMetric metric={metrics?.advise} />}
                 />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </div>
+            <div>
                 <InfoCard
                     cardMeta={{
                         title: "Dependencies Summary",
@@ -46,8 +46,8 @@ export const AdviseSummary = ({ metrics }) => {
                         />
                     }
                 />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </div>
+            <div>
                 <InfoCard
                     cardMeta={{
                         title: "Licenses Summary",
@@ -62,8 +62,8 @@ export const AdviseSummary = ({ metrics }) => {
                         />
                     }
                 />
-            </Grid>
-        </Grid>
+            </div>
+        </Masonry>
     );
 };
 

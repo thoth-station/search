@@ -153,7 +153,7 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
         // set justifications
         discoverPackageChanges(
             mergedGraph.nodes,
-            adviseDocument.result.report?.products?.[0]?.justification,
+            adviseDocument?.result?.report?.products?.[0]?.justification,
         );
 
         // add edges to merged graph Object
