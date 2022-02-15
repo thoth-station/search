@@ -1,7 +1,9 @@
 export const PYPI_URL = "https://pypi.org/pypi";
+const useProd = true;
 export const THOTH_URL =
-    process.env.REACT_APP_DEPLOYMENT === "STAGE" ||
-    process.env.NODE_ENV === "development"
+    !useProd &&
+    (process.env.REACT_APP_DEPLOYMENT === "STAGE" ||
+        process.env.NODE_ENV === "development")
         ? "https://stage.thoth-station.ninja/api/v1"
         : "https://khemenu.thoth-station.ninja/api/v1";
 export const LICENSES_URL =

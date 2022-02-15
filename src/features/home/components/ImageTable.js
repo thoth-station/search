@@ -101,7 +101,7 @@ export default function ImageTable() {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const navigate = useNavigate();
 
-    const images = useContainerImages();
+    const images = useContainerImages({ useErrorBoundary: false });
 
     const rows = useMemo(() => {
         if (images?.data?.data?.container_images) {

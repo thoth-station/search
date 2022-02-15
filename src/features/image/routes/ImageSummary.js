@@ -8,19 +8,21 @@ import { DebInfo, PythonInfo, ImageInfo, RPMInfo } from "../components";
 export const ImageSummary = ({ metrics, imageDocument, imageMetadata }) => {
     return (
         <Masonry columns={{ xs: 1, md: 2 }} spacing={3} mb={3} mt={1}>
-            <div>
-                <InfoCard
-                    cardMeta={{
-                        title: "Image Details",
-                    }}
-                    cardBody={
-                        <ImageInfo
-                            imageDocument={imageDocument}
-                            imageMetadata={imageMetadata}
-                        />
-                    }
-                />
-            </div>
+            {imageDocument || imageMetadata ? (
+                <div>
+                    <InfoCard
+                        cardMeta={{
+                            title: "Image Details",
+                        }}
+                        cardBody={
+                            <ImageInfo
+                                imageDocument={imageDocument}
+                                imageMetadata={imageMetadata}
+                            />
+                        }
+                    />
+                </div>
+            ) : undefined}
 
             {imageDocument?.result?.["python-interpreters"]?.length > 0 ? (
                 <div>

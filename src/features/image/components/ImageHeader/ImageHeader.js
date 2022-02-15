@@ -92,7 +92,7 @@ export const ImageHeader = ({ imageDocument, logs }) => {
                     <IconText text="Logs" icon={<FeedRoundedIcon />} />
                 </Button>
             </div>
-            <Typography variant={"subtitle2"}>
+            <Typography variant={"subtitle2"} mb={2}>
                 {imageDocument?.error ?? imageDocument?.result?.error_msg}
             </Typography>
             <Collapse in={showLogs}>

@@ -25,17 +25,11 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                 combinedNode.value = {
                     ...combinedNode.value,
                     change: "added",
-                    label:
-                        value.value.label +
-                        " " +
-                        (value?.value?.metadata?.Version ?? ""),
                     font: {
                         color: theme.palette.success.main,
                     },
                     color: theme.palette.success.main,
-                    version: value?.value?.metadata?.Version ?? "",
                     dependencies: value.adjacents.size,
-                    license: value?.value?.metadata?.License ?? "",
                     lockfile: ["new"],
                 };
             }
@@ -44,12 +38,7 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                 // set values that wont change
                 combinedNode.value = {
                     ...combinedNode.value,
-                    label:
-                        value.value.label +
-                        " " +
-                        (value?.value?.metadata?.Version ?? ""),
                     dependencies: value.adjacents.size,
-                    license: value?.value?.metadata?.License ?? "",
                     lockfile: ["new", "old"],
                 };
                 // if the nodes are equal (version are the same)
@@ -59,7 +48,6 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                 ) {
                     combinedNode.value = {
                         ...combinedNode.value,
-                        version: value?.value?.metadata?.Version ?? "",
                         change: "unchanged",
                     };
                 }
@@ -68,10 +56,9 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                     combinedNode.value = {
                         ...combinedNode.value,
                         change: "version",
-                        version: value?.value?.metadata?.Version ?? "",
                         oldVersion:
                             oldGraph.nodes.get(key)?.value?.metadata?.Version ??
-                            "",
+                            oldGraph.nodes.get(key)?.value?.version,
                         font: {
                             color: theme.palette.success.main,
                         },
@@ -111,12 +98,15 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                     label:
                         value.value.label +
                         " " +
-                        (value?.value?.metadata?.Version ?? ""),
+                        (value?.value?.metadata?.Version ??
+                            value?.value?.version),
                     font: {
                         color: theme.palette.error.main,
                     },
                     color: theme.palette.error.main,
-                    version: value?.value?.metadata?.Version ?? "",
+                    version:
+                        value?.value?.metadata?.Version ??
+                        value?.value?.version,
                     dependencies: value.adjacents.size,
                     license: value?.value?.metadata?.License ?? "",
                     lockfile: ["old"],
@@ -153,7 +143,7 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
         // set justifications
         discoverPackageChanges(
             mergedGraph.nodes,
-            adviseDocument.result.report?.products?.[0]?.justification,
+            adviseDocument?.result?.report?.products?.[0]?.justification,
         );
 
         // add edges to merged graph Object

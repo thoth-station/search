@@ -4,7 +4,7 @@ export const useAdviseMetric = (graph, adviseDocument) => {
     const [metric, setMetric] = useState();
 
     useEffect(() => {
-        if (!graph || !adviseDocument) {
+        if (!graph || !adviseDocument?.metadata) {
             return;
         }
 

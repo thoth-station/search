@@ -112,7 +112,7 @@ export const AdviseRoutes = () => {
     }
 
     return (
-        <NavigationLayout>
+        <NavigationLayout goHome={true}>
             <AdviseLayout
                 header={
                     <AdviseHeader

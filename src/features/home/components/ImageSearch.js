@@ -102,6 +102,7 @@ export const ImageSearch = () => {
                                     type="search"
                                     boxprops={{ mr: 2 }}
                                     lefticon={<SearchRoundedIcon />}
+                                    onEnter={handleAnalyze}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>
