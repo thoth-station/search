@@ -6,12 +6,19 @@ import PropTypes from "prop-types";
 /**
  * Layout is used in most of the app and allows for backwards navigation.
  */
-export const NavigationLayout = ({ children }) => {
+export const NavigationLayout = ({ children, goHome }) => {
     const navigate = useNavigate();
 
     return (
         <>
-            <Button onClick={() => navigate(-1)}>go back</Button>
+            <Button onClick={() => {
+                if(goHome) {
+                    navigate("/")
+                }
+                else {
+                    navigate(-1)
+                }
+            }}>go back</Button>
             <div>{children}</div>
         </>
     );
@@ -19,4 +26,5 @@ export const NavigationLayout = ({ children }) => {
 
 NavigationLayout.propTypes = {
     children: PropTypes.node,
+    goHome: PropTypes.bool
 };

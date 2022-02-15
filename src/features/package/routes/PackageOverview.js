@@ -13,6 +13,7 @@ import { usePackageMetadata } from "api";
 import { PackageNotFound } from "./PackageNotFound";
 import { useAllVersions, useSimpleGraph } from "../hooks";
 import { usePackageEnvironments } from "../api";
+import { ErrorPage } from "../../../routes/ErrorPage";
 
 // component styling
 const useStyles = makeStyles(theme => ({
@@ -131,6 +132,11 @@ export const PackageOverview = () => {
     }
 
     if (!metadata.data) {
+        if(metadata?.error?.response?.data?.error) {
+            return <ErrorPage message={metadata.error.response.data.error}
+                              type={metadata.error.response.status}
+                              reason={`${metadata?.error?.config?.url} failed with params ${JSON.stringify(metadata?.error?.config?.params)}`} />
+        }
         return (
             <PackageNotFound
                 package_name={params.package_name}

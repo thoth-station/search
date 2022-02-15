@@ -28,14 +28,16 @@ export function useGraph(data = [], knownRoots) {
         // add data to graph
         allMetadata.forEach(query => {
             // if could not find metadata
-            console.log(query);
             if (query.status === "error") {
                 const params =
                     query?.error?.response?.data?.parameters ??
                     query?.error?.response?.config?.params;
+
                 const value = {
                     id: params.name.toLowerCase(),
-                    label: params.name,
+                    label: params.name  + " " + params.version,
+                    name: params.name,
+                    version: params.version,
                     metadata: null,
                 };
 
@@ -48,7 +50,9 @@ export function useGraph(data = [], knownRoots) {
                 const metadata = query.data.data.metadata;
                 const value = {
                     id: metadata.package_name.toLowerCase(),
-                    label: metadata.package_name,
+                    label: metadata.package_name  + " " + metadata.package_version,
+                    name: metadata.package_name,
+                    version: metadata.package_version,
                     metadata: metadata.importlib_metadata.metadata,
                 };
 
