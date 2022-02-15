@@ -11,14 +11,17 @@ export const NavigationLayout = ({ children, goHome }) => {
 
     return (
         <>
-            <Button onClick={() => {
-                if(goHome) {
-                    navigate("/")
-                }
-                else {
-                    navigate(-1)
-                }
-            }}>go back</Button>
+            <Button
+                onClick={() => {
+                    if (goHome) {
+                        navigate("/");
+                    } else {
+                        navigate(-1);
+                    }
+                }}
+            >
+                go back
+            </Button>
             <div>{children}</div>
         </>
     );
@@ -26,5 +29,5 @@ export const NavigationLayout = ({ children, goHome }) => {
 
 NavigationLayout.propTypes = {
     children: PropTypes.node,
-    goHome: PropTypes.bool
+    goHome: PropTypes.bool,
 };

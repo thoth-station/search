@@ -132,10 +132,18 @@ export const PackageOverview = () => {
     }
 
     if (!metadata.data) {
-        if(metadata?.error?.response?.data?.error) {
-            return <ErrorPage message={metadata.error.response.data.error}
-                              type={metadata.error.response.status}
-                              reason={`${metadata?.error?.config?.url} failed with params ${JSON.stringify(metadata?.error?.config?.params)}`} />
+        if (metadata?.error?.response?.data?.error) {
+            return (
+                <ErrorPage
+                    message={metadata.error.response.data.error}
+                    type={metadata.error.response.status}
+                    reason={`${
+                        metadata?.error?.config?.url
+                    } failed with params ${JSON.stringify(
+                        metadata?.error?.config?.params,
+                    )}`}
+                />
+            );
         }
         return (
             <PackageNotFound

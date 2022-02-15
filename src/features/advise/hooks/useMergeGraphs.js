@@ -43,7 +43,9 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                 };
                 // if the nodes are equal (version are the same)
                 if (
-                    value?.value?.metadata?.Version === oldGraph.nodes.get(key)?.value?.metadata?.Version) {
+                    value?.value?.metadata?.Version ===
+                    oldGraph.nodes.get(key)?.value?.metadata?.Version
+                ) {
                     combinedNode.value = {
                         ...combinedNode.value,
                         change: "unchanged",
@@ -54,7 +56,9 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                     combinedNode.value = {
                         ...combinedNode.value,
                         change: "version",
-                        oldVersion: oldGraph.nodes.get(key)?.value?.metadata?.Version ?? oldGraph.nodes.get(key)?.value?.version,
+                        oldVersion:
+                            oldGraph.nodes.get(key)?.value?.metadata?.Version ??
+                            oldGraph.nodes.get(key)?.value?.version,
                         font: {
                             color: theme.palette.success.main,
                         },
@@ -94,12 +98,15 @@ export const useMergeGraphs = (oldGraph, newGraph, adviseDocument) => {
                     label:
                         value.value.label +
                         " " +
-                        (value?.value?.metadata?.Version ?? value?.value?.version),
+                        (value?.value?.metadata?.Version ??
+                            value?.value?.version),
                     font: {
                         color: theme.palette.error.main,
                     },
                     color: theme.palette.error.main,
-                    version: value?.value?.metadata?.Version ?? value?.value?.version,
+                    version:
+                        value?.value?.metadata?.Version ??
+                        value?.value?.version,
                     dependencies: value.adjacents.size,
                     license: value?.value?.metadata?.License ?? "",
                     lockfile: ["old"],

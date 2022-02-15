@@ -13,7 +13,7 @@ export const ImageInfo = ({ imageDocument, imageMetadata }) => {
     const params = useMemo(() => {
         if (imageMetadata) {
             return imageMetadata;
-        } else if ( imageDocument?.result?.["skopeo-inspect"]) {
+        } else if (imageDocument?.result?.["skopeo-inspect"]) {
             return {
                 architecture:
                     imageDocument.result["skopeo-inspect"].Architecture,

@@ -2,9 +2,17 @@
 import React, { useContext, useMemo } from "react";
 
 // material-ui
-import { Typography, Grid, Box, Paper, Link, Button, Stack } from "@material-ui/core";
+import {
+    Typography,
+    Grid,
+    Box,
+    Paper,
+    Link,
+    Button,
+    Stack,
+} from "@material-ui/core";
 import GavelIcon from "@material-ui/icons/Gavel";
-import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
+import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 
 // local
 import IconText from "components/Elements/IconText";
@@ -40,7 +48,6 @@ export const SelectedPackage = ({ mergedGraph }) => {
         return justs;
     }, [selectedPackage]);
 
-
     return (
         <Box>
             <Paper sx={{ padding: 2 }}>
@@ -57,14 +64,23 @@ export const SelectedPackage = ({ mergedGraph }) => {
                     </Grid>
                 </Grid>
 
-                {!selectedPackage.value.metadata
-                    ? <Stack direction="row" alignItems="center">
-                            <ErrorRoundedIcon color="error" sx={{marginRight: ".5rem"}}/>
-                            <Typography mb={0} color="error" gutterBottom variant="body2">
-                                The package metadata could not be fetched. Package data will be limited.
-                            </Typography>
-                        </Stack>
-                    : undefined}
+                {!selectedPackage.value.metadata ? (
+                    <Stack direction="row" alignItems="center">
+                        <ErrorRoundedIcon
+                            color="error"
+                            sx={{ marginRight: ".5rem" }}
+                        />
+                        <Typography
+                            mb={0}
+                            color="error"
+                            gutterBottom
+                            variant="body2"
+                        >
+                            The package metadata could not be fetched. Package
+                            data will be limited.
+                        </Typography>
+                    </Stack>
+                ) : undefined}
 
                 <Typography gutterBottom variant="body1">
                     {selectedPackage?.value?.metadata?.Summary}

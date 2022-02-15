@@ -35,7 +35,7 @@ export function useGraph(data = [], knownRoots) {
 
                 const value = {
                     id: params.name.toLowerCase(),
-                    label: params.name  + " " + params.version,
+                    label: params.name + " " + params.version,
                     name: params.name,
                     version: params.version,
                     metadata: null,
@@ -50,7 +50,8 @@ export function useGraph(data = [], knownRoots) {
                 const metadata = query.data.data.metadata;
                 const value = {
                     id: metadata.package_name.toLowerCase(),
-                    label: metadata.package_name  + " " + metadata.package_version,
+                    label:
+                        metadata.package_name + " " + metadata.package_version,
                     name: metadata.package_name,
                     version: metadata.package_version,
                     metadata: metadata.importlib_metadata.metadata,
