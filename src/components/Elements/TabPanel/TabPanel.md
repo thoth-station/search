@@ -1,6 +1,6 @@
 ```jsx
 import React from "react";
-import { Tab, Tabs } from "@material-ui/core";
+import { Tab, Tabs } from "@mui/material";
 
 // for tab control
 const [value, setValue] = React.useState(1);

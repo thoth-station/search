@@ -11,7 +11,7 @@ import {
     Box,
     Grid,
     Skeleton,
-} from "@material-ui/core";
+} from "@mui/material";
 import { TransitionGroup } from "react-transition-group";
 
 // local

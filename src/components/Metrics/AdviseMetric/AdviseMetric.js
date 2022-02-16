@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // material-ui
-import { Typography, Divider, Skeleton, Box } from "@material-ui/core";
+import { Typography, Divider, Skeleton, Box } from "@mui/material";
 
 // local
 import ProgressBar from "components/Elements/ProgressBar";

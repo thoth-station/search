@@ -1,8 +1,7 @@
 import React, { useContext, useMemo, useState } from "react";
 
 // material-ui
-import { Box, Grid, IconButton, Skeleton, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Box, Grid, IconButton, Skeleton, Typography } from "@mui/material";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import GavelIcon from "@mui/icons-material/Gavel";
@@ -15,20 +14,6 @@ import PropTypes from "prop-types";
 import { ParamDropdown } from "../ParamDropdown";
 import { SpecContext } from "../../routes/PackageOverview";
 
-// component styling
-const useStyles = makeStyles(theme => ({
-    titleRow: {
-        display: "flex",
-        alignItems: "center",
-    },
-    marginLeft: {
-        marginLeft: theme.spacing(2),
-    },
-    linksRow: {
-        display: "flex",
-    },
-}));
-
 /**
  * A header for package metadata.
  */
@@ -37,7 +22,6 @@ export const PackageHeader = ({
     allVersions = [],
     allEnvironments = [],
 }) => {
-    const classes = useStyles();
     const { defaultSpecs, specs } = useContext(SpecContext);
     const [showEnvParams, setShowEnvParams] = useState(false);
 
@@ -192,7 +176,7 @@ export const PackageHeader = ({
             <Typography gutterBottom variant="body1" mt={2}>
                 {metadata?.Summary ?? "NaN"}
             </Typography>
-            <div className={classes.linksRow}>
+            <div>
                 <IconText
                     text={metadata?.License ?? "NaN"}
                     icon={<GavelIcon />}

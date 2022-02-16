@@ -9,7 +9,7 @@ import { options } from "config";
 import { Network, DataSet } from "vis-network/standalone";
 
 // material ui
-import { makeStyles } from "@material-ui/styles";
+
 
 // local
 import Popup from "../Popup";
@@ -17,22 +17,13 @@ import { SelectedPackageContext } from "../../routes/AdviseDetails";
 import PropTypes from "prop-types";
 import { Graph } from "utils/Graph";
 
-const useStyles = makeStyles(() => ({
-    root: {
-        display: "flex",
-        flexFlow: "column nowrap",
-    },
-    canvas: {
-        flex: "1 1 auto",
-        height: "50vh",
-    },
-}));
+
 
 /**
  * Renders a network graph visualization using `vis-network`.
  */
 const NetworkGraph = ({ mergedGraph, ...props }) => {
-    const classes = useStyles();
+
     const visJsRef = useRef(null);
     const { selected } = useContext(SelectedPackageContext);
 
@@ -135,8 +126,8 @@ const NetworkGraph = ({ mergedGraph, ...props }) => {
     }, [selected, mergedGraph]);
 
     return (
-        <div className={`${classes.root} ${props.className}`}>
-            <div ref={visJsRef} id="mynetwork" className={classes.canvas} />
+        <div {...props}>
+            <div ref={visJsRef} id="mynetwork"  />
         </div>
     );
 };

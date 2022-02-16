@@ -16,7 +16,7 @@ import { useMergeGraphs, useMetrics } from "../hooks";
 import { useGraph } from "hooks";
 
 // misc
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 import { AdviseNotFound } from "./AdviseNotFound";
 import { NavigationLayout } from "components/Layout/NavigationLayout";
 

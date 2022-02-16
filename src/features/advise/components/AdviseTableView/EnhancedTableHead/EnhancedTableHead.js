@@ -6,7 +6,7 @@ import {
     TableSortLabel,
     Box,
     TableCell,
-} from "@material-ui/core";
+} from "@mui/material";
 
 import { visuallyHidden } from "@material-ui/utils";
 

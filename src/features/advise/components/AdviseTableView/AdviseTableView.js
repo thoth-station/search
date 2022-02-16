@@ -9,7 +9,7 @@ import {
     TablePagination,
     TableRow,
     Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 
 import AddRoundedIcon from "@material-ui/icons/AddRounded";
 import RemoveRoundedIcon from "@material-ui/icons/RemoveRounded";

@@ -1,7 +1,7 @@
 import React from "react";
 
 // material-ui
-import { Divider, Collapse, Chip, Grid, Box } from "@material-ui/core";
+import { Divider, Collapse, Chip, Grid, Box } from "@mui/material";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import CheckRoundedIcon from "@material-ui/icons/CheckRounded";

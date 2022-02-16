@@ -16,7 +16,7 @@ import { IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useContainerImages } from "../api";
 import { useMemo } from "react";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 import { NotFound } from "routes/NotFound";
 
 function descendingComparator(a, b, orderBy) {

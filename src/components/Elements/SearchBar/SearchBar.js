@@ -1,7 +1,7 @@
 import React from "react";
 
 // material ui
-import { Typography, Box, Paper, InputBase } from "@material-ui/core";
+import { Typography, Box, Paper, InputBase } from "@mui/material";
 
 // react
 import PropTypes from "prop-types";

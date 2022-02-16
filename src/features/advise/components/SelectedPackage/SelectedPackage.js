@@ -10,7 +10,7 @@ import {
     Link,
     Button,
     Stack,
-} from "@material-ui/core";
+} from "@mui/material";
 import GavelIcon from "@material-ui/icons/Gavel";
 import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 

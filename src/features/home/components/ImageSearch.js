@@ -1,4 +1,4 @@
-import { Button, Collapse, Grid, Typography } from "@material-ui/core";
+import { Button, Collapse, Grid, Typography } from "@mui/material";
 import SearchBar from "components/Elements/SearchBar";
 import React, { useReducer } from "react";
 import { useNavigate } from "react-router-dom";

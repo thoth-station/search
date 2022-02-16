@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import Select from "@mui/material/Select";
-import { Box, MenuItem, Typography } from "@material-ui/core";
+import { Box, MenuItem, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { SpecContext } from "features/package/routes/PackageOverview";

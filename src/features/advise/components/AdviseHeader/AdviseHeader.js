@@ -2,8 +2,8 @@
 import React, { useMemo } from "react";
 
 // material-ui
-import { Typography, Chip, Button, Collapse } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Typography, Chip, Button, Collapse } from "@mui/material";
+
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import FeedRoundedIcon from "@mui/icons-material/FeedRounded";
 // local
@@ -18,28 +18,7 @@ import PropTypes from "prop-types";
 
 // component styling
 
-const useStyles = makeStyles(theme => ({
-    titleRow: {
-        display: "flex",
-        alignItems: "center",
-        marginBottom: theme.spacing(1),
-    },
-    marginLeft: {
-        marginLeft: theme.spacing(2),
-    },
-    marginRight: {
-        marginRight: theme.spacing(2),
-    },
-    linksRow: {
-        display: "flex",
-        marginBottom: theme.spacing(3),
-        alignItems: "center",
-    },
-    alert: {
-        width: "100%",
-        marginTop: theme.spacing(1),
-    },
-}));
+
 
 /**
  * Displays basic Advise document information and
@@ -47,7 +26,7 @@ const useStyles = makeStyles(theme => ({
  * in the document generation.
  */
 export const AdviseHeader = ({ adviseDocument, logs }) => {
-    const classes = useStyles();
+
     const [expandAlerts, setExpandAlerts] = React.useState(false);
     const [showLogs, setShowLogs] = React.useState(false);
     const [selectedLine, setSelectedLine] = React.useState();
@@ -91,10 +70,10 @@ export const AdviseHeader = ({ adviseDocument, logs }) => {
                         adviseDocument?.parameters?.analysis_id}
                 </b>
             </Typography>
-            <div className={classes.linksRow}>
+            <div >
                 <Chip label={statusText} color={statusColor} />
                 <IconText
-                    className={classes.marginLeft}
+
                     text={calcTime(
                         adviseDocument?.status?.finished_at,
                         adviseDocument?.status?.started_at,
@@ -123,7 +102,7 @@ export const AdviseHeader = ({ adviseDocument, logs }) => {
                                 <CustomAlert
                                     key={i}
                                     info={info}
-                                    className={classes.alert}
+
                                 />
                             );
                         })}

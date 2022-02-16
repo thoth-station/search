@@ -3,9 +3,8 @@ import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 
 // material-ui
-import { Typography, Chip, Button, Collapse } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import { Typography, Chip, Button, Collapse } from "@mui/material";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import FeedRoundedIcon from "@mui/icons-material/FeedRounded";
 
 // local
@@ -14,29 +13,6 @@ import IconText from "components/Elements/IconText";
 // utils
 import { calcTime } from "utils/calcTime";
 
-// component styling
-const useStyles = makeStyles(theme => ({
-    titleRow: {
-        display: "flex",
-        alignItems: "center",
-        marginBottom: theme.spacing(1),
-    },
-    marginLeft: {
-        marginLeft: theme.spacing(2),
-    },
-    marginRight: {
-        marginRight: theme.spacing(2),
-    },
-    linksRow: {
-        display: "flex",
-        marginBottom: theme.spacing(3),
-        alignItems: "center",
-    },
-    alert: {
-        width: "100%",
-        marginTop: theme.spacing(1),
-    },
-}));
 
 /**
  * Displays basic Advise document information and
@@ -44,7 +20,6 @@ const useStyles = makeStyles(theme => ({
  * in the document generation.
  */
 export const ImageHeader = ({ imageDocument, logs }) => {
-    const classes = useStyles();
     const [showLogs, setShowLogs] = React.useState(false);
     const [selectedLine, setSelectedLine] = React.useState();
 
@@ -74,10 +49,9 @@ export const ImageHeader = ({ imageDocument, logs }) => {
                         imageDocument.parameters.analysis_id}
                 </b>
             </Typography>
-            <div className={classes.linksRow}>
+            <div>
                 <Chip label={statusText} color={statusColor} />
                 <IconText
-                    className={classes.marginLeft}
                     text={calcTime(
                         imageDocument?.status?.finished_at,
                         imageDocument?.status?.started_at,

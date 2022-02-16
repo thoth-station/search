@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, Paper, Typography } from "@material-ui/core";
+import { Grid, Paper, Typography } from "@mui/material";
 import SearchBar from "components/Elements/SearchBar";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { AdviseTableView, SelectedPackage } from "../components";

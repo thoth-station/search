@@ -10,7 +10,7 @@ import { ImageSummary } from "./ImageSummary";
 import { useImageDocument, useImageLogs, useImageMetadata } from "../api";
 
 // misc
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 import { ImageNotFound } from "./ImageNotFound";
 import { NavigationLayout } from "components/Layout/NavigationLayout";
 import { useGraph } from "hooks";

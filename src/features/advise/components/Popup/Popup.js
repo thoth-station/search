@@ -1,7 +1,7 @@
 // react
 import React from "react";
 
-import { Typography, Grid } from "@material-ui/core";
+import { Typography, Grid } from "@mui/material";
 import GavelIcon from "@material-ui/icons/Gavel";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
 

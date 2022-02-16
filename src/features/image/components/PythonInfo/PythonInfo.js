@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 
 // material-ui
-import { Box, Grid, Skeleton, Stack, Typography } from "@material-ui/core";
+import { Box, Grid, Skeleton, Stack, Typography } from "@mui/material";
 import { Chip } from "@mui/material";
 
 /**

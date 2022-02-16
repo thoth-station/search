@@ -5,8 +5,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { PackageDependencies, PackageHeader } from "../components";
 
 // material-ui
-import { CircularProgress, Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { CircularProgress, Grid } from "@mui/material";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { usePackageMetadata } from "api";
@@ -15,24 +14,11 @@ import { useAllVersions, useSimpleGraph } from "../hooks";
 import { usePackageEnvironments } from "../api";
 import { ErrorPage } from "../../../routes/ErrorPage";
 
-// component styling
-const useStyles = makeStyles(theme => ({
-    root: {
-        flexGrow: 1,
-        maxWidth: "95%",
-        marginLeft: "auto",
-        marginRight: "auto",
-        paddingRight: theme.spacing(3),
-        paddingLeft: theme.spacing(3),
-        marginTop: theme.spacing(1),
-    },
-}));
 
 export const SpecContext = React.createContext({});
 
 // The page that displays all analysis data
 export const PackageOverview = () => {
-    const classes = useStyles();
     const params = useParams();
     const [defaultSpecs, setDefaultSpecs] = useState({
         package_version: undefined,
@@ -155,7 +141,7 @@ export const PackageOverview = () => {
 
     return (
         <SpecContext.Provider value={{ specs, defaultSpecs }}>
-            <Grid container className={classes.root}>
+            <Grid container>
                 <Grid item xs={12} mb={3}>
                     <PackageHeader
                         metadata={

@@ -2,7 +2,7 @@ import * as React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { QueryClientProvider } from "react-query";
 import { queryClient } from "lib/react-query";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import Theme from "styles/Theme";
 import Global from "stores/Global";
 import { MainLayout } from "components/Layout";

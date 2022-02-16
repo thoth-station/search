@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 // material-ui
 import InfoCard from "components/Elements/InfoCard";
-import { Box, Divider, Grid, Skeleton, Typography } from "@material-ui/core";
+import { Box, Divider, Grid, Skeleton, Typography } from "@mui/material";
 import { VersionDropdown } from "./VersionDropdown";
 
 /**

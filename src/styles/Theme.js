@@ -1,11 +1,12 @@
 import React from "react";
 
 // material ui
-import { ThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles'
 
-import { createTheme } from "@material-ui/core/styles";
+
 import PropTypes from "prop-types";
+
 
 const themeLight = createTheme({
     palette: {
@@ -80,7 +81,6 @@ const themeLight = createTheme({
 function Theme({ children }) {
     return (
         <ThemeProvider theme={themeLight}>
-            <CssBaseline />
             {children}
         </ThemeProvider>
     );

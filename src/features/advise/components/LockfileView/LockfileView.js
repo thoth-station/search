@@ -3,15 +3,10 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // material-ui
-import { makeStyles } from "@material-ui/styles";
-import { Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
-    lockfile: {
-        overflow: "scroll",
-        paddingLeft: theme.spacing(1),
-    },
-}));
+import { Typography } from "@mui/material";
+
+
 
 /**
  * Renders out a Pipfile.lock file and attaches
@@ -19,13 +14,13 @@ const useStyles = makeStyles(theme => ({
  *  scroll to certain spot in the lock file
  */
 export const LockfileView = ({ file }) => {
-    const classes = useStyles();
+
 
     return (
         <Typography variant="caption">
             <pre>
                 <div
-                    className={classes.lockfile}
+
                     dangerouslySetInnerHTML={{
                         __html: JSON.stringify(file, undefined, 4)?.replaceAll(
                             new RegExp(

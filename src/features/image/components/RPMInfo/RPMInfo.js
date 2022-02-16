@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { DataGrid } from "@mui/x-data-grid";
 
 // material-ui
-import { Box, Skeleton } from "@material-ui/core";
+import { Box, Skeleton } from "@mui/material";
 
 const columns = [
     { field: "name", headerName: "Package Name", flex: 1 },

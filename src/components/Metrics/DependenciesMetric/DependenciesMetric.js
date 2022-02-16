@@ -18,7 +18,7 @@ import {
     Collapse,
     Box,
     Skeleton,
-} from "@material-ui/core";
+} from "@mui/material";
 
 /**
  * A metric card that displays direct, indirect, and root packages of a dependency graph.

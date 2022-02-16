@@ -5,7 +5,7 @@ import {
     Paper,
     TextField,
     Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import SearchBar from "components/Elements/SearchBar";
 import React, { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
