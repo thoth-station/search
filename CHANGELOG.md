@@ -1,4 +1,14 @@
 
+## Release 0.3.0 (2022-03-07T13:41:42)
+* prettier
+* bug fixes
+* bug fixes
+* prettier
+* prettier
+* added image tests
+* image page
+* added image search to home page
+
 ## Release 0.2.0 (2022-02-01T15:01:46)
 * added tests to package overview page
 * added spacing
