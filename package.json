@@ -46,10 +46,11 @@
         "generate": "rc-autocomplete",
         "styleguide": "styleguidist server",
         "styleguide:build": "styleguidist build && rm -rf docs && mv styleguide docs",
-        "lint": "eslint src --color",
+        "lint": "eslint --ignore-path .eslintignore --ext .js,.ts src --color",
         "prettier": "prettier src -c",
         "lint-staged": "lint-staged --config lint-staged.js",
-        "husky-install": "husky install"
+        "husky-install": "husky install",
+        "dev": "tsc --watch"
     },
     "eslintConfig": {
         "extends": [
@@ -75,8 +76,11 @@
         ]
     },
     "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.15.0",
+        "@typescript-eslint/parser": "^5.15.0",
         "core-js": "^3.20.3",
         "eslint-plugin-jest": "^26.0.0",
-        "prop-types": "^15.8.1"
+        "prop-types": "^15.8.1",
+        "typedoc": "^0.22.13"
     }
 }

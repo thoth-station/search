@@ -16,7 +16,7 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v2
 
-      - name: set up Node.js ${{ matrix.node-version }}
+      - name: set up Node.ts ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}

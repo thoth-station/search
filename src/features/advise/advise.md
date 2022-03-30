@@ -139,7 +139,7 @@ _adviseDocument_ - output of `useAdviseDocument`
 _mergedGraph_ - output of `useMergedGraph`
 
 Metrics produced are: dependency counts, licenses, and changes between graph. To add more metrics,
-create a new metric hook inside useMetrics.js similar to how useDependencyMetric() is implemented.
+create a new metric hook inside useMetrics.ts similar to how useDependencyMetric() is implemented.
 
 Example
 
