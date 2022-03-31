@@ -1,10 +1,11 @@
 import { Button, Collapse, Grid, Typography } from "@mui/material";
 import SearchBar from "components/Elements/SearchBar";
-import React, { useReducer } from "react";
+import React, { useMemo, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
-import { postImageAnalyze } from "../api";
+import { postImageAnalyze, useContainerImages } from "../api";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import ImageTable from "./ImageTable";
+import GenericTable from "components/Elements/GenericTable/GenericTable";
+import timeSince from "utils/timeSince";
 
 interface ImageSearchState {
     error: { [key: string]: string | undefined };
@@ -36,6 +37,29 @@ function reducer(state: ImageSearchState, action: { [key: string]: any }) {
     }
 }
 
+const headCells = [
+    {
+        id: "environment_name",
+        label: "Image Name",
+    },
+    {
+        id: "os_name",
+        label: "OS Name",
+    },
+    {
+        id: "os_version",
+        label: "OS Version",
+    },
+    {
+        id: "python_version",
+        label: "Python Version",
+    },
+    {
+        id: "date",
+        label: "Last Updated",
+    },
+];
+
 const initState: ImageSearchState = {
     error: {},
     loading: false,
@@ -46,6 +70,27 @@ const initState: ImageSearchState = {
 export const ImageSearch = () => {
     const navigate = useNavigate();
     const [state, dispatch] = useReducer(reducer, initState);
+
+    const images = useContainerImages({ useErrorBoundary: false });
+
+    const rows = useMemo(() => {
+        if (images?.data?.data?.container_images) {
+            return images?.data?.data?.container_images.map(image => {
+                return {
+                    ...image,
+                    date: timeSince(new Date(image.datetime)) + " ago",
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [images?.data]);
+
+    const tableRowAction = (row: {package_extract_document_id: string, environment_name: string}) => {
+        navigate("/image/" + row.package_extract_document_id, {
+            state: { image_name: row.environment_name },
+        });
+    };
 
     const handleAnalyze = async () => {
         if (state.loading) {
@@ -143,7 +188,7 @@ export const ImageSearch = () => {
                     <Typography variant={"h6"} mt={3} mb={1} ml={2}>
                         Available Thoth Container Images
                     </Typography>
-                    <ImageTable />
+                    <GenericTable headers={headCells} rows={rows} action={tableRowAction} />
                 </>
             </Collapse>
         </>

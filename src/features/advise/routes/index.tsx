@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Route, Routes, useParams, Navigate } from "react-router-dom";
 
 // layouts
@@ -21,6 +21,7 @@ import { AdviseNotFound } from "./AdviseNotFound";
 import { NavigationLayout } from "components/Layout/NavigationLayout";
 import { AxiosResponse } from "axios";
 import { components } from "lib/schema";
+import { LOCAL_STORAGE_KEY } from "config";
 
 type statusResponse = components["schemas"]["AnalysisStatusResponse"];
 
@@ -38,6 +39,19 @@ export const AdviseRoutes = () => {
             return false;
         },
     });
+
+    useEffect(() => {
+        if(adviseDocument.isSuccess && analysis_id) {
+            console.log(adviseDocument)
+            const ids = localStorage.getItem(LOCAL_STORAGE_KEY) ?? ""
+
+            const split = ids.split(",")
+            if(!split.includes(analysis_id)) {
+                split.push(analysis_id)
+                localStorage.setItem(LOCAL_STORAGE_KEY, split.join(","))
+            }
+        }
+    }, [adviseDocument.status])
 
     const logs = useAdviseLogs(analysis_id, {
         useErrorBoundary: false,
