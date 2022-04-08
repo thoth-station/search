@@ -18,50 +18,36 @@ import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import IconText from "components/Elements/IconText";
 import NetworkGraphView from "../NetworkGraphView";
 import { SelectedPackageContext } from "../../routes/AdviseDetails";
-import { MergedGraph } from "lib/interfaces/Graph";
-import { PackageMergedNodeValue } from "lib/interfaces/PackageMergedNodeValue";
+import { Graph } from "lib/interfaces/Graph";
 import { Node } from "lib/interfaces/Node";
-import { components } from "../../../../lib/schema";
+import { components } from "lib/schema";
+import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 
 interface ISelectedPackage {
-    mergedGraph: MergedGraph;
+    graph: Graph<Node<PackageNodeValue>>;
 }
-
-type Dependents = {
-    removed: string[];
-    added: string[];
-    version: string[];
-    unchanged: string[];
-};
 
 /**
  * Renders the selected package context variable's data. It will preform
  * a search of the list of packages using the selected package variable.
  */
-export const SelectedPackage = ({ mergedGraph }: ISelectedPackage) => {
+export const SelectedPackage = ({ graph }: ISelectedPackage) => {
     const { selected, setSelected } = useContext(SelectedPackageContext);
 
-    const selectedPackage = useMemo<
-        Node<PackageMergedNodeValue> | undefined
-    >(() => {
-        return mergedGraph.nodes.get(selected);
+    const selectedPackage = useMemo<Node<PackageNodeValue> | undefined>(() => {
+        return graph.nodes.get(selected);
     }, [selected]);
 
-    const dependents = useMemo<Dependents>(() => {
-        const deps: Dependents = {
-            removed: [],
-            added: [],
-            version: [],
-            unchanged: [],
-        };
+    const dependents = useMemo<string[]>(() => {
+        const deps: string[] = [];
 
         if (selectedPackage) {
             [...selectedPackage.parents]
                 .filter(p => p !== "*App")
                 .forEach(node => {
-                    const nodeObj = mergedGraph.nodes.get(node);
+                    const nodeObj = graph.nodes.get(node);
                     if (nodeObj) {
-                        deps[nodeObj.value.change].push(node);
+                        deps.push(node);
                     }
                 });
         }
@@ -74,7 +60,8 @@ export const SelectedPackage = ({ mergedGraph }: ISelectedPackage) => {
             {};
 
         if (selectedPackage) {
-            selectedPackage?.value?.justifications?.thoth?.forEach(just => {
+            console.log(selectedPackage);
+            selectedPackage?.value?.justifications?.forEach(just => {
                 justs[just.type] = [...(justs[just.type] ?? []), just];
             });
         }
@@ -130,33 +117,6 @@ export const SelectedPackage = ({ mergedGraph }: ISelectedPackage) => {
 
             <Paper sx={{ padding: 2, marginTop: 2 }}>
                 <Typography variant="h5">Thoth Justifications</Typography>
-                <Typography variant="body1" mt={2}>
-                    {selectedPackage?.value?.justifications?.header}
-                </Typography>
-                {selectedPackage?.value?.justifications?.reasons?.length ? (
-                    <ul>
-                        {selectedPackage?.value?.justifications?.reasons.map(
-                            (reason, i) => {
-                                return (
-                                    <li key={i + reason.reason}>
-                                        <Typography variant="body1" mt={2}>
-                                            <Link
-                                                underline="hover"
-                                                onClick={() =>
-                                                    setSelected(reason.package)
-                                                }
-                                            >
-                                                {reason.package}
-                                            </Link>
-                                            {reason.reason}
-                                        </Typography>
-                                    </li>
-                                );
-                            },
-                        )}
-                    </ul>
-                ) : null}
-
                 {Object.entries(justifications).map(([type, reasons]) => {
                     return (
                         <React.Fragment key={type}>
@@ -205,50 +165,23 @@ export const SelectedPackage = ({ mergedGraph }: ISelectedPackage) => {
                           )?.length +
                           " package(s) that have " +
                           selectedPackage?.value?.label +
-                          " as a direct dependency. Of those package(s)"}
-
-                    {(
-                        Object.keys(dependents) as Array<
-                            keyof typeof dependents
-                        >
-                    ).map((change, i) => {
-                        if (dependents[change].length === 0) {
-                            return null;
-                        }
-
+                          " as a direct dependency: "}
+                    {dependents.map((dep, i) => {
                         return (
-                            <React.Fragment key={change + i}>
-                                {", " +
-                                    dependents[change].length +
-                                    (change === "version"
-                                        ? " had a version change "
-                                        : (dependents[change].length === 1
-                                              ? " was "
-                                              : " were ") + change) +
-                                    " ("}
-                                {dependents[change].map((p, i, a) => {
-                                    let text = p;
-                                    if (i !== a.length - 1) {
-                                        text += ", ";
-                                    }
-                                    return (
-                                        <Link
-                                            key={i + text}
-                                            underline="hover"
-                                            onClick={() => setSelected(p)}
-                                        >
-                                            {text}
-                                        </Link>
-                                    );
-                                })}
-                                {")"}
-                            </React.Fragment>
+                            <>
+                                <Link
+                                    key={dep + i}
+                                    underline="hover"
+                                    onClick={() => setSelected(dep)}
+                                >
+                                    {dep}
+                                </Link>{" "}
+                            </>
                         );
                     })}
-                    {"."}
                 </Typography>
 
-                <NetworkGraphView mergedGraph={mergedGraph} />
+                <NetworkGraphView graph={graph} />
             </Paper>
         </Box>
     );

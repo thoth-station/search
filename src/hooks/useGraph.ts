@@ -4,7 +4,7 @@ import { usePackagesMetadata } from "api";
 import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 import { Graph } from "lib/interfaces/Graph";
 import { Node } from "lib/interfaces/Node";
-import { operations } from "../lib/schema";
+import { components, operations } from "../lib/schema";
 import { PackageMetadata } from "../lib/types/PackageMetadata";
 
 export type Requirements = {
@@ -26,6 +26,7 @@ export type Requirements = {
 export function useGraph(
     data: operations["get_python_package_version_metadata"]["parameters"]["query"][] = [],
     knownRoots?: Requirements["packages"],
+    justifications?: components["schemas"]["Justification"],
 ) {
     const allMetadata = usePackagesMetadata(data);
 
@@ -141,11 +142,38 @@ export function useGraph(
             }
         });
 
+        const justifiedPackages = new Map();
+
+        if (justifications) {
+            justifications.forEach(
+                (
+                    justification: components["schemas"]["Justification"][number] & {
+                        package_name?: string;
+                    },
+                ) => {
+                    const key = justification.package_name ?? "*App";
+                    if (justifiedPackages.has(key)) {
+                        justifiedPackages.set(key, [
+                            ...justifiedPackages.get(key),
+                            justification,
+                        ]);
+                    } else {
+                        justifiedPackages.set(key, [justification]);
+                    }
+                },
+            );
+        }
+
         // set depth and parent packages using dfs
         while (visitList.length !== 0) {
             const node = visitList.pop();
             if (node && !visited.has(node)) {
                 visited.add(node);
+
+                // check if there is a justification for change
+                if (justifiedPackages.has(node.key)) {
+                    node.value.justifications = justifiedPackages.get(node.key);
+                }
 
                 const adjs = node.getAdjacents();
 
@@ -159,6 +187,24 @@ export function useGraph(
                 }
             }
         }
+
+        const visGraphEdges = new Map();
+
+        // add edges from old graph
+        tempGraph.nodes.forEach(value => {
+            // set package edges
+            value.adjacents.forEach(adj => {
+                visGraphEdges.set(value.value.id + adj.value.id, {
+                    id: value.value.id + adj.value.id,
+                    to: value.value.id,
+                    from: adj.value.id,
+                });
+            });
+        });
+
+        // add edges to merged graph Object
+        tempGraph["visEdges"] = Array.from(visGraphEdges.values());
+
         return tempGraph;
     }, [isLoading, knownRoots]);
 }

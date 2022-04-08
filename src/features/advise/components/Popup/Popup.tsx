@@ -7,11 +7,11 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 
 // local
 import IconText from "components/Elements/IconText";
-import { PackageMergedNodeValue } from "lib/interfaces/PackageMergedNodeValue";
 import { Node } from "lib/interfaces/Node";
+import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 
 interface IPopup {
-    node: Node<PackageMergedNodeValue>;
+    node: Node<PackageNodeValue>;
 }
 
 /**
@@ -46,7 +46,7 @@ const Popup = ({ node }: IPopup) => {
                     <IconText
                         ml={2}
                         text={
-                            node.value?.latestVersion
+                            node.value?.latestVersion // TODO is not correct
                                 ? "Latest version is installed"
                                 : "Installed version is NOT the latest."
                         }
@@ -54,9 +54,6 @@ const Popup = ({ node }: IPopup) => {
                     />
                 </Grid>
             </Grid>
-            <Typography variant="body2" mt={2}>
-                {node.value?.justifications?.header}
-            </Typography>
         </div>
     );
 };

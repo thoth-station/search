@@ -16,7 +16,11 @@ export const AdviseLayout = ({ children, header }: IProps) => {
 
     const currentTab = useMemo(() => {
         const ending = location.pathname.split("/").at(-1);
-        if (ending === "summary" || ending === "details") {
+        if (
+            ending === "summary" ||
+            ending === "details" ||
+            ending === "compare"
+        ) {
             return ending;
         } else {
             return "summary";
@@ -39,10 +43,16 @@ export const AdviseLayout = ({ children, header }: IProps) => {
                         to="summary"
                     />
                     <Tab
-                        label="Advise Results"
+                        label="Details"
                         value={"details"}
                         component={RouterLink}
                         to="details"
+                    />
+                    <Tab
+                        label="Compare"
+                        value={"compare"}
+                        component={RouterLink}
+                        to="compare"
                     />
                 </Tabs>
             </div>

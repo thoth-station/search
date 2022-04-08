@@ -7,13 +7,17 @@ import {
     Typography,
 } from "@mui/material";
 import SearchBar from "components/Elements/SearchBar";
-import React, { useReducer } from "react";
+import React, { useMemo, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { postAdvise } from "../api";
 import ComboBox from "./ComboBox/ComboBox";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { components } from "lib/schema";
+import GenericTable from "../../../components/Elements/GenericTable/GenericTable";
+import { useAdviseDocuments } from "../../advise/api";
+import { LOCAL_STORAGE_KEY } from "../../../config";
+import { calcTime } from "../../../utils/calcTime";
 
 interface IAdviseState {
     error: { [key: string]: string | undefined };
@@ -57,6 +61,37 @@ function reducer(state: IAdviseState, action: { [key: string]: any }) {
     }
 }
 
+const headCells = [
+    {
+        id: "document_id",
+        label: "Document ID",
+    },
+    {
+        id: "status",
+        label: "Status",
+    },
+    {
+        id: "name",
+        label: "Name",
+    },
+    {
+        id: "os_name",
+        label: "OS Name",
+    },
+    {
+        id: "os_version",
+        label: "OS Version",
+    },
+    {
+        id: "python_version",
+        label: "Python Version",
+    },
+    {
+        id: "date",
+        label: "Last Run",
+    },
+];
+
 export const initState: IAdviseState = {
     error: {},
     loading: false,
@@ -76,6 +111,59 @@ export const initState: IAdviseState = {
 export const AdviseCreation = () => {
     const navigate = useNavigate();
     const [state, dispatch] = useReducer(reducer, initState);
+
+    const localHistory: string[] = useMemo(() => {
+        const ids = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (ids) {
+            return ids.split(",").filter(s => s !== "");
+        } else {
+            return [];
+        }
+    }, []);
+
+    const adviseHistory = useAdviseDocuments(localHistory);
+
+    const rows = useMemo(() => {
+        if (adviseHistory) {
+            return adviseHistory.map(doc => {
+                const status = () => {
+                    if (doc.data?.data?.status) {
+                        return doc.data?.data?.status.state;
+                    } else if (doc.data?.data.result.report?.products) {
+                        return "success";
+                    } else {
+                        return "error";
+                    }
+                };
+                return {
+                    document_id: doc.data?.data.metadata.document_id,
+                    name: doc.data?.data.result.report?.products?.[0].project
+                        .runtime_environment?.name,
+                    os_name:
+                        doc.data?.data.result.report?.products?.[0].project
+                            .runtime_environment?.operating_system?.name,
+                    os_version:
+                        doc.data?.data.result.report?.products?.[0].project
+                            .runtime_environment?.operating_system?.version,
+                    python_version:
+                        doc.data?.data.result.report?.products?.[0].project
+                            .runtime_environment?.python_version,
+                    status: status(),
+                    date: calcTime(
+                        doc.data?.data?.status?.finished_at,
+                        doc.data?.data?.status?.started_at,
+                        doc.data?.data?.metadata?.datetime,
+                    ),
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [adviseHistory]);
+
+    const tableRowAction = (row: { document_id: string }) => {
+        navigate("/advise/" + row.document_id);
+    };
 
     const isValid = () => {
         if (state.lookupType === "id") {
@@ -270,6 +358,30 @@ export const AdviseCreation = () => {
                     >
                         New Advise
                     </Button>
+                    <Button
+                        onClick={() =>
+                            dispatch({
+                                type: "input",
+                                param: "lookupType",
+                                payload: "history",
+                            })
+                        }
+                    >
+                        History
+                    </Button>
+                </>
+            </Collapse>
+
+            <Collapse in={state.lookupType === "history"}>
+                <>
+                    <Typography variant={"h6"} mt={3} mb={1} ml={2}>
+                        Local Thoth Advise History
+                    </Typography>
+                    <GenericTable
+                        headers={headCells}
+                        rows={rows}
+                        action={tableRowAction}
+                    />
                 </>
             </Collapse>
 

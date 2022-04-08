@@ -8,12 +8,7 @@ import {
     TableContainer,
     TablePagination,
     TableRow,
-    Typography,
 } from "@mui/material";
-
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
-import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 
 // utils
 import { getComparator, stableSort } from "./utils";
@@ -23,12 +18,12 @@ import EnhancedTableHead from "./EnhancedTableHead";
 import { SelectedPackageContext } from "../../routes/AdviseDetails";
 import { Graph } from "lib/interfaces/Graph";
 import { Node } from "lib/interfaces/Node";
-import { PackageMergedNodeValue } from "lib/interfaces/PackageMergedNodeValue";
+import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 
 interface IAdviseTableView {
     /** the text value used to filter the cells in the table */
     search: string;
-    filteredGraph: Graph<Node<PackageMergedNodeValue>>;
+    graph: Graph<Node<PackageNodeValue>>;
 }
 
 type Row = {
@@ -38,7 +33,6 @@ type Row = {
     depth: number;
     license: string;
     dependencies: number;
-    change: string;
     summary: string;
 };
 
@@ -46,10 +40,7 @@ type Row = {
  * The table cells and total structure specific to
  * python packages.
  */
-export function AdviseTableView({
-    search = "",
-    filteredGraph,
-}: IAdviseTableView) {
+export function AdviseTableView({ search = "", graph }: IAdviseTableView) {
     const [order, setOrder] = useState<"asc" | "desc">("asc");
     const [orderBy, setOrderBy] = React.useState<string>("name");
     const [page, setPage] = React.useState<number>(0);
@@ -62,14 +53,14 @@ export function AdviseTableView({
 
     // format data
     useEffect(() => {
-        if (!filteredGraph) {
+        if (!graph) {
             return;
         }
 
         setPage(0);
 
         const newRows: Row[] = [];
-        filteredGraph.nodes.forEach(node => {
+        graph.nodes.forEach(node => {
             if (node.value.depth === -1) {
                 return;
             }
@@ -80,12 +71,11 @@ export function AdviseTableView({
                 depth: node.value?.depth ?? -1,
                 license: node?.value?.metadata?.License ?? "",
                 dependencies: node.adjacents.size,
-                change: node.value?.change,
                 summary: node?.value?.metadata?.Summary ?? "",
             });
         });
         setRows(newRows);
-    }, [filteredGraph]);
+    }, [graph]);
 
     const handleRequestSort = (property: string) => {
         const isAsc = orderBy === property && order === "asc";
@@ -132,12 +122,6 @@ export function AdviseTableView({
                             .map((row: Row, index: number) => {
                                 const labelId = `enhanced-table-checkbox-${index}`;
 
-                                const iconColor =
-                                    row.change === "removed"
-                                        ? "error"
-                                        : row.change === "added"
-                                        ? "success"
-                                        : undefined;
                                 return (
                                     <React.Fragment key={row.name}>
                                         <TableRow
@@ -151,24 +135,7 @@ export function AdviseTableView({
                                                 id={labelId}
                                                 scope="row"
                                             >
-                                                <Box display="flex">
-                                                    {row.change ===
-                                                    "removed" ? (
-                                                        <RemoveRoundedIcon
-                                                            color={iconColor}
-                                                        />
-                                                    ) : row.change ===
-                                                      "added" ? (
-                                                        <AddRoundedIcon
-                                                            color={iconColor}
-                                                        />
-                                                    ) : (
-                                                        <CircleOutlinedIcon />
-                                                    )}
-                                                    <Typography ml={2}>
-                                                        {row.name}
-                                                    </Typography>
-                                                </Box>
+                                                {row.name}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.depth}

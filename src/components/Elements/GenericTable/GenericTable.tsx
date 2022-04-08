@@ -9,37 +9,9 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
-import timeSince from "utils/timeSince";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import { IconButton } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useContainerImages } from "../api";
-import { useMemo } from "react";
 import { CircularProgress } from "@mui/material";
-import { NotFound } from "routes/NotFound";
-
-const headCells = [
-    {
-        id: "environment_name",
-        label: "Image Name",
-    },
-    {
-        id: "os_name",
-        label: "OS Name",
-    },
-    {
-        id: "os_version",
-        label: "OS Version",
-    },
-    {
-        id: "python_version",
-        label: "Python Version",
-    },
-    {
-        id: "datetime",
-        label: "Last Updated",
-    },
-];
 
 function descendingComparator(
     a: { [key: string]: any },
@@ -63,23 +35,33 @@ function getComparator(order: "desc" | "asc", orderBy: string) {
               -descendingComparator(a, b, orderBy);
 }
 
+interface IGenericTable {
+    headers: {
+        id: string;
+        label: string;
+    }[];
+    rows: { [key: string]: unknown }[];
+    action?: (row: any) => void;
+}
+
 interface IEnhancedTableHead {
     order: "asc" | "desc";
-    orderBy: typeof headCells[number]["id"];
-    onRequestSort: (property: typeof headCells[number]["id"]) => void;
+    orderBy: IGenericTable["headers"][number]["id"];
+    onRequestSort: (property: IGenericTable["headers"][number]["id"]) => void;
     rowCount: number;
+    headers: IGenericTable["headers"];
 }
 
 function EnhancedTableHead(props: IEnhancedTableHead) {
-    const { order, orderBy, onRequestSort } = props;
-    const createSortHandler = (property: typeof headCells[number]["id"]) => {
+    const { order, orderBy, onRequestSort, headers } = props;
+    const createSortHandler = (property: typeof headers[number]["id"]) => {
         onRequestSort(property);
     };
 
     return (
         <TableHead>
             <TableRow>
-                {headCells.map(headCell => (
+                {headers.map(headCell => (
                     <TableCell
                         key={headCell.id}
                         sortDirection={orderBy === headCell.id ? order : false}
@@ -99,30 +81,15 @@ function EnhancedTableHead(props: IEnhancedTableHead) {
     );
 }
 
-export default function ImageTable() {
+export default function GenericTable({ headers, rows, action }: IGenericTable) {
     const [order, setOrder] = React.useState("asc");
-    const [orderBy, setOrderBy] =
-        React.useState<typeof headCells[number]["id"]>("datetime");
+    const [orderBy, setOrderBy] = React.useState<typeof headers[number]["id"]>(
+        headers[0].id,
+    );
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const navigate = useNavigate();
 
-    const images = useContainerImages({ useErrorBoundary: false });
-
-    const rows = useMemo(() => {
-        if (images?.data?.data?.container_images) {
-            return images?.data?.data?.container_images.map(image => {
-                return {
-                    ...image,
-                    date: timeSince(new Date(image.datetime)) + " ago",
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [images?.data]);
-
-    const handleRequestSort = (property: typeof headCells[number]["id"]) => {
+    const handleRequestSort = (property: typeof headers[number]["id"]) => {
         const isAsc = orderBy === property && order === "asc";
         setOrder(isAsc ? "desc" : "asc");
         setOrderBy(property);
@@ -144,19 +111,6 @@ export default function ImageTable() {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const handleAnalyze = (
-        package_extract_document_id: string,
-        environment_name: string | null,
-    ) => {
-        navigate("/image/" + package_extract_document_id, {
-            state: { image_name: environment_name },
-        });
-    };
-
-    if (images.isError) {
-        return <NotFound />;
-    }
-
     if (!rows) {
         return (
             <div className="w-full h-48 flex justify-center items-center">
@@ -175,6 +129,7 @@ export default function ImageTable() {
                             orderBy={orderBy}
                             onRequestSort={handleRequestSort}
                             rowCount={rows.length}
+                            headers={headers}
                         />
                         <TableBody>
                             {rows
@@ -196,42 +151,47 @@ export default function ImageTable() {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
-                                            key={
-                                                (row?.environment_name ?? "") +
-                                                index
-                                            }
+                                            key={index}
                                         >
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                            >
-                                                {row.environment_name}
-                                            </TableCell>
-                                            <TableCell align="left">
-                                                {row.os_name}
-                                            </TableCell>
-                                            <TableCell align="left">
-                                                {row.os_version}
-                                            </TableCell>
-                                            <TableCell align="left">
-                                                {row.python_version}
-                                            </TableCell>
-                                            <TableCell align="left">
-                                                {row.date}
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <IconButton
-                                                    onClick={() =>
-                                                        handleAnalyze(
-                                                            row.package_extract_document_id,
-                                                            row.environment_name,
-                                                        )
-                                                    }
-                                                >
-                                                    <ArrowForwardRoundedIcon />
-                                                </IconButton>
-                                            </TableCell>
+                                            {headers.map((header, j) => {
+                                                if (j === 0) {
+                                                    return (
+                                                        <TableCell
+                                                            component="th"
+                                                            id={labelId}
+                                                            scope="row"
+                                                        >
+                                                            {
+                                                                row[
+                                                                    header.id
+                                                                ] as string
+                                                            }
+                                                        </TableCell>
+                                                    );
+                                                } else {
+                                                    return (
+                                                        <TableCell align="left">
+                                                            {
+                                                                row[
+                                                                    header.id
+                                                                ] as string
+                                                            }
+                                                        </TableCell>
+                                                    );
+                                                }
+                                            })}
+
+                                            {action ? (
+                                                <TableCell align="right">
+                                                    <IconButton
+                                                        onClick={() =>
+                                                            action(row)
+                                                        }
+                                                    >
+                                                        <ArrowForwardRoundedIcon />
+                                                    </IconButton>
+                                                </TableCell>
+                                            ) : undefined}
                                         </TableRow>
                                     );
                                 })}

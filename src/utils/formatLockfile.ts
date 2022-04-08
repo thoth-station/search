@@ -8,6 +8,13 @@ export type Lockfile = {
             hashes: string[];
         };
     };
+    _meta: {
+        sources: {
+            name: string;
+            url: string;
+            verify_ssl: boolean;
+        }[];
+    };
 };
 
 export function formatLockfile(
