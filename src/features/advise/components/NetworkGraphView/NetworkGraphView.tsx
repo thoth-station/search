@@ -11,41 +11,39 @@ import { Network, DataSet, Data } from "vis-network/standalone";
 // local
 import Popup from "../Popup";
 import { SelectedPackageContext } from "../../routes/AdviseDetails";
-import { MergedGraph } from "lib/interfaces/Graph";
-import { PackageMergedNodeValue } from "../../../../lib/interfaces/PackageMergedNodeValue";
+import { Graph } from "lib/interfaces/Graph";
+import { Node } from "lib/interfaces/Node";
+import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 
 interface INetworkGraph {
-    mergedGraph: MergedGraph;
+    graph: Graph<Node<PackageNodeValue>>;
 }
 
 /**
  * Renders a network graph visualization using `vis-network`.
  */
-const NetworkGraph = ({ mergedGraph, ...props }: INetworkGraph) => {
+const NetworkGraph = ({ graph, ...props }: INetworkGraph) => {
     const visJsRef = useRef<HTMLDivElement>(null);
     const { selected } = useContext(SelectedPackageContext);
 
     // create the graph
     useEffect(() => {
-        if (!selected || !mergedGraph) {
+        if (!selected || !graph) {
             return;
         }
 
-        const selectedNode = mergedGraph.nodes.get(selected);
+        const selectedNode = graph.nodes.get(selected);
 
         if (selectedNode) {
-            const nodes = mergedGraph.findAllNodesOnAllPaths(
-                selectedNode,
-                "*App",
-            );
+            const nodes = graph.findAllNodesOnAllPaths(selectedNode, "*App");
 
-            const app_node = mergedGraph.nodes.get("*App");
+            const app_node = graph.nodes.get("*App");
             if (app_node) {
                 nodes.set("*App", app_node);
             }
 
             // convert to vis graph format
-            const convertedNodes = new DataSet<PackageMergedNodeValue>();
+            const convertedNodes = new DataSet<PackageNodeValue>();
             nodes.forEach(value => {
                 // popup element
                 const popup = document.createElement("div");
@@ -78,7 +76,7 @@ const NetworkGraph = ({ mergedGraph, ...props }: INetworkGraph) => {
 
             const visData: Data = {
                 nodes: convertedNodes,
-                edges: new DataSet(mergedGraph.visEdges),
+                edges: new DataSet(graph.visEdges),
             };
 
             const network =
@@ -116,7 +114,7 @@ const NetworkGraph = ({ mergedGraph, ...props }: INetworkGraph) => {
                 });
             }
         }
-    }, [selected, mergedGraph, visJsRef]);
+    }, [selected, graph, visJsRef]);
 
     return (
         <div {...props} style={{ display: "flex", flexFlow: "column nowrap" }}>

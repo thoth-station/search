@@ -3,22 +3,24 @@ import { Grid, Paper, Typography } from "@mui/material";
 import SearchBar from "components/Elements/SearchBar";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { AdviseTableView, SelectedPackage } from "../components";
-import { MergedGraph } from "lib/interfaces/Graph";
+import { Graph } from "lib/interfaces/Graph";
+import { Node } from "lib/interfaces/Node";
+import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 
-type SelectedPackage = {
+type SelectedPackageType = {
     selected: string;
     setSelected: (c: string) => void;
 };
 
-export const SelectedPackageContext = React.createContext<SelectedPackage>(
-    {} as SelectedPackage,
+export const SelectedPackageContext = React.createContext<SelectedPackageType>(
+    {} as SelectedPackageType,
 );
 
 interface IAdviseDetails {
-    mergedGraph?: MergedGraph;
+    graph?: Graph<Node<PackageNodeValue>>;
 }
 
-export const AdviseDetails = ({ mergedGraph }: IAdviseDetails) => {
+export const AdviseDetails = ({ graph }: IAdviseDetails) => {
     const [search, setSearch] = useState<string>("");
     const [selected, setSelected] = useState<string>("");
 
@@ -28,7 +30,7 @@ export const AdviseDetails = ({ mergedGraph }: IAdviseDetails) => {
         setSearch(event.target.value);
     };
 
-    if (!mergedGraph) {
+    if (!graph) {
         return null;
     }
 
@@ -47,10 +49,7 @@ export const AdviseDetails = ({ mergedGraph }: IAdviseDetails) => {
                             onChange={handleSearch}
                             lefticon={<SearchRoundedIcon />}
                         />
-                        <AdviseTableView
-                            search={search}
-                            filteredGraph={mergedGraph}
-                        />
+                        <AdviseTableView search={search} graph={graph} />
                     </Paper>
                 </Grid>
                 <Grid item sm={12} md={6}>
@@ -59,7 +58,7 @@ export const AdviseDetails = ({ mergedGraph }: IAdviseDetails) => {
                             No package selected
                         </Typography>
                     ) : (
-                        <SelectedPackage mergedGraph={mergedGraph} />
+                        <SelectedPackage graph={graph} />
                     )}
                 </Grid>
             </Grid>

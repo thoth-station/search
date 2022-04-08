@@ -86,7 +86,10 @@ export const ImageSearch = () => {
         }
     }, [images?.data]);
 
-    const tableRowAction = (row: {package_extract_document_id: string, environment_name: string}) => {
+    const tableRowAction = (row: {
+        package_extract_document_id: string;
+        environment_name: string;
+    }) => {
         navigate("/image/" + row.package_extract_document_id, {
             state: { image_name: row.environment_name },
         });
@@ -188,7 +191,11 @@ export const ImageSearch = () => {
                     <Typography variant={"h6"} mt={3} mb={1} ml={2}>
                         Available Thoth Container Images
                     </Typography>
-                    <GenericTable headers={headCells} rows={rows} action={tableRowAction} />
+                    <GenericTable
+                        headers={headCells}
+                        rows={rows}
+                        action={tableRowAction}
+                    />
                 </>
             </Collapse>
         </>

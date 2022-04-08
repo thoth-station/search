@@ -1,22 +1,19 @@
 import { Node, NodeValue } from "lib/interfaces/Node";
-import { PackageMergedNodeValue } from "lib/interfaces/PackageMergedNodeValue";
-
-export interface MergedGraph extends Graph<Node<PackageMergedNodeValue>> {
-    visEdges: {
-        id: number | string;
-        to: string;
-        from: string;
-    }[];
-}
 
 /**
  * Graph data structure implemented with an adjacent list
  */
 export class Graph<NodeType extends Node<NodeValue>> {
     nodes: Map<NodeType["key"], NodeType>;
+    visEdges: {
+        id: number | string;
+        to: string;
+        from: string;
+    }[];
 
     constructor() {
         this.nodes = new Map();
+        this.visEdges = [];
     }
 
     /**

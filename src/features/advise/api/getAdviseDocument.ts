@@ -3,7 +3,6 @@ import { THOTH_URL } from "config";
 import { useQueries, useQuery } from "react-query";
 import { paths } from "lib/schema";
 import { UseQueryResult } from "react-query/types/react/types";
-import { PackageMetadataRequestResponseSuccess } from "../../../api";
 
 type path = paths["/advise/python/{analysis_id}"]["get"];
 export type AdviseDocumentRequestParams = path["parameters"]["path"];
@@ -40,13 +39,19 @@ export const useAdviseDocument = (
 > => {
     return useQuery({
         ...config,
+        enabled: !!analysis_id && analysis_id.startsWith("adviser"),
         queryKey: ["adviseDocument", analysis_id],
         queryFn: () => getAdviseDocument(analysis_id),
     });
 };
 
-
-export const useAdviseDocuments = (analysis_ids: AdviseDocumentRequestParams["analysis_id"][], config?: { [key: string]: unknown }): UseQueryResult<AxiosResponse<AdviseDocumentRequestResponseSuccess>, AxiosError<requestResponseFailure>>[] => {
+export const useAdviseDocuments = (
+    analysis_ids: AdviseDocumentRequestParams["analysis_id"][],
+    config?: { [key: string]: unknown },
+): UseQueryResult<
+    AxiosResponse<AdviseDocumentRequestResponseSuccess>,
+    AxiosError<requestResponseFailure>
+>[] => {
     return useQueries(
         analysis_ids.map(id => {
             return {
@@ -58,5 +63,5 @@ export const useAdviseDocuments = (analysis_ids: AdviseDocumentRequestParams["an
     ) as UseQueryResult<
         AxiosResponse<AdviseDocumentRequestResponseSuccess>,
         AxiosError<requestResponseFailure>
-        >[];
+    >[];
 };

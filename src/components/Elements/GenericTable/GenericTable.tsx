@@ -13,7 +13,6 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import { IconButton } from "@mui/material";
 import { CircularProgress } from "@mui/material";
 
-
 function descendingComparator(
     a: { [key: string]: any },
     b: { [key: string]: any },
@@ -31,18 +30,18 @@ function descendingComparator(
 function getComparator(order: "desc" | "asc", orderBy: string) {
     return order === "desc"
         ? (a: { [key: string]: any }, b: { [key: string]: any }) =>
-            descendingComparator(a, b, orderBy)
+              descendingComparator(a, b, orderBy)
         : (a: { [key: string]: any }, b: { [key: string]: any }) =>
-            -descendingComparator(a, b, orderBy);
+              -descendingComparator(a, b, orderBy);
 }
 
 interface IGenericTable {
     headers: {
-        id: string,
-        label: string
-    }[]
-    rows: {[key: string]: unknown}[]
-    action?: (row: any) => void
+        id: string;
+        label: string;
+    }[];
+    rows: { [key: string]: unknown }[];
+    action?: (row: any) => void;
 }
 
 interface IEnhancedTableHead {
@@ -50,9 +49,8 @@ interface IEnhancedTableHead {
     orderBy: IGenericTable["headers"][number]["id"];
     onRequestSort: (property: IGenericTable["headers"][number]["id"]) => void;
     rowCount: number;
-    headers: IGenericTable["headers"]
+    headers: IGenericTable["headers"];
 }
-
 
 function EnhancedTableHead(props: IEnhancedTableHead) {
     const { order, orderBy, onRequestSort, headers } = props;
@@ -83,13 +81,13 @@ function EnhancedTableHead(props: IEnhancedTableHead) {
     );
 }
 
-
-export default function GenericTable({headers, rows, action}: IGenericTable) {
+export default function GenericTable({ headers, rows, action }: IGenericTable) {
     const [order, setOrder] = React.useState("asc");
-    const [orderBy, setOrderBy] = React.useState<typeof headers[number]["id"]>(headers[0].id);
+    const [orderBy, setOrderBy] = React.useState<typeof headers[number]["id"]>(
+        headers[0].id,
+    );
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
 
     const handleRequestSort = (property: typeof headers[number]["id"]) => {
         const isAsc = orderBy === property && order === "asc";
@@ -156,28 +154,35 @@ export default function GenericTable({headers, rows, action}: IGenericTable) {
                                             key={index}
                                         >
                                             {headers.map((header, j) => {
-                                                if(j === 0) {
-                                                   return (
-                                                       <TableCell
-                                                           component="th"
-                                                           id={labelId}
-                                                           scope="row"
-                                                       >
-                                                           {row[header.id] as string}
-                                                       </TableCell>
-                                                   )
-                                                }
-                                                else {
+                                                if (j === 0) {
+                                                    return (
+                                                        <TableCell
+                                                            component="th"
+                                                            id={labelId}
+                                                            scope="row"
+                                                        >
+                                                            {
+                                                                row[
+                                                                    header.id
+                                                                ] as string
+                                                            }
+                                                        </TableCell>
+                                                    );
+                                                } else {
                                                     return (
                                                         <TableCell align="left">
-                                                            {row[header.id] as string}
+                                                            {
+                                                                row[
+                                                                    header.id
+                                                                ] as string
+                                                            }
                                                         </TableCell>
-                                                    )
+                                                    );
                                                 }
                                             })}
 
-                                            {action
-                                            ? <TableCell align="right">
+                                            {action ? (
+                                                <TableCell align="right">
                                                     <IconButton
                                                         onClick={() =>
                                                             action(row)
@@ -186,7 +191,7 @@ export default function GenericTable({headers, rows, action}: IGenericTable) {
                                                         <ArrowForwardRoundedIcon />
                                                     </IconButton>
                                                 </TableCell>
-                                            : undefined}
+                                            ) : undefined}
                                         </TableRow>
                                     );
                                 })}

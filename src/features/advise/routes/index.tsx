@@ -7,12 +7,13 @@ import { AdviseLayout } from "components/Layout";
 // sub-routes
 import { AdviseSummary } from "./AdviseSummary";
 import { AdviseDetails } from "./AdviseDetails";
+import { AdviseCompare } from "./AdviseCompare";
 
 // feature specific imports
 import { useAdviseDocument, useAdviseLogs } from "../api";
 import { formatLockfile } from "utils/formatLockfile";
 import { AdviseHeader } from "../components";
-import { useMergeGraphs, useMetrics } from "../hooks";
+import { useMetrics } from "../hooks";
 import { Requirements, useGraph } from "hooks";
 
 // misc
@@ -41,17 +42,16 @@ export const AdviseRoutes = () => {
     });
 
     useEffect(() => {
-        if(adviseDocument.isSuccess && analysis_id) {
-            console.log(adviseDocument)
-            const ids = localStorage.getItem(LOCAL_STORAGE_KEY) ?? ""
+        if (adviseDocument.isSuccess && analysis_id) {
+            const ids = localStorage.getItem(LOCAL_STORAGE_KEY) ?? "";
 
-            const split = ids.split(",")
-            if(!split.includes(analysis_id)) {
-                split.push(analysis_id)
-                localStorage.setItem(LOCAL_STORAGE_KEY, split.join(","))
+            const split = ids.split(",");
+            if (!split.includes(analysis_id)) {
+                split.push(analysis_id);
+                localStorage.setItem(LOCAL_STORAGE_KEY, split.join(","));
             }
         }
-    }, [adviseDocument.status])
+    }, [adviseDocument.status]);
 
     const logs = useAdviseLogs(analysis_id, {
         useErrorBoundary: false,
@@ -62,20 +62,9 @@ export const AdviseRoutes = () => {
             return false;
         },
     });
-    // format init graph data
-    const initGraphData = useMemo(() => {
-        if (
-            adviseDocument.isSuccess &&
-            adviseDocument.data.data?.result?.parameters?.project
-        ) {
-            const lockfile = adviseDocument.data.data?.result.parameters
-                .project as components["schemas"]["ProjectDef"];
-            return formatLockfile(lockfile);
-        }
-    }, [adviseDocument]);
 
     // format advise graph data
-    const adviseGraphData = useMemo(() => {
+    const graphData = useMemo(() => {
         if (
             adviseDocument.isSuccess &&
             adviseDocument.data.data?.result?.report?.products?.[0]?.project
@@ -86,40 +75,20 @@ export const AdviseRoutes = () => {
         }
     }, [adviseDocument]);
 
-    // create init graph
-    const initGraph = useGraph(
-        initGraphData,
-        (
-            (
-                adviseDocument?.data?.data?.result?.parameters
-                    ?.project as components["schemas"]["ProjectDef"]
-            )?.requirements as Requirements
-        )?.packages,
-    );
-    const adviseGraph = useGraph(
-        adviseGraphData,
+    const graph = useGraph(
+        graphData,
         (
             (
                 adviseDocument?.data?.data?.result?.report?.products?.[0]
                     ?.project as components["schemas"]["ProjectDef"]
             )?.requirements as Requirements
         )?.packages,
-    );
-
-    // merge graphs based on added, removed, changed packages
-    const mergedGraph = useMergeGraphs(
-        initGraph,
-        adviseGraph,
-        adviseDocument.data?.data,
+        adviseDocument?.data?.data?.result?.report?.products?.[0]
+            ?.justification,
     );
 
     // compute metric data
-    const metrics = useMetrics(
-        initGraph,
-        adviseGraph,
-        mergedGraph,
-        adviseDocument.data?.data,
-    );
+    const metrics = useMetrics(graph, adviseDocument.data?.data);
 
     if (adviseDocument.isLoading) {
         return (
@@ -154,7 +123,15 @@ export const AdviseRoutes = () => {
                     />
                     <Route
                         path="details"
-                        element={<AdviseDetails mergedGraph={mergedGraph} />}
+                        element={<AdviseDetails graph={graph} />}
+                    />
+                    <Route
+                        path="compare"
+                        element={
+                            <AdviseCompare
+                                adviseDocument={adviseDocument.data.data}
+                            />
+                        }
                     />
                     <Route path="*" element={<Navigate to="summary" />} />
                 </Routes>

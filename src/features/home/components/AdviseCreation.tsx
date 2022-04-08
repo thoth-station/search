@@ -15,7 +15,6 @@ import ComboBox from "./ComboBox/ComboBox";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { components } from "lib/schema";
 import GenericTable from "../../../components/Elements/GenericTable/GenericTable";
-import timeSince from "../../../utils/timeSince";
 import { useAdviseDocuments } from "../../advise/api";
 import { LOCAL_STORAGE_KEY } from "../../../config";
 import { calcTime } from "../../../utils/calcTime";
@@ -69,7 +68,7 @@ const headCells = [
     },
     {
         id: "status",
-        label: "Status"
+        label: "Status",
     },
     {
         id: "name",
@@ -114,42 +113,47 @@ export const AdviseCreation = () => {
     const [state, dispatch] = useReducer(reducer, initState);
 
     const localHistory: string[] = useMemo(() => {
-        const ids = localStorage.getItem(LOCAL_STORAGE_KEY)
-        if(ids) {
-            return ids.split(",").filter(s => s !== "")
+        const ids = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (ids) {
+            return ids.split(",").filter(s => s !== "");
+        } else {
+            return [];
         }
-        else {
-            return []
-        }
-    }, [])
+    }, []);
 
-    const adviseHistory = useAdviseDocuments(localHistory)
+    const adviseHistory = useAdviseDocuments(localHistory);
 
     const rows = useMemo(() => {
         if (adviseHistory) {
             return adviseHistory.map(doc => {
                 const status = () => {
-                    if(doc.data?.data?.status) {
-                        return doc.data?.data?.status.state
+                    if (doc.data?.data?.status) {
+                        return doc.data?.data?.status.state;
+                    } else if (doc.data?.data.result.report?.products) {
+                        return "success";
+                    } else {
+                        return "error";
                     }
-                    else if (doc.data?.data.result.report?.products) {
-                        return "success"
-                    }
-                    else {
-                        return "error"
-                    }
-                }
+                };
                 return {
                     document_id: doc.data?.data.metadata.document_id,
-                    name: doc.data?.data.result.report?.products?.[0].project.runtime_environment?.name,
-                    os_name: doc.data?.data.result.report?.products?.[0].project.runtime_environment?.operating_system?.name,
-                    os_version: doc.data?.data.result.report?.products?.[0].project.runtime_environment?.operating_system?.version,
-                    python_version: doc.data?.data.result.report?.products?.[0].project.runtime_environment?.python_version,
+                    name: doc.data?.data.result.report?.products?.[0].project
+                        .runtime_environment?.name,
+                    os_name:
+                        doc.data?.data.result.report?.products?.[0].project
+                            .runtime_environment?.operating_system?.name,
+                    os_version:
+                        doc.data?.data.result.report?.products?.[0].project
+                            .runtime_environment?.operating_system?.version,
+                    python_version:
+                        doc.data?.data.result.report?.products?.[0].project
+                            .runtime_environment?.python_version,
                     status: status(),
                     date: calcTime(
                         doc.data?.data?.status?.finished_at,
                         doc.data?.data?.status?.started_at,
-                        doc.data?.data?.metadata?.datetime)
+                        doc.data?.data?.metadata?.datetime,
+                    ),
                 };
             });
         } else {
@@ -157,7 +161,7 @@ export const AdviseCreation = () => {
         }
     }, [adviseHistory]);
 
-    const tableRowAction = (row: {document_id: string}) => {
+    const tableRowAction = (row: { document_id: string }) => {
         navigate("/advise/" + row.document_id);
     };
 
@@ -373,7 +377,11 @@ export const AdviseCreation = () => {
                     <Typography variant={"h6"} mt={3} mb={1} ml={2}>
                         Local Thoth Advise History
                     </Typography>
-                    <GenericTable headers={headCells} rows={rows} action={tableRowAction} />
+                    <GenericTable
+                        headers={headCells}
+                        rows={rows}
+                        action={tableRowAction}
+                    />
                 </>
             </Collapse>
 

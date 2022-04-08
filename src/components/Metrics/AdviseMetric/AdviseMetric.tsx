@@ -18,9 +18,6 @@ interface IAdviseMetric {
  * graph and the Thoth made dependency graph.
  */
 export const AdviseMetric = ({ metric }: IAdviseMetric) => {
-    const total = metric
-        ? metric.added + metric.removed + metric.version + metric.unchanged
-        : 0;
     const justTotal = Object.values(metric?.justification ?? {}).reduce(
         (a, b) => a + b,
         0,
@@ -41,27 +38,7 @@ export const AdviseMetric = ({ metric }: IAdviseMetric) => {
             <Typography variant="body2" gutterBottom>
                 {metric?.build}
             </Typography>
-            <Typography variant="h6" gutterBottom mt={2}>
-                What Thoth Changed
-            </Typography>
             <Divider sx={{ mb: 1 }} />
-            <ProgressBar
-                value={metric?.added ?? 0}
-                total={total}
-                label={"Added Packages"}
-                sx={{ mb: 1 }}
-            />
-            <ProgressBar
-                value={metric?.removed ?? 0}
-                total={total}
-                label={"Removed Packages"}
-                sx={{ mb: 1 }}
-            />
-            <ProgressBar
-                value={metric?.version ?? 0}
-                total={total}
-                label={"Version Changes"}
-            />
             <Typography variant="h6" mt={3} gutterBottom>
                 Justification Counts
             </Typography>
