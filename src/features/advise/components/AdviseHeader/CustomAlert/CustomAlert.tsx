@@ -1,11 +1,11 @@
 import React from "react";
-import { Button, Alert, AlertColor } from "@mui/material";
+import { Button, Alert, AlertColor, AlertProps } from "@mui/material";
 
-interface ICustomAlert {
+interface ICustomAlert extends AlertProps {
     /** The alert content. */
     info: {
         /** Link to navigate to if alert is actioned on. */
-        link: string;
+        link?: string;
         /** Text displayed in the alert. */
         message: string;
         /** Severity (color) of alert: `["ERROR", "WARNING", "INFO", "SUCCESS"]`. */
@@ -20,9 +20,11 @@ const CustomAlert = ({ info, ...props }: ICustomAlert) => {
     return (
         <Alert
             action={
-                <Button color="inherit" size="small" href={info?.link}>
-                    DETAILS
-                </Button>
+                info.link ? (
+                    <Button color="inherit" size="small" href={info?.link}>
+                        DETAILS
+                    </Button>
+                ) : undefined
             }
             severity={info.type}
             {...props}

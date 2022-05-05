@@ -22,6 +22,8 @@ const IconText = ({ text, icon, link, ...props }: IIconText) => {
             <Link
                 underline="none"
                 href={link ? link : undefined}
+                target="_blank"
+                rel="noopener noreferrer"
                 variant="body2"
                 align="center"
             >

@@ -121,7 +121,7 @@ export default function GenericTable({ headers, rows, action }: IGenericTable) {
 
     return (
         <Box sx={{ width: "100%" }}>
-            <Paper sx={{ width: "100%", mb: 2 }}>
+            <Paper sx={{ width: "100%", mb: 2 }} variant="outlined">
                 <TableContainer>
                     <Table sx={{ minWidth: 750 }} size="medium">
                         <EnhancedTableHead

@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 /** Card template for metric cards. */
 const InfoCard = ({ cardMeta, cardBody, cardAction }: IProps) => {
     return (
-        <Card>
+        <Card elevation={0} sx={{ margin: 0 }}>
             <CardHeader
                 action={cardAction}
                 title={<Typography variant="h5">{cardMeta.title}</Typography>}

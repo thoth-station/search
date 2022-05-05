@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { Route, Routes, useParams, Navigate } from "react-router-dom";
 
-// layouts
-import { AdviseLayout } from "components/Layout";
-
 // sub-routes
 import { AdviseSummary } from "./AdviseSummary";
 import { AdviseDetails } from "./AdviseDetails";
@@ -12,17 +9,18 @@ import { AdviseCompare } from "./AdviseCompare";
 // feature specific imports
 import { useAdviseDocument, useAdviseLogs } from "../api";
 import { formatLockfile } from "utils/formatLockfile";
-import { AdviseHeader } from "../components";
 import { useMetrics } from "../hooks";
 import { Requirements, useGraph } from "hooks";
 
 // misc
-import { CircularProgress } from "@mui/material";
 import { AdviseNotFound } from "./AdviseNotFound";
-import { NavigationLayout } from "components/Layout/NavigationLayout";
 import { AxiosResponse } from "axios";
 import { components } from "lib/schema";
 import { LOCAL_STORAGE_KEY } from "config";
+import { AdviserLayout, MainLayout, NavigationLayout } from "components/Layout";
+import Loading from "../../../components/Elements/Loading/Loading";
+import { AdviseLogs } from "./AdviseLogs";
+import { AdviseStackInfo } from "./AdviseStackInfo";
 
 type statusResponse = components["schemas"]["AnalysisStatusResponse"];
 
@@ -90,52 +88,100 @@ export const AdviseRoutes = () => {
     // compute metric data
     const metrics = useMetrics(graph, adviseDocument.data?.data);
 
-    if (adviseDocument.isLoading) {
-        return (
-            <div className="w-full h-48 flex justify-center items-center">
-                <CircularProgress />
-            </div>
-        );
-    }
+    const loading = useMemo(() => {
+        if (adviseDocument.isLoading) {
+            return <Loading type="circular" label="Fetching Advise Document" />;
+        }
 
-    if (!adviseDocument.data) {
-        return (
-            <NavigationLayout>
-                <AdviseNotFound analysis_id={analysis_id ?? "no id"} />
-            </NavigationLayout>
-        );
-    }
+        if (!adviseDocument.data) {
+            return (
+                <NavigationLayout>
+                    <AdviseNotFound analysis_id={analysis_id ?? "no id"} />
+                </NavigationLayout>
+            );
+        }
+    }, [adviseDocument.data, adviseDocument.status]);
+
+    const lastLog = useMemo(() => {
+        try {
+            return JSON.parse(
+                logs.data?.data?.log?.split("\n")?.at(-2) ?? "{}",
+            );
+        } catch (e) {
+            return {};
+        }
+    }, [logs.data]);
+
+    const stackInfoTotals = useMemo(() => {
+        if (!adviseDocument.data?.data?.result?.report?.stack_info) {
+            return {
+                info: 0,
+                warning: 0,
+                error: 0,
+            };
+        }
+        return {
+            info:
+                adviseDocument.data?.data.result.report?.stack_info.filter(
+                    t => t.type === "INFO",
+                ).length ?? 0,
+            warning:
+                adviseDocument.data?.data.result.report?.stack_info.filter(
+                    t => t.type === "WARNING",
+                ).length ?? 0,
+            error:
+                adviseDocument.data?.data.result.report?.stack_info.filter(
+                    t => t.type === "ERROR",
+                ).length ?? 0,
+        };
+    }, [adviseDocument.data?.data]);
 
     return (
-        <NavigationLayout goHome={true}>
-            <AdviseLayout
-                header={
-                    <AdviseHeader
-                        adviseDocument={adviseDocument.data.data}
-                        logs={logs.data?.data?.log}
-                    />
-                }
-            >
-                <Routes>
-                    <Route
-                        path="summary"
-                        element={<AdviseSummary metrics={metrics} />}
-                    />
-                    <Route
-                        path="details"
-                        element={<AdviseDetails graph={graph} />}
-                    />
-                    <Route
-                        path="compare"
-                        element={
-                            <AdviseCompare
-                                adviseDocument={adviseDocument.data.data}
-                            />
-                        }
-                    />
-                    <Route path="*" element={<Navigate to="summary" />} />
-                </Routes>
-            </AdviseLayout>
-        </NavigationLayout>
+        <AdviserLayout chipData={{ "stack-info": stackInfoTotals }}>
+            <MainLayout>
+                {loading ?? (
+                    <Routes>
+                        <Route
+                            path="summary"
+                            element={
+                                <AdviseSummary
+                                    adviseDocument={adviseDocument?.data?.data}
+                                    metrics={metrics}
+                                    lastLog={lastLog}
+                                />
+                            }
+                        />
+                        <Route
+                            path="justifications"
+                            element={<AdviseDetails graph={graph} />}
+                        />
+                        <Route
+                            path="logs"
+                            element={<AdviseLogs logs={logs.data?.data?.log} />}
+                        />
+                        <Route
+                            path="compare"
+                            element={
+                                <AdviseCompare
+                                    adviseDocument={adviseDocument?.data?.data}
+                                />
+                            }
+                        />
+                        <Route
+                            path="stack-info"
+                            element={
+                                <AdviseStackInfo
+                                    stack_info={
+                                        adviseDocument.data?.data?.result
+                                            ?.report?.stack_info
+                                    }
+                                />
+                            }
+                        />
+                        <Route path="*" element={<Navigate to="summary" />} />
+                    </Routes>
+                )}
+            </MainLayout>
+        </AdviserLayout>
     );
 };
