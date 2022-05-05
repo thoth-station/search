@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 
 import { usePackagesMetadata } from "api";
 import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
@@ -6,6 +6,7 @@ import { Graph } from "lib/interfaces/Graph";
 import { Node } from "lib/interfaces/Node";
 import { components, operations } from "../lib/schema";
 import { PackageMetadata } from "../lib/types/PackageMetadata";
+import { DispatchContext } from "../stores/Global";
 
 export type Requirements = {
     "dev-packages": { [key: string]: string };
@@ -28,9 +29,16 @@ export function useGraph(
     knownRoots?: Requirements["packages"],
     justifications?: components["schemas"]["Justification"],
 ) {
+    const { updateLoading } = useContext(DispatchContext);
     const allMetadata = usePackagesMetadata(data);
 
     const isLoading = useMemo(() => {
+        updateLoading(
+            "graph",
+            "Loading package metadata",
+            allMetadata.filter(query => !query.isLoading).length,
+            allMetadata.length,
+        );
         return allMetadata.some(query => query.isLoading);
     }, [allMetadata]);
 
@@ -38,6 +46,7 @@ export function useGraph(
         if (isLoading) {
             return;
         }
+        updateLoading("graph");
 
         // create graph
         const tempGraph = new Graph<Node<PackageNodeValue>>();

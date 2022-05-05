@@ -42,7 +42,7 @@ export const Home = () => {
                 marginRight: "auto",
             }}
         >
-            <Grid container justifyContent="center">
+            <Grid container justifyContent="center" sx={{ marginBottom: 10 }}>
                 <Grid item>
                     <Box sx={{ marginTop: 10 }}>
                         <img

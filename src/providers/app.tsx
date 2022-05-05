@@ -5,7 +5,6 @@ import { queryClient } from "lib/react-query";
 import { Button } from "@mui/material";
 import Theme from "styles/Theme";
 import Global from "stores/Global";
-import { MainLayout } from "components/Layout";
 
 interface IAppProvider {
     children?: JSX.Element;
@@ -30,7 +29,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
             <Global>
                 <ErrorBoundary FallbackComponent={ErrorFallback}>
                     <QueryClientProvider client={queryClient}>
-                        <MainLayout>{children}</MainLayout>
+                        {children}
                     </QueryClientProvider>
                 </ErrorBoundary>
             </Global>

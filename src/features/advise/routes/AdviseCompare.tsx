@@ -16,6 +16,7 @@ import {
     DialogContent,
     DialogActions,
     Button,
+    Paper,
 } from "@mui/material";
 
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -30,6 +31,7 @@ import { components } from "lib/schema";
 import { Requirements } from "../../../hooks";
 import { Variant } from "@mui/material/styles/createTypography";
 import { Lockfile } from "../../../utils/formatLockfile";
+import { ScrollToTop } from "../../../components/Elements/ScrollToTop";
 
 interface IAdviseCompare {
     adviseDocument?: AdviseDocumentRequestResponseSuccess;
@@ -94,20 +96,20 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
 
     const COMPARE_COLORS = {
         old: {
-            text: "#b31412",
-            background: "#fad2cf",
+            text: "errorContainer.contrastText",
+            background: "errorContainer.main",
         },
         new: {
-            text: "#217f70",
-            background: "#e3fbf7",
+            text: "successContainer.contrastText",
+            background: "successContainer.main",
         },
         change: {
-            text: "#7f6921",
-            background: "#fbf3e3",
+            text: "warningContainer.contrastText",
+            background: "warningContainer.main",
         },
         equal: {
             text: undefined,
-            background: "#FFF",
+            background: undefined,
         },
     };
 
@@ -182,71 +184,76 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
             height: "100%",
             paddingBottom: 0.25,
             paddingTop: 0.25,
-            borderLeft: "1px solid #e3e5e8",
-            borderRight: "1px solid #e3e5e8",
+            borderRadius: 0,
+            borderStyle: "hidden solid hidden solid",
             overflow: "hidden",
         };
         if (compareType) {
             return (
                 <Grid item xs={6}>
-                    <Stack
-                        direction="row"
+                    <Paper
+                        variant="outlined"
                         sx={{
                             backgroundColor:
                                 COMPARE_COLORS[compareType].background,
                             ...borderStyles,
                         }}
                     >
-                        {compareType !== "equal" ? (
+                        <Stack direction="row">
+                            {compareType !== "equal" ? (
+                                <Typography
+                                    sx={{
+                                        textAlign: "center",
+                                        minWidth: "2rem",
+                                        color: COMPARE_COLORS[compareType].text,
+                                    }}
+                                    variant="body2"
+                                >
+                                    <b>
+                                        {compareType === "old"
+                                            ? "-"
+                                            : compareType === "new"
+                                            ? "+"
+                                            : "~"}
+                                    </b>
+                                </Typography>
+                            ) : (
+                                <Box sx={{ minWidth: "2rem" }} />
+                            )}
+                            {label ? (
+                                <Typography
+                                    sx={{
+                                        marginRight: 1,
+                                        color: COMPARE_COLORS[compareType].text,
+                                    }}
+                                    variant="body2"
+                                >
+                                    <b>{label + ":"}</b>
+                                </Typography>
+                            ) : undefined}
                             <Typography
-                                sx={{
-                                    textAlign: "center",
-                                    minWidth: "2rem",
-                                    color: COMPARE_COLORS[compareType].text,
-                                }}
+                                sx={{ color: COMPARE_COLORS[compareType].text }}
+                                display="inline"
                                 variant="body2"
                             >
-                                <b>
-                                    {compareType === "old"
-                                        ? "-"
-                                        : compareType === "new"
-                                        ? "+"
-                                        : "~"}
-                                </b>
+                                {value}
                             </Typography>
-                        ) : (
-                            <Box sx={{ minWidth: "2rem" }} />
-                        )}
-                        {label ? (
-                            <Typography
-                                sx={{
-                                    marginRight: 1,
-                                    color: COMPARE_COLORS[compareType].text,
-                                }}
-                                variant="body2"
-                            >
-                                <b>{label + ":"}</b>
-                            </Typography>
-                        ) : undefined}
-                        <Typography
-                            sx={{ color: COMPARE_COLORS[compareType].text }}
-                            display="inline"
-                            variant="body2"
-                        >
-                            {value}
-                        </Typography>
-                    </Stack>
+                        </Stack>
+                    </Paper>
                 </Grid>
             );
         } else {
             return (
                 <Grid item xs={6}>
-                    <Box
+                    <Paper
+                        variant="outlined"
                         sx={{
                             backgroundColor: COMPARE_COLORS["equal"].background,
                             ...borderStyles,
                         }}
-                    />
+                    >
+                        <Box />
+                    </Paper>
                 </Grid>
             );
         }
@@ -255,28 +262,37 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
     const doubleRenderTypography = (
         variant: Variant,
         text: string,
-        styleOverrides: { [key: string]: string | number } = {},
+        styleOverrides: { [key: string]: string | number | undefined } = {},
     ) => {
         const headerStyles = {
             paddingLeft: 4,
-            backgroundColor: "white",
             paddingBottom: 1,
             paddingTop: 4,
-            borderLeft: "1px solid #e3e5e8",
-            borderRight: "1px solid #e3e5e8",
+            borderRadius: 0,
+            borderStyle: "hidden solid hidden solid",
             ...styleOverrides,
         };
         return (
             <>
                 <Grid item xs={6}>
-                    <Typography variant={variant} sx={headerStyles}>
-                        {text}
-                    </Typography>
+                    <Paper
+                        variant="outlined"
+                        sx={{
+                            ...headerStyles,
+                        }}
+                    >
+                        <Typography variant={variant}>{text}</Typography>
+                    </Paper>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography variant={variant} sx={headerStyles}>
-                        {text}
-                    </Typography>
+                    <Paper
+                        variant="outlined"
+                        sx={{
+                            ...headerStyles,
+                        }}
+                    >
+                        <Typography variant={variant}>{text}</Typography>
+                    </Paper>
                 </Grid>
             </>
         );
@@ -626,10 +642,6 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
             if (comparison === "Original Lockfile") {
                 return (
                     <>
-                        {doubleRenderTypography("body2", " ", {
-                            borderTop: "1px solid #e3e5e8",
-                            marginTop: 4,
-                        })}
                         {createProjectCompare(
                             adviseDocument?.result?.report?.products?.[0]
                                 ?.project,
@@ -640,7 +652,10 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                             )?.project,
                         )}
                         {doubleRenderTypography("body1", " ", {
-                            borderBottom: "1px solid #e3e5e8",
+                            borderBottomStyle: "solid",
+                            borderRadius: undefined,
+                            borderTopLeftRadius: 0,
+                            borderTopRightRadius: 0,
                         })}
                     </>
                 );
@@ -649,84 +664,138 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
         }
         return (
             <>
-                {doubleRenderTypography("body2", " ", {
-                    borderTop: "1px solid #e3e5e8",
-                    marginTop: 4,
-                })}
                 {createCompare(adviseDocument, compareDoc.data?.data)}
                 {doubleRenderTypography("body1", " ", {
-                    borderBottom: "1px solid #e3e5e8",
+                    borderBottomStyle: "solid",
+                    borderRadius: undefined,
+                    borderTopLeftRadius: 0,
+                    borderTopRightRadius: 0,
                 })}
             </>
         );
     }, [adviseDocument, compareDoc.data?.data]);
 
+    if (!adviseDocument) {
+        return (
+            <Box
+                height="100vh"
+                flexDirection="column"
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Typography variant="h5" align="center">
+                    Compare not available
+                </Typography>
+                <Typography variant="body2" align="center">
+                    The adviser has not finished resolving packages
+                </Typography>
+            </Box>
+        );
+    }
+
     return (
-        <Box>
-            <Dialog disableEscapeKeyDown open={open} onClose={handleClose}>
-                <DialogTitle>Import another Advise document</DialogTitle>
-                <DialogContent>
-                    <Box
-                        component="form"
-                        sx={{ display: "flex", flexWrap: "wrap" }}
-                    >
-                        <TextField
-                            onChange={event =>
-                                setImportText(event.target.value)
-                            }
-                            label="Document ID"
-                            variant="outlined"
-                            size="small"
-                        />
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => handleClose()}>Cancel</Button>
-                    <Button onClick={() => handleImport()}>Import</Button>
-                </DialogActions>
-            </Dialog>
-            <Grid container mb={1} columnSpacing={10} sx={{ marginTop: 4 }}>
-                <Grid item xs={6} alignSelf="center">
-                    <Typography
-                        sx={{
-                            textAlign: "center",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                        }}
-                        variant="h5"
-                    >
-                        Current Advise Document
-                    </Typography>
-                </Grid>
-                <Grid item xs={6} alignSelf="center">
-                    <Stack direction="row" spacing={1} sx={{ marginX: "10%" }}>
-                        <FormControl fullWidth>
-                            <Select
-                                value={comparison}
-                                displayEmpty
-                                onChange={handleChange}
+        <ScrollToTop>
+            <Box>
+                <Dialog disableEscapeKeyDown open={open} onClose={handleClose}>
+                    <DialogTitle>Import another Advise document</DialogTitle>
+                    <DialogContent>
+                        <Box
+                            component="form"
+                            sx={{ display: "flex", flexWrap: "wrap" }}
+                        >
+                            <TextField
+                                onChange={event =>
+                                    setImportText(event.target.value)
+                                }
+                                label="Document ID"
+                                variant="outlined"
                                 size="small"
+                            />
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => handleClose()}>Cancel</Button>
+                        <Button onClick={() => handleImport()}>Import</Button>
+                    </DialogActions>
+                </Dialog>
+                <Grid container mb={1} columnSpacing={10} sx={{ marginTop: 4 }}>
+                    <Grid item xs={6}>
+                        <Paper
+                            variant="outlined"
+                            sx={{
+                                height: "100%",
+                                borderTopStyle: "solid",
+                                borderBottomLeftRadius: 0,
+                                borderBottomRightRadius: 0,
+                                paddingBottom: 4,
+                                paddingTop: 4,
+                                borderStyle: "solid solid hidden solid",
+                            }}
+                        >
+                            <Typography
+                                sx={{
+                                    textAlign: "center",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                }}
+                                fontWeight="bold"
+                                variant="h6"
                             >
-                                <MenuItem disabled value="">
-                                    <em>Select a comparison</em>
-                                </MenuItem>
-                                {localHistory.map(item => {
-                                    return (
-                                        <MenuItem key={item} value={item}>
-                                            {item}
+                                Current Advise Document
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Paper
+                            variant="outlined"
+                            sx={{
+                                height: "100%",
+                                borderTopStyle: "solid",
+                                borderBottomLeftRadius: 0,
+                                borderBottomRightRadius: 0,
+                                paddingBottom: 4,
+                                paddingTop: 4,
+                                borderStyle: "solid solid hidden solid",
+                            }}
+                        >
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                sx={{ marginX: "10%" }}
+                            >
+                                <FormControl fullWidth>
+                                    <Select
+                                        value={comparison}
+                                        displayEmpty
+                                        onChange={handleChange}
+                                        size="small"
+                                    >
+                                        <MenuItem disabled value="">
+                                            <em>Select a comparison</em>
                                         </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                        <IconButton onClick={handleClickOpen}>
-                            <AddRoundedIcon />
-                        </IconButton>
-                    </Stack>
+                                        {localHistory.map(item => {
+                                            return (
+                                                <MenuItem
+                                                    key={item}
+                                                    value={item}
+                                                >
+                                                    {item}
+                                                </MenuItem>
+                                            );
+                                        })}
+                                    </Select>
+                                </FormControl>
+                                <IconButton onClick={handleClickOpen}>
+                                    <AddRoundedIcon />
+                                </IconButton>
+                            </Stack>
+                        </Paper>
+                    </Grid>
+                    {compareJSX}
                 </Grid>
-                {compareJSX}
-            </Grid>
-        </Box>
+            </Box>
+        </ScrollToTop>
     );
 };

@@ -7,23 +7,35 @@ import {
 } from "components/Metrics";
 import { Masonry } from "@mui/lab";
 import { AllMetrics } from "../hooks";
+import { AdviseHeader } from "../components";
+import { Box } from "@mui/material";
+import { AdviseDocumentRequestResponseSuccess } from "../api";
 
 interface IAdviseSummary {
     metrics: AllMetrics;
+    adviseDocument?: AdviseDocumentRequestResponseSuccess;
+    lastLog?: { [key: string]: string };
 }
 
-export const AdviseSummary = ({ metrics }: IAdviseSummary) => {
+export const AdviseSummary = ({
+    metrics,
+    adviseDocument,
+    lastLog,
+}: IAdviseSummary) => {
     return (
-        <Masonry columns={{ xs: 1, md: 2 }} spacing={3} sx={{ mb: 3, mt: 1 }}>
-            <div>
+        <Box>
+            <AdviseHeader adviseDocument={adviseDocument} lastLog={lastLog} />
+            <Masonry
+                columns={{ xs: 1, md: 2 }}
+                spacing={2}
+                sx={{ margin: "0 auto" }}
+            >
                 <InfoCard
                     cardMeta={{
                         title: "Thoth Advise Summary",
                     }}
                     cardBody={<AdviseMetric metric={metrics?.advise} />}
                 />
-            </div>
-            <div>
                 <InfoCard
                     cardMeta={{
                         title: "Dependencies Summary",
@@ -32,15 +44,13 @@ export const AdviseSummary = ({ metrics }: IAdviseSummary) => {
                         <DependenciesMetric metric={metrics?.dependencies} />
                     }
                 />
-            </div>
-            <div>
                 <InfoCard
                     cardMeta={{
                         title: "Licenses Summary",
                     }}
                     cardBody={<LicenseMetric metric={metrics?.licenses} />}
                 />
-            </div>
-        </Masonry>
+            </Masonry>
+        </Box>
     );
 };

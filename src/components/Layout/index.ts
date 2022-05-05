@@ -1,2 +1,3 @@
 export * from "./MainLayout";
-export * from "./AdviseLayout";
+export * from "./AdviserLayout";
+export * from "./NavigationLayout";

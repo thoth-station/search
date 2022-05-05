@@ -1,20 +1,4 @@
-// GitHub
-export function getGitHubFileText(githubRepo: URL, fileName: string) {
-    const url = new URL(githubRepo);
-
-    if (url.hostname === "github.com") {
-        return fetch(
-            "https://raw.githubusercontent.com" +
-                url.pathname +
-                "/master/" +
-                fileName,
-        )
-            .then(response => response.text())
-            .then(response => {
-                return response;
-            });
-    } else return Promise.reject();
-}
+import YAML from "yaml";
 
 export function getFile(url: RequestInfo) {
     return fetch(url)
@@ -22,4 +6,8 @@ export function getFile(url: RequestInfo) {
         .then(response => {
             return response;
         });
+}
+
+export function getYamlFile(url: string) {
+    return getFile(url).then(text => YAML.parse(text));
 }
