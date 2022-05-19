@@ -47,10 +47,7 @@ export function AdviseLogs({ logs }: IAdviseLogs) {
     }, [logs]);
     return (
         <ScrollToTop>
-            <TableContainer
-                component={Paper}
-                variant="outlined"
-            >
+            <TableContainer component={Paper} variant="outlined">
                 <Table size="small" aria-label="a dense table" stickyHeader>
                     <TableHead>
                         <TableRow>

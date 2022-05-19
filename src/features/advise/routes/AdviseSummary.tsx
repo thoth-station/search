@@ -25,9 +25,11 @@ export const AdviseSummary = ({
         <Box>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <AdviseHeader adviseDocument={adviseDocument} lastLog={lastLog} />
+                    <AdviseHeader
+                        adviseDocument={adviseDocument}
+                        lastLog={lastLog}
+                    />
                 </Grid>
-
 
                 <Grid item xs={12} sm={6}>
                     <InfoCard
@@ -43,7 +45,9 @@ export const AdviseSummary = ({
                             title: "Dependencies Summary",
                         }}
                         cardBody={
-                            <DependenciesMetric metric={metrics?.dependencies} />
+                            <DependenciesMetric
+                                metric={metrics?.dependencies}
+                            />
                         }
                     />
                 </Grid>

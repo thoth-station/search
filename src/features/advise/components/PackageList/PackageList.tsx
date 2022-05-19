@@ -1,7 +1,11 @@
 import React, { useContext, useMemo, useState } from "react";
 
 import {
-    Chip, List, ListItem, ListItemSecondaryAction, ListItemText,
+    Chip,
+    List,
+    ListItem,
+    ListItemSecondaryAction,
+    ListItemText,
     Stack,
     Typography,
 } from "@mui/material";
@@ -16,9 +20,8 @@ import SearchBar from "components/Elements/SearchBar";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 
-import {activeColor} from "styles/Theme";
+import { activeColor } from "styles/Theme";
 import { hexFromArgb } from "@material/material-color-utilities";
-
 
 interface IPackageList {
     graph?: Graph<Node<PackageNodeValue>>;
@@ -83,12 +86,12 @@ export function PackageList({ graph }: IPackageList) {
     }
 
     return (
-        <Stack spacing={2} sx={{maxHeight: "100%"}}>
+        <Stack spacing={2} sx={{ maxHeight: "100%" }}>
             <SearchBar
                 onChange={handleSearch}
                 lefticon={<SearchRoundedIcon />}
             />
-            <List sx={{overflow: "scroll"}}>
+            <List sx={{ overflow: "scroll" }}>
                 {packageList
                     .filter(p => p.name.startsWith(search))
                     .map(p => {
@@ -100,13 +103,27 @@ export function PackageList({ graph }: IPackageList) {
                                 sx={{
                                     borderRadius: 100,
                                     marginY: 0.5,
-                                    backgroundColor: selected === p.key ? hexFromArgb(activeColor.light.colorContainer) : undefined,
-                                    color: selected === p.key ? hexFromArgb(activeColor.light.onColorContainer) : undefined
+                                    backgroundColor:
+                                        selected === p.key
+                                            ? hexFromArgb(
+                                                  activeColor.light
+                                                      .colorContainer,
+                                              )
+                                            : undefined,
+                                    color:
+                                        selected === p.key
+                                            ? hexFromArgb(
+                                                  activeColor.light
+                                                      .onColorContainer,
+                                              )
+                                            : undefined,
                                 }}
                             >
                                 <ListItemText
                                     primary={
-                                        <Typography variant="h5">{p.name}</Typography>
+                                        <Typography variant="h5">
+                                            {p.name}
+                                        </Typography>
                                     }
                                     secondary={`v${p.version}`}
                                 />
@@ -138,8 +155,7 @@ export function PackageList({ graph }: IPackageList) {
                                 </ListItemSecondaryAction>
                             </ListItem>
                         );
-                    })
-                }
+                    })}
             </List>
         </Stack>
     );

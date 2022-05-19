@@ -134,9 +134,5 @@ export const AdviseStackInfo = ({ stack_info = [] }: IAdviseStackInfo) => {
         );
     }
 
-    return (
-        <Masonry columns={{sm: 1, lg: 2, xl: 4}}>
-            {metrics}
-        </Masonry>
-    );
+    return <Masonry columns={{ sm: 1, lg: 2, xl: 4 }}>{metrics}</Masonry>;
 };

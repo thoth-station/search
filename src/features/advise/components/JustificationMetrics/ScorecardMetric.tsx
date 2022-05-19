@@ -42,9 +42,7 @@ const ScorecardItem = ({
                 container
                 alignItems="center"
                 sx={{
-                    backgroundColor: selected
-                        ? "action.selected"
-                        : undefined,
+                    backgroundColor: selected ? "action.selected" : undefined,
                     borderRadius: "16px",
                 }}
             >
@@ -141,9 +139,7 @@ export const ScorecardMetric = ({
     }[];
 }) => {
     return (
-        <Card variant="outlined"
-            sx={{ marginTop: 2, }}
-        >
+        <Card variant="outlined" sx={{ marginTop: 2 }}>
             <CardHeader
                 title="Security Scorecards"
                 subheader={`Scorecards give consumers of open-source projects an easy way to judge whether their dependencies are safe.`}

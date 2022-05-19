@@ -125,7 +125,7 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
     }, []);
 
     return (
-        <Box sx={{overflow: "scroll"}}>
+        <Box sx={{ overflow: "scroll" }}>
             <Card variant="outlined" sx={{ padding: 2 }}>
                 <Grid container alignItems="center" mb={1}>
                     <Grid item>
@@ -182,10 +182,7 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
             ) : undefined}
 
             {popular ? (
-                <Card
-                    variant="outlined"
-                    sx={{ marginTop: 2, }}
-                >
+                <Card variant="outlined" sx={{ marginTop: 2 }}>
                     <CardHeader
                         title={popular.message}
                         action={
@@ -208,7 +205,7 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
                           <Card
                               key={just.message}
                               variant="outlined"
-                              sx={{ marginTop: 2, }}
+                              sx={{ marginTop: 2 }}
                           >
                               <CardHeader
                                   title={just.message}
@@ -236,10 +233,7 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
                   })
                 : undefined}
 
-            <Card
-                variant="outlined"
-                sx={{ marginTop: 2, }}
-            >
+            <Card variant="outlined" sx={{ marginTop: 2 }}>
                 <CardHeader
                     title="Dependency Graph"
                     subheader={

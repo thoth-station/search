@@ -1,6 +1,16 @@
 import * as React from "react";
-import { Box, Button, Chip, CSSObject, IconButton, Stack, styled, Theme, Typography } from "@mui/material";
-import MuiDrawer from '@mui/material/Drawer';
+import {
+    Box,
+    Button,
+    Chip,
+    CSSObject,
+    IconButton,
+    Stack,
+    styled,
+    Theme,
+    Typography,
+} from "@mui/material";
+import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
@@ -16,11 +26,11 @@ import { useMemo } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import MenuOpenRoundedIcon from "@mui/icons-material/MenuOpenRounded";
 import { hexFromArgb } from "@material/material-color-utilities";
 
-import {activeColor} from "styles/Theme";
+import { activeColor } from "styles/Theme";
 
 const drawerWidth = 360;
 
@@ -52,39 +62,38 @@ interface ICustomListItem {
 
 const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
-    transition: theme.transitions.create('width', {
+    transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
     }),
-    overflowX: 'hidden',
+    overflowX: "hidden",
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
-    transition: theme.transitions.create('width', {
+    transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
-    overflowX: 'hidden',
+    overflowX: "hidden",
     width: "80px",
 });
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
-        width: drawerWidth,
-        flexShrink: 0,
-        whiteSpace: 'nowrap',
-        boxSizing: 'border-box',
-        ...(open && {
-            ...openedMixin(theme),
-            '& .MuiDrawer-paper': openedMixin(theme),
-        }),
-        ...(!open && {
-            ...closedMixin(theme),
-            '& .MuiDrawer-paper': closedMixin(theme),
-        }),
+const Drawer = styled(MuiDrawer, {
+    shouldForwardProp: prop => prop !== "open",
+})(({ theme, open }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+    boxSizing: "border-box",
+    ...(open && {
+        ...openedMixin(theme),
+        "& .MuiDrawer-paper": openedMixin(theme),
     }),
-);
-
+    ...(!open && {
+        ...closedMixin(theme),
+        "& .MuiDrawer-paper": closedMixin(theme),
+    }),
+}));
 
 const CustomListItem = ({
     label,
@@ -93,10 +102,11 @@ const CustomListItem = ({
     icon,
     chipData,
     disabled,
-    open, hideOnClosed
+    open,
+    hideOnClosed,
 }: ICustomListItem) => {
-    if(!open && hideOnClosed) {
-        return null
+    if (!open && hideOnClosed) {
+        return null;
     }
 
     return (
@@ -109,8 +119,12 @@ const CustomListItem = ({
                 marginRight: 1.5,
                 marginY: 0.5,
                 justifyContent: !open ? "center" : undefined,
-                backgroundColor: selected ? hexFromArgb(activeColor.light.colorContainer) : undefined,
-                color: selected ? hexFromArgb(activeColor.light.onColorContainer) : undefined
+                backgroundColor: selected
+                    ? hexFromArgb(activeColor.light.colorContainer)
+                    : undefined,
+                color: selected
+                    ? hexFromArgb(activeColor.light.onColorContainer)
+                    : undefined,
             }}
             button
             disabled={disabled}
@@ -151,30 +165,28 @@ const CustomListItem = ({
             }
         >
             {icon ? (
-                <ListItemIcon sx={{
-                    minWidth: 3,
-                    marginRight: open ? 1.5 : 0,
-                    color: selected ? hexFromArgb(activeColor.light.onColorContainer) : undefined
-                }}>
+                <ListItemIcon
+                    sx={{
+                        minWidth: 3,
+                        marginRight: open ? 1.5 : 0,
+                        color: selected
+                            ? hexFromArgb(activeColor.light.onColorContainer)
+                            : undefined,
+                    }}
+                >
                     {icon}
                 </ListItemIcon>
             ) : undefined}
-            { open
-                ? (
-                    <ListItemText
-                        disableTypography
-                        sx={{ marginLeft: icon ? undefined : 4.5}}
-                    >
-                        <Typography
-                            fontWeight="600"
-                            variant="body2"
-                        >
-                            {label}
-                        </Typography>
-                    </ListItemText>
-                )
-                : undefined
-            }
+            {open ? (
+                <ListItemText
+                    disableTypography
+                    sx={{ marginLeft: icon ? undefined : 4.5 }}
+                >
+                    <Typography fontWeight="600" variant="body2">
+                        {label}
+                    </Typography>
+                </ListItemText>
+            ) : undefined}
         </ListItem>
     );
 };
@@ -191,49 +203,48 @@ export const AdviserLayout = ({ children, chipData }: IProps) => {
 
     return (
         <Box sx={{ display: "flex" }}>
-            <Drawer
-                open={open}
-                variant="permanent"
-            >
-                {open
-                    ? (
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{
+            <Drawer open={open} variant="permanent">
+                {open ? (
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        sx={{
                             marginBottom: 1,
                             marginTop: 3,
-                            paddingRight: 1.5
-                        }}>
-                            <Typography
-                                component={Button}
-                                onClick={() => navigate("/")}
-                                variant="h5"
-                                sx={{
-                                    textAlign: "center",
-                                    color: "primary.main",
-                                    marginLeft: 3,
-                                    width: "fit-content",
-                                }}
-                            >
-                                SEARCH UI
-                            </Typography>
-                            <IconButton
-                                onClick={() => setOpen(false)}
-                            >
-                                <MenuOpenRoundedIcon />
-                            </IconButton>
-                        </Stack>
-                    )
-                    : (
-                        <Box sx={{
+                            paddingRight: 1.5,
+                        }}
+                    >
+                        <Typography
+                            component={Button}
+                            onClick={() => navigate("/")}
+                            variant="h5"
+                            sx={{
+                                textAlign: "center",
+                                color: "primary.main",
+                                marginLeft: 3,
+                                width: "fit-content",
+                            }}
+                        >
+                            SEARCH UI
+                        </Typography>
+                        <IconButton onClick={() => setOpen(false)}>
+                            <MenuOpenRoundedIcon />
+                        </IconButton>
+                    </Stack>
+                ) : (
+                    <Box
+                        sx={{
                             marginBottom: 1,
                             marginTop: 3,
-                            textAlign: "center"
-                        }}>
-                            <IconButton onClick={() => setOpen(true)}>
-                                <MenuRoundedIcon />
-                            </IconButton>
-                        </Box>
-                    )
-                }
+                            textAlign: "center",
+                        }}
+                    >
+                        <IconButton onClick={() => setOpen(true)}>
+                            <MenuRoundedIcon />
+                        </IconButton>
+                    </Box>
+                )}
                 <List sx={{ paddingLeft: 1.5, paddingRight: 1.5 }}>
                     <CustomListItem
                         selected={currentTab === "summary"}
@@ -304,9 +315,7 @@ export const AdviserLayout = ({ children, chipData }: IProps) => {
                     />
                 </List>
             </Drawer>
-            <Box sx={{ width: "100%", overflowX: "hidden" }}>
-                {children}
-            </Box>
+            <Box sx={{ width: "100%", overflowX: "hidden" }}>{children}</Box>
         </Box>
     );
 };

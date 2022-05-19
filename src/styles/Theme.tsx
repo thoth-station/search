@@ -12,10 +12,10 @@ let theme = createTheme();
 theme = createTheme(theme, {
     palette: {
         primary: {
-            main: "#f39200"
+            main: "#f39200",
         },
         secondary: {
-            main: "#4fc1ea"
+            main: "#4fc1ea",
         },
         background: {
             default: "rgb(249, 249, 249)",
@@ -23,8 +23,8 @@ theme = createTheme(theme, {
         },
         text: {
             primary: "#363636",
-            secondary: "#999999"
-        }
+            secondary: "#999999",
+        },
     },
     shape: {
         borderRadius: 12,
@@ -34,8 +34,8 @@ theme = createTheme(theme, {
 export const activeColor = customColor(0, {
     value: argbFromHex(theme.palette.primary.main),
     name: "active",
-    blend: false
-})
+    blend: false,
+});
 
 theme = responsiveFontSizes(theme);
 
@@ -73,14 +73,13 @@ theme = createTheme(theme, {
                 root: {
                     color: theme.palette.text.primary,
                     "&:hover": {
-                        color: theme.palette.primary.main
-                    }
+                        color: theme.palette.primary.main,
+                    },
                 },
             },
         },
     },
 });
-
 
 interface ITheme {
     children?: JSX.Element;

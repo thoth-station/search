@@ -10,6 +10,8 @@ interface IProps {
  */
 export const MainLayout = ({ children }: IProps) => {
     return (
-        <Box sx={{marginY: 2, marginRight: 2, height: "calc(100vh - 32px)"}}>{children}</Box>
+        <Box sx={{ marginY: 2, marginRight: 2, height: "calc(100vh - 32px)" }}>
+            {children}
+        </Box>
     );
 };

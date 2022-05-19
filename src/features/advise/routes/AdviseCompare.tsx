@@ -696,7 +696,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
 
     return (
         <ScrollToTop>
-            <Box >
+            <Box>
                 <Dialog disableEscapeKeyDown open={open} onClose={handleClose}>
                     <DialogTitle>Import another Advise document</DialogTitle>
                     <DialogContent>

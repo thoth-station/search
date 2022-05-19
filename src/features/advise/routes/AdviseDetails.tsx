@@ -61,17 +61,28 @@ export const AdviseDetails = ({ graph }: IAdviseDetails) => {
 
     return (
         <SelectedPackageContext.Provider value={{ selected, setSelected }}>
-            <Box flexDirection="column"
-                 display="flex"
-                 height="100%"
-                 justifyContent="center"
-                 alignItems="flex-start"
+            <Box
+                flexDirection="column"
+                display="flex"
+                height="100%"
+                justifyContent="center"
+                alignItems="flex-start"
             >
-                <Box flexGrow={1} display="flex" sx={{overflowY: "hidden", width:"100%" }}>
-                    <Box overflow="auto" sx={{marginRight: 2, minWidth: "500px"}}>
+                <Box
+                    flexGrow={1}
+                    display="flex"
+                    sx={{ overflowY: "hidden", width: "100%" }}
+                >
+                    <Box
+                        overflow="auto"
+                        sx={{ marginRight: 2, minWidth: "500px" }}
+                    >
                         <PackageList graph={graph} />
                     </Box>
-                    <Box overflow="auto" sx={{minWidth: "50%", width: "100%"}}>
+                    <Box
+                        overflow="auto"
+                        sx={{ minWidth: "50%", width: "100%" }}
+                    >
                         {!selected || !graph ? (
                             <Box
                                 height="100%"
@@ -84,8 +95,8 @@ export const AdviseDetails = ({ graph }: IAdviseDetails) => {
                                     Choose a package
                                 </Typography>
                                 <Typography variant="body2" align="center">
-                                    Click on a package from the packages found in
-                                    the Pipfile.lock
+                                    Click on a package from the packages found
+                                    in the Pipfile.lock
                                 </Typography>
                             </Box>
                         ) : (
