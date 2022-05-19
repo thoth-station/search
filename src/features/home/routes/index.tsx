@@ -19,6 +19,7 @@ import TabPanel from "components/Elements/TabPanel";
 import logo from "assets/thoth-logo.png";
 
 import { PackageSearch, AdviseCreation, ImageSearch } from "../components";
+import { Footer } from "../../../components/Footer";
 
 export const Home = () => {
     // utility states
@@ -35,75 +36,73 @@ export const Home = () => {
     };
 
     return (
-        <div
-            style={{
-                maxWidth: "1000px",
-                marginLeft: "auto",
-                marginRight: "auto",
-            }}
+        <Grid
+            container
+            justifyContent="center"
+            sx={{ paddingX: 2, maxWidth: "1000px", margin: "auto" }}
         >
-            <Grid container justifyContent="center" sx={{ marginBottom: 10 }}>
-                <Grid item>
-                    <Box sx={{ marginTop: 10 }}>
-                        <img
-                            alt="Thoth Logo"
-                            src={logo}
-                            height={!matches ? "auto" : 300}
-                            width={"100%"}
-                        />
-                    </Box>
+            <Grid item>
+                <Box sx={{ marginTop: 10 }}>
+                    <img
+                        alt="Thoth Logo"
+                        src={logo}
+                        height={!matches ? "auto" : 300}
+                        width={"100%"}
+                    />
+                </Box>
+            </Grid>
+            <Grid container item justifyContent="center" mt={5} spacing={0}>
+                <Grid item xs={12} alignItems="left" mb={3}>
+                    <Typography variant="h4">
+                        <b>Thoth Search</b>
+                    </Typography>
                 </Grid>
-                <Grid container item justifyContent="center" mt={5} spacing={0}>
-                    <Grid item xs={12} alignItems="left" mb={3}>
-                        <Typography variant="h4">
-                            <b>Thoth Search</b>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} alignItems="left">
-                        <Typography variant="subtitle1">
-                            Thoth Search is a tool that runs analysis on a
-                            Python application. It utilizes package metadata and
-                            Thoth Adviser to analyse and recommend a software
-                            stack. You can run analysis on an entire Python
-                            application using a properly formatted Pipfile and
-                            Pipfile.lock. Alternatively, you can analyse a
-                            single Python package to see what Thoth knows about
-                            the package.
-                        </Typography>
-                    </Grid>
-                    <Grid item textAlign="center" xs={12} mt={3} mb={4}>
-                        <ToggleButtonGroup
-                            value={mode}
-                            exclusive
-                            onChange={handleMode}
-                            size={!matches ? "small" : "large"}
-                        >
-                            <ToggleButton value="package">
-                                <b>package</b>
-                            </ToggleButton>
-                            <ToggleButton value="environment">
-                                <b>environment</b>
-                            </ToggleButton>
-                            <ToggleButton value="image">
-                                <b>image</b>
-                            </ToggleButton>
-                        </ToggleButtonGroup>
-                    </Grid>
+                <Grid item xs={12} alignItems="left">
+                    <Typography variant="subtitle1">
+                        Thoth Search is a tool that runs analysis on a Python
+                        application. It utilizes package metadata and Thoth
+                        Adviser to analyse and recommend a software stack. You
+                        can run analysis on an entire Python application using a
+                        properly formatted Pipfile and Pipfile.lock.
+                        Alternatively, you can analyse a single Python package
+                        to see what Thoth knows about the package.
+                    </Typography>
+                </Grid>
+                <Grid item textAlign="center" xs={12} mt={3} mb={4}>
+                    <ToggleButtonGroup
+                        value={mode}
+                        exclusive
+                        onChange={handleMode}
+                        size={!matches ? "small" : "large"}
+                    >
+                        <ToggleButton value="package">
+                            <b>package</b>
+                        </ToggleButton>
+                        <ToggleButton value="environment">
+                            <b>environment</b>
+                        </ToggleButton>
+                        <ToggleButton value="image">
+                            <b>image</b>
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Grid>
 
-                    <Grid item xs={12} sx={{ marginBottom: 3 }}>
-                        <Divider />
-                        <TabPanel value={mode} index="package">
-                            <PackageSearch />
-                        </TabPanel>
-                        <TabPanel value={mode} index="environment">
-                            <AdviseCreation />
-                        </TabPanel>
-                        <TabPanel value={mode} index="image">
-                            <ImageSearch />
-                        </TabPanel>
-                    </Grid>
+                <Grid item xs={12} sx={{ marginBottom: 3 }}>
+                    <Divider />
+                    <TabPanel value={mode} index="package">
+                        <PackageSearch />
+                    </TabPanel>
+                    <TabPanel value={mode} index="environment">
+                        <AdviseCreation />
+                    </TabPanel>
+                    <TabPanel value={mode} index="image">
+                        <ImageSearch />
+                    </TabPanel>
                 </Grid>
             </Grid>
-        </div>
+            <Grid item xs={12}>
+                <Footer />
+            </Grid>
+        </Grid>
     );
 };

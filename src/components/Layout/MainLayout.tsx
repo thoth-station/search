@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Stack } from "@mui/material";
+import { Box } from "@mui/material";
 
 interface IProps {
     children: NonNullable<React.ReactNode>;
@@ -10,12 +10,8 @@ interface IProps {
  */
 export const MainLayout = ({ children }: IProps) => {
     return (
-        <Stack
-            direction="column"
-            justifyContent="flex-start"
-            sx={{ marginX: "16px" }}
-        >
+        <Box sx={{ marginY: 2, marginRight: 2, height: "calc(100vh - 32px)" }}>
             {children}
-        </Stack>
+        </Box>
     );
 };

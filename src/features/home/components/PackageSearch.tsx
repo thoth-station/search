@@ -52,7 +52,6 @@ export const PackageSearch = () => {
                         onChange={e => handleChange(e)}
                         helpertext={"Search for a Python package"}
                         type="search"
-                        boxprops={{ mr: 2 }}
                         lefticon={<SearchRoundedIcon />}
                         onEnter={handleAnalyze}
                     />
