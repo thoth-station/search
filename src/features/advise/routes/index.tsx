@@ -152,7 +152,7 @@ export const AdviseRoutes = () => {
                             }
                         />
                         <Route
-                            path="justifications"
+                            path="packages"
                             element={<AdviseDetails graph={graph} />}
                         />
                         <Route

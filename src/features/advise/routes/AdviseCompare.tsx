@@ -696,7 +696,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
 
     return (
         <ScrollToTop>
-            <Box>
+            <Box >
                 <Dialog disableEscapeKeyDown open={open} onClose={handleClose}>
                     <DialogTitle>Import another Advise document</DialogTitle>
                     <DialogContent>
@@ -719,7 +719,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                         <Button onClick={() => handleImport()}>Import</Button>
                     </DialogActions>
                 </Dialog>
-                <Grid container mb={1} columnSpacing={10} sx={{ marginTop: 4 }}>
+                <Grid container mb={1} columnSpacing={10}>
                     <Grid item xs={6}>
                         <Paper
                             variant="outlined"

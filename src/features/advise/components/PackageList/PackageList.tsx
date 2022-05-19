@@ -1,11 +1,7 @@
 import React, { useContext, useMemo, useState } from "react";
 
 import {
-    Card,
-    CardActionArea,
-    CardContent,
-    CardHeader,
-    Chip,
+    Chip, List, ListItem, ListItemSecondaryAction, ListItemText,
     Stack,
     Typography,
 } from "@mui/material";
@@ -19,6 +15,10 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import SearchBar from "components/Elements/SearchBar";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
+
+import {activeColor} from "styles/Theme";
+import { hexFromArgb } from "@material/material-color-utilities";
+
 
 interface IPackageList {
     graph?: Graph<Node<PackageNodeValue>>;
@@ -83,71 +83,64 @@ export function PackageList({ graph }: IPackageList) {
     }
 
     return (
-        <Stack spacing={2}>
+        <Stack spacing={2} sx={{maxHeight: "100%"}}>
             <SearchBar
                 onChange={handleSearch}
                 lefticon={<SearchRoundedIcon />}
             />
-            {packageList
-                .filter(p => p.name.startsWith(search))
-                .map(p => {
-                    return (
-                        <Card
-                            elevation={0}
-                            key={p.key}
-                            sx={{
-                                backgroundColor:
-                                    selected === p.key
-                                        ? "secondaryContainer.main"
-                                        : undefined,
-                                color:
-                                    selected === p.key
-                                        ? "secondaryContainer.contrast_text"
-                                        : undefined,
-                            }}
-                        >
-                            <CardActionArea onClick={() => setSelected(p.key)}>
-                                <CardHeader
-                                    title={p.name}
-                                    subheader={`v${p.version}`}
-                                    action={
-                                        <Stack direction="row" spacing={1}>
-                                            {p.warnings ? (
-                                                <Chip
-                                                    variant="outlined"
-                                                    size="medium"
-                                                    icon={
-                                                        <WarningAmberOutlinedIcon />
-                                                    }
-                                                    label={p.warnings}
-                                                    color="warning"
-                                                />
-                                            ) : undefined}
-                                            {p.errors ? (
-                                                <Chip
-                                                    variant="outlined"
-                                                    size="medium"
-                                                    icon={
-                                                        <ErrorOutlineOutlinedIcon />
-                                                    }
-                                                    label={p.errors}
-                                                    color="error"
-                                                />
-                                            ) : undefined}
-                                        </Stack>
+            <List sx={{overflow: "scroll"}}>
+                {packageList
+                    .filter(p => p.name.startsWith(search))
+                    .map(p => {
+                        return (
+                            <ListItem
+                                key={p.key}
+                                button
+                                onClick={() => setSelected(p.key)}
+                                sx={{
+                                    borderRadius: 100,
+                                    marginY: 0.5,
+                                    backgroundColor: selected === p.key ? hexFromArgb(activeColor.light.colorContainer) : undefined,
+                                    color: selected === p.key ? hexFromArgb(activeColor.light.onColorContainer) : undefined
+                                }}
+                            >
+                                <ListItemText
+                                    primary={
+                                        <Typography variant="h5">{p.name}</Typography>
                                     }
+                                    secondary={`v${p.version}`}
                                 />
-                                {p.summary ? (
-                                    <CardContent>
-                                        <Typography variant="body2">
-                                            {p.summary}
-                                        </Typography>
-                                    </CardContent>
-                                ) : undefined}
-                            </CardActionArea>
-                        </Card>
-                    );
-                })}
+                                <ListItemSecondaryAction>
+                                    <Stack direction="row" spacing={1}>
+                                        {p.warnings ? (
+                                            <Chip
+                                                variant="outlined"
+                                                size="medium"
+                                                icon={
+                                                    <WarningAmberOutlinedIcon />
+                                                }
+                                                label={p.warnings}
+                                                color="warning"
+                                            />
+                                        ) : undefined}
+                                        {p.errors ? (
+                                            <Chip
+                                                variant="outlined"
+                                                size="medium"
+                                                icon={
+                                                    <ErrorOutlineOutlinedIcon />
+                                                }
+                                                label={p.errors}
+                                                color="error"
+                                            />
+                                        ) : undefined}
+                                    </Stack>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        );
+                    })
+                }
+            </List>
         </Stack>
     );
 }

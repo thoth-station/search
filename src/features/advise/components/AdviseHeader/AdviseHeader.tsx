@@ -60,7 +60,7 @@ export const AdviseHeader = ({ adviseDocument, lastLog }: IAdviseHeader) => {
 
     return (
         <>
-            <Paper elevation={0} sx={{ padding: 2, margin: 1 }}>
+            <Paper variant="outlined" sx={{ padding: 2 }}>
                 <Typography variant="h5" mb={1}>
                     <b>
                         {adviseDocument?.metadata?.document_id ??

@@ -5,10 +5,9 @@ import {
     DependenciesMetric,
     LicenseMetric,
 } from "components/Metrics";
-import { Masonry } from "@mui/lab";
 import { AllMetrics } from "../hooks";
 import { AdviseHeader } from "../components";
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { AdviseDocumentRequestResponseSuccess } from "../api";
 
 interface IAdviseSummary {
@@ -24,33 +23,39 @@ export const AdviseSummary = ({
 }: IAdviseSummary) => {
     return (
         <Box>
-            <AdviseHeader adviseDocument={adviseDocument} lastLog={lastLog} />
-            <Masonry
-                columns={{ xs: 1, md: 2 }}
-                spacing={2}
-                sx={{ margin: "0 auto" }}
-            >
-                <InfoCard
-                    cardMeta={{
-                        title: "Thoth Advise Summary",
-                    }}
-                    cardBody={<AdviseMetric metric={metrics?.advise} />}
-                />
-                <InfoCard
-                    cardMeta={{
-                        title: "Dependencies Summary",
-                    }}
-                    cardBody={
-                        <DependenciesMetric metric={metrics?.dependencies} />
-                    }
-                />
-                <InfoCard
-                    cardMeta={{
-                        title: "Licenses Summary",
-                    }}
-                    cardBody={<LicenseMetric metric={metrics?.licenses} />}
-                />
-            </Masonry>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <AdviseHeader adviseDocument={adviseDocument} lastLog={lastLog} />
+                </Grid>
+
+
+                <Grid item xs={12} sm={6}>
+                    <InfoCard
+                        cardMeta={{
+                            title: "Thoth Advise Summary",
+                        }}
+                        cardBody={<AdviseMetric metric={metrics?.advise} />}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <InfoCard
+                        cardMeta={{
+                            title: "Dependencies Summary",
+                        }}
+                        cardBody={
+                            <DependenciesMetric metric={metrics?.dependencies} />
+                        }
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <InfoCard
+                        cardMeta={{
+                            title: "Licenses Summary",
+                        }}
+                        cardBody={<LicenseMetric metric={metrics?.licenses} />}
+                    />
+                </Grid>
+            </Grid>
         </Box>
     );
 };

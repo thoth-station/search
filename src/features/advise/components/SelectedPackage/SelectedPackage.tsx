@@ -125,18 +125,12 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
     }, []);
 
     return (
-        <Box>
-            <Card
-                elevation={0}
-                sx={{ padding: 2, backgroundColor: "surface.main" }}
-            >
+        <Box sx={{overflow: "scroll"}}>
+            <Card variant="outlined" sx={{ padding: 2 }}>
                 <Grid container alignItems="center" mb={1}>
                     <Grid item>
-                        <Typography
-                            variant="h3"
-                            sx={{ color: "surface.contrastText" }}
-                        >
-                            <Link underline="hover" href={browseLink}>
+                        <Typography variant="h3">
+                            <Link underline="none" href={browseLink}>
                                 <b>{selectedPackage?.value?.name}</b>
                             </Link>
                         </Typography>
@@ -189,12 +183,8 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
 
             {popular ? (
                 <Card
-                    elevation={0}
-                    sx={{
-                        color: "surface.contrastText",
-                        backgroundColor: "surface.main",
-                        marginTop: 2,
-                    }}
+                    variant="outlined"
+                    sx={{ marginTop: 2, }}
                 >
                     <CardHeader
                         title={popular.message}
@@ -217,12 +207,8 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
                       return (
                           <Card
                               key={just.message}
-                              elevation={0}
-                              sx={{
-                                  color: "surface.contrastText",
-                                  backgroundColor: "surface.main",
-                                  marginTop: 2,
-                              }}
+                              variant="outlined"
+                              sx={{ marginTop: 2, }}
                           >
                               <CardHeader
                                   title={just.message}
@@ -251,12 +237,8 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
                 : undefined}
 
             <Card
-                elevation={0}
-                sx={{
-                    color: "surface.contrastText",
-                    backgroundColor: "surface.main",
-                    marginTop: 2,
-                }}
+                variant="outlined"
+                sx={{ marginTop: 2, }}
             >
                 <CardHeader
                     title="Dependency Graph"

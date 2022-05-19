@@ -1,7 +1,7 @@
 import React from "react";
 
 // material-ui
-import { Link, Stack, BoxProps } from "@mui/material";
+import { Link, Stack, BoxProps, Typography } from "@mui/material";
 
 interface IIconText extends BoxProps {
     /** The text shown */
@@ -19,16 +19,23 @@ const IconText = ({ text, icon, link, ...props }: IIconText) => {
     return (
         <Stack {...props} direction="row" spacing={1} alignItems="center">
             {icon}
-            <Link
-                underline="none"
-                href={link ? link : undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="body2"
-                align="center"
-            >
-                {text}
-            </Link>
+            {link
+                ? (
+                    <Link
+                        underline="none"
+                        href={link ? link : undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="body2"
+                        align="center"
+                    >
+                        {text}
+                    </Link>
+                )
+                : (
+                    <Typography variant="body2" align="center">{text}</Typography>
+                )
+            }
         </Stack>
     );
 };

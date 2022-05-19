@@ -6,8 +6,8 @@ import {
     StackInfoMetric,
     StackInfoRulesMetric,
 } from "../components/StackInfoMetrics";
-import { Masonry } from "@mui/lab";
 import { Box, Typography } from "@mui/material";
+import { Masonry } from "@mui/lab";
 
 interface IAdviseStackInfo {
     stack_info?: components["schemas"]["StackInfo"];
@@ -135,11 +135,7 @@ export const AdviseStackInfo = ({ stack_info = [] }: IAdviseStackInfo) => {
     }
 
     return (
-        <Masonry
-            columns={{ xs: 1, sm: 1, md: 1, lg: 2, xl: 3 }}
-            spacing={2}
-            sx={{ margin: "0 auto" }}
-        >
+        <Masonry columns={{sm: 1, lg: 2, xl: 4}}>
             {metrics}
         </Masonry>
     );

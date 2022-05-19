@@ -19,6 +19,7 @@ import TabPanel from "components/Elements/TabPanel";
 import logo from "assets/thoth-logo.png";
 
 import { PackageSearch, AdviseCreation, ImageSearch } from "../components";
+import { Footer } from "../../../components/Footer";
 
 export const Home = () => {
     // utility states
@@ -35,14 +36,7 @@ export const Home = () => {
     };
 
     return (
-        <div
-            style={{
-                maxWidth: "1000px",
-                marginLeft: "auto",
-                marginRight: "auto",
-            }}
-        >
-            <Grid container justifyContent="center" sx={{ marginBottom: 10 }}>
+            <Grid container justifyContent="center" sx={{ paddingX: 2, maxWidth: "1000px", margin: "auto" }}>
                 <Grid item>
                     <Box sx={{ marginTop: 10 }}>
                         <img
@@ -103,7 +97,9 @@ export const Home = () => {
                         </TabPanel>
                     </Grid>
                 </Grid>
+                <Grid item xs={12}>
+                    <Footer/>
+                </Grid>
             </Grid>
-        </div>
     );
 };

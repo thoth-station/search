@@ -49,7 +49,6 @@ const SearchBar = ({
                 {label}
             </Typography>
             <Paper
-                component="form"
                 variant="outlined"
                 sx={{
                     p: "8px 4px",

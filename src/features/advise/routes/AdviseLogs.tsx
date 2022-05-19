@@ -50,7 +50,6 @@ export function AdviseLogs({ logs }: IAdviseLogs) {
             <TableContainer
                 component={Paper}
                 variant="outlined"
-                sx={{ marginY: 1 }}
             >
                 <Table size="small" aria-label="a dense table" stickyHeader>
                     <TableHead>

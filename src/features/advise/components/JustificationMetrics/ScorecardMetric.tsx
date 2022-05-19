@@ -43,7 +43,7 @@ const ScorecardItem = ({
                 alignItems="center"
                 sx={{
                     backgroundColor: selected
-                        ? "surfaceVariant.main"
+                        ? "action.selected"
                         : undefined,
                     borderRadius: "16px",
                 }}
@@ -141,13 +141,8 @@ export const ScorecardMetric = ({
     }[];
 }) => {
     return (
-        <Card
-            elevation={0}
-            sx={{
-                color: "surface.contrastText",
-                backgroundColor: "surface.main",
-                marginTop: 2,
-            }}
+        <Card variant="outlined"
+            sx={{ marginTop: 2, }}
         >
             <CardHeader
                 title="Security Scorecards"
