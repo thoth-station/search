@@ -1,4 +1,10 @@
 
+## Release 0.5.0 (2022-05-23T12:18:17)
+* 3aca69e prettier
+* 93d9c8e added footer image
+* b28bb05 added footer
+* d566828 added metrics
+
 ## Release 0.4.0 (2022-04-22T13:10:47)
 * 7810452 added advise compare screen
 * cddc7da added advise history
