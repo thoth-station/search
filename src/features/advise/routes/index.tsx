@@ -21,6 +21,7 @@ import { AdviserLayout, MainLayout, NavigationLayout } from "components/Layout";
 import Loading from "../../../components/Elements/Loading/Loading";
 import { AdviseLogs } from "./AdviseLogs";
 import { AdviseStackInfo } from "./AdviseStackInfo";
+import { AdviseEnvironmentInfo } from "./AdviseEnvironmentInfo";
 
 type statusResponse = components["schemas"]["AnalysisStatusResponse"];
 
@@ -175,6 +176,19 @@ export const AdviseRoutes = () => {
                                         adviseDocument.data?.data?.result
                                             ?.report?.stack_info
                                     }
+                                />
+                            }
+                        />
+                        <Route
+                            path="environment"
+                            element={
+                                <AdviseEnvironmentInfo
+                                    runtime_environment={
+                                        adviseDocument.data?.data?.result
+                                            ?.report?.products?.[0]?.project?.runtime_environment
+                                    }
+                                    pipfileLock={JSON.stringify((adviseDocument.data?.data?.result?.parameters as {project: components["schemas"]["ProjectDef"]})?.project.requirements_locked ?? {})}
+                                    pipfile={JSON.stringify((adviseDocument.data?.data?.result?.parameters as {project: components["schemas"]["ProjectDef"]})?.project.requirements ?? {})}
                                 />
                             }
                         />
