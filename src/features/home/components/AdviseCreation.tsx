@@ -136,17 +136,17 @@ export const AdviseCreation = () => {
                     }
                 };
                 return {
-                    document_id: doc.data?.data.metadata.document_id,
-                    name: doc.data?.data.result.report?.products?.[0].project
+                    document_id: doc.data?.data?.metadata?.document_id,
+                    name: doc.data?.data?.result?.report?.products?.[0].project
                         .runtime_environment?.name,
                     os_name:
-                        doc.data?.data.result.report?.products?.[0].project
+                        doc.data?.data?.result?.report?.products?.[0].project
                             .runtime_environment?.operating_system?.name,
                     os_version:
-                        doc.data?.data.result.report?.products?.[0].project
+                        doc.data?.data?.result?.report?.products?.[0].project
                             .runtime_environment?.operating_system?.version,
                     python_version:
-                        doc.data?.data.result.report?.products?.[0].project
+                        doc.data?.data?.result?.report?.products?.[0].project
                             .runtime_environment?.python_version,
                     status: status(),
                     date: calcTime(

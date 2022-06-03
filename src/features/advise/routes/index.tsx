@@ -22,6 +22,7 @@ import Loading from "../../../components/Elements/Loading/Loading";
 import { AdviseLogs } from "./AdviseLogs";
 import { AdviseStackInfo } from "./AdviseStackInfo";
 import { AdviseEnvironmentInfo } from "./AdviseEnvironmentInfo";
+import { AdviseLicenses } from "./AdviseLicenses";
 
 type statusResponse = components["schemas"]["AnalysisStatusResponse"];
 
@@ -137,8 +138,33 @@ export const AdviseRoutes = () => {
         };
     }, [adviseDocument.data?.data]);
 
+    const licenseTotals = useMemo(() => {
+        const data = {
+            info: 0,
+            warning: 0,
+            error: 0,
+        }
+
+        if (!metrics.licenses) {
+            return data
+        }
+
+        Object.values(metrics.licenses).forEach(license => {
+            switch (license.metadata.isOsiApproved) {
+                case null:
+                    data.warning += Object.keys(license.packages).length
+                    break
+                case false:
+                    data.error += Object.keys(license.packages).length
+                    break
+            }
+        })
+
+        return data
+    }, [metrics.licenses]);
+
     return (
-        <AdviserLayout chipData={{ "stack-info": stackInfoTotals }}>
+        <AdviserLayout chipData={{ "stack-info": stackInfoTotals, "licenses":  licenseTotals}}>
             <MainLayout>
                 {loading ?? (
                     <Routes>
@@ -189,6 +215,14 @@ export const AdviseRoutes = () => {
                                     }
                                     pipfileLock={JSON.stringify((adviseDocument.data?.data?.result?.parameters as {project: components["schemas"]["ProjectDef"]})?.project.requirements_locked ?? {})}
                                     pipfile={JSON.stringify((adviseDocument.data?.data?.result?.parameters as {project: components["schemas"]["ProjectDef"]})?.project.requirements ?? {})}
+                                />
+                            }
+                        />
+                        <Route
+                            path="licenses"
+                            element={
+                                <AdviseLicenses
+                                    metric={metrics.licenses}
                                 />
                             }
                         />

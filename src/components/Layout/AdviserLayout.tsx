@@ -286,9 +286,9 @@ export const AdviserLayout = ({ children, chipData }: IProps) => {
                         hideOnClosed
                     />
                     <CustomListItem
-                        disabled
                         label="Licenses"
                         to="licenses"
+                        chipData={chipData["licenses"]}
                         icon={<CircleRoundedIcon />}
                         selected={currentTab === "licenses"}
                         open={open}

@@ -91,10 +91,10 @@ export const AdviseEnvironmentInfo = ({ runtime_environment, pipfile, pipfileLoc
                 alignItems="center"
             >
                 <Typography variant="h5" align="center">
-                    Stack info not available
+                    Environment data not available
                 </Typography>
                 <Typography variant="body2" align="center">
-                    The adviser has not finished resolving packages
+                    The advise document did not contain information regarding the runtime environment
                 </Typography>
             </Box>
         );
@@ -409,9 +409,9 @@ export const AdviseEnvironmentInfo = ({ runtime_environment, pipfile, pipfileLoc
                     </List>
                 </Grid>
                 <Grid item xs={4}>
-                    <Card sx={{marginTop: 2, width: "fit-content", marginX: "auto"}}>
+                    <Card sx={{marginTop: 2, width: "fit-content", marginX: "auto"}} variant="outlined">
                         <CardHeader
-                            title={runtime_environment.name}
+                            title={currentRuntimeEnvironment?.name}
                             action={
                             <Button
                                 size="small"
