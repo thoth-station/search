@@ -160,7 +160,7 @@ export default function GenericTable({ headers, rows, action }: IGenericTable) {
                                                             component="th"
                                                             id={labelId}
                                                             scope="row"
-                                                            key={header.id+j}
+                                                            key={header.id + j}
                                                         >
                                                             {
                                                                 row[
@@ -171,7 +171,10 @@ export default function GenericTable({ headers, rows, action }: IGenericTable) {
                                                     );
                                                 } else {
                                                     return (
-                                                        <TableCell key={header.id+j} align="left">
+                                                        <TableCell
+                                                            key={header.id + j}
+                                                            align="left"
+                                                        >
                                                             {
                                                                 row[
                                                                     header.id

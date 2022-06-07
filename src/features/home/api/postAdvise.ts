@@ -26,7 +26,7 @@ export const postAdvise = (
         data,
         {
             params: {
-                recommendation_type: "stable"
+                recommendation_type: "stable",
             },
             headers: {
                 accept: "application/json",

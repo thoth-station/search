@@ -111,7 +111,6 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
         }
     }, [justifications]);
 
-
     const showError = useMemo(() => {
         return (
             <Stack direction="row" alignItems="center" sx={{ marginTop: 2 }}>

@@ -81,7 +81,13 @@ export const StackInfoInstallErrorMetric = ({
                         <List dense>
                             {metric.map((pkg, i) => {
                                 return (
-                                    <React.Fragment key={(pkg?.package ?? "") + (pkg?.index ?? "") + i}>
+                                    <React.Fragment
+                                        key={
+                                            (pkg?.package ?? "") +
+                                            (pkg?.index ?? "") +
+                                            i
+                                        }
+                                    >
                                         <ListItem
                                             selected={selected === i}
                                             secondaryAction={

@@ -32,12 +32,12 @@ export function useGraph(
     const { updateLoading } = useContext(DispatchContext);
     const allMetadata = usePackagesMetadata(data);
 
-    const [loading, setLoading] = useState(true)
-    const [graph, setGraph] = useState<Graph<Node<PackageNodeValue>>>()
+    const [loading, setLoading] = useState(true);
+    const [graph, setGraph] = useState<Graph<Node<PackageNodeValue>>>();
 
     useEffect(() => {
-        if(!allMetadata || allMetadata.length === 0) {
-            return
+        if (!allMetadata || allMetadata.length === 0) {
+            return;
         }
 
         updateLoading(
@@ -47,17 +47,15 @@ export function useGraph(
             allMetadata.length,
         );
 
-        if(allMetadata.every(query => !query.isLoading)) {
-            setLoading(false)
+        if (allMetadata.every(query => !query.isLoading)) {
+            setLoading(false);
         }
-
     }, [allMetadata]);
 
     useEffect(() => {
         if (loading) {
             return;
-        }
-        else {
+        } else {
             updateLoading("graph");
         }
 
@@ -227,8 +225,8 @@ export function useGraph(
         // add edges to merged graph Object
         tempGraph["visEdges"] = Array.from(visGraphEdges.values());
 
-        setGraph(tempGraph)
+        setGraph(tempGraph);
     }, [loading, knownRoots]);
 
-    return graph
+    return graph;
 }

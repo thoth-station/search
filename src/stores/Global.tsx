@@ -73,10 +73,15 @@ export default function Global({ children }: IGlobal) {
     // for state control
     const [state, dispatch] = React.useReducer(reducer, initState);
 
-    const actionMap: IActionMap = ({
-        updateLoading: ( name: string, text?: string, value?: number, total?: number) => {
-            if(state.loading?.[name]?.value === value) {
-                return
+    const actionMap: IActionMap = {
+        updateLoading: (
+            name: string,
+            text?: string,
+            value?: number,
+            total?: number,
+        ) => {
+            if (state.loading?.[name]?.value === value) {
+                return;
             }
             if (!value || !total) {
                 dispatch({
@@ -101,9 +106,8 @@ export default function Global({ children }: IGlobal) {
                     },
                 });
             }
-        }
-    })
-
+        },
+    };
 
     return (
         <StateContext.Provider value={state}>

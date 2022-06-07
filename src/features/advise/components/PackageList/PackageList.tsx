@@ -20,7 +20,6 @@ import SearchBar from "components/Elements/SearchBar";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 
-
 interface IPackageList {
     graph?: Graph<Node<PackageNodeValue>>;
 }

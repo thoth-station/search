@@ -153,7 +153,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                             "change",
                             label,
                         )}
-                    </ React.Fragment>
+                    </React.Fragment>
                 );
             }
         } else if (obj1_mapped) {
