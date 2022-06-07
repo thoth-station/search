@@ -81,7 +81,7 @@ export const StackInfoInstallErrorMetric = ({
                         <List dense>
                             {metric.map((pkg, i) => {
                                 return (
-                                    <>
+                                    <React.Fragment key={(pkg?.package ?? "") + (pkg?.index ?? "") + i}>
                                         <ListItem
                                             selected={selected === i}
                                             secondaryAction={
@@ -131,7 +131,7 @@ export const StackInfoInstallErrorMetric = ({
                                                 />
                                             </ListItem>
                                         </Collapse>
-                                    </>
+                                    </React.Fragment>
                                 );
                             })}
                         </List>

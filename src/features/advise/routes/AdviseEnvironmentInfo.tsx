@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { components } from "lib/schema";
 import {
     Box,
@@ -20,6 +20,7 @@ import ChangeHistoryRoundedIcon from '@mui/icons-material/ChangeHistoryRounded';
 import { postAdvise } from "../../home/api";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
+import yaml from "js-yaml";
 
 interface IAdviseEnvironmentInfo {
     runtime_environment?: components["schemas"]["RuntimeEnvironment"] | null
@@ -41,31 +42,18 @@ type ListData = {
     detail: string
 }
 
-export const EditableLabel = ({ itemKey, itemSubKey, value, handleSubmit, label}: {itemKey: string, itemSubKey?: string, value: any, handleSubmit: (key: string, value: any, subKey?: string) => void, label?: string}) => {
-    const [editMode, setEditMode] = useState(false)
-    const [editValue, setEditValue] = useState(value)
 
-    useEffect(() => {
-        setEditValue(value)
-    }, [value])
-
+export const EditableLabel = ({ itemKey, itemSubKey, value, handleSubmit, label, editMode}: {itemKey: string, itemSubKey?: string, value: any, handleSubmit: (key: string, value: any, subKey?: string) => void, label?: string, editMode: boolean}) => {
     return (
         <>
             {editMode
                 ? (
-                    <Stack direction="row" alignItems="center" justifyContent="flex-end">
-                        <TextField value={editValue} onChange={event => setEditValue(event.target.value)} size="small" variant="outlined"/>
-                        <IconButton sx={{marginLeft: 1}} onClick={() => {
-                            setEditMode(false)
-                            handleSubmit(itemKey, editValue, itemSubKey)
-                        }}><DoneRoundedIcon fontSize="small"/></IconButton>
-                    </Stack>
+                    <TextField value={value} label={label} onChange={event => handleSubmit(itemKey, event.target.value, itemSubKey)} size="small" variant="outlined"/>
                     )
                 : (
                     <Stack direction="row" alignItems="center" justifyContent="flex-end">
-                        {label ? <Typography sx={{marginRight: 1}} variant="body1" fontStyle={!value ? "italic" : undefined} fontWeight={value ? "bold" : undefined}>{label}</Typography> : undefined}
-                        <Typography variant="body1" fontWeight={!label ? "bold" : undefined}>{value}</Typography>
-                        <IconButton sx={{marginLeft: 1}} onClick={() => setEditMode(true)}><EditRoundedIcon fontSize="small"/></IconButton>
+                        {itemSubKey ? <Typography sx={{marginRight: 1}} variant="body1" fontStyle={!value ? "italic" : undefined} fontWeight={value ? "bold" : undefined}>{label}</Typography> : undefined}
+                        <Typography variant="body1" fontWeight={!itemSubKey ? "bold" : undefined}>{value}</Typography>
                     </Stack>
 
                     )
@@ -79,6 +67,7 @@ export const AdviseEnvironmentInfo = ({ runtime_environment, pipfile, pipfileLoc
     const [currentRuntimeEnvironment, setCurrentRuntimeEnvironment] = useState(runtime_environment)
     const [errorMessage, setErrorMessage] = useState()
     const [loading, setLoading] = useState(false)
+    const [editMode, setEditMode] = useState(false)
     const navigate = useNavigate();
 
     if (!runtime_environment) {
@@ -260,40 +249,10 @@ export const AdviseEnvironmentInfo = ({ runtime_environment, pipfile, pipfileLoc
             }
         })
 
-        return JSON.stringify(format, null, 2)
+        return yaml.dump(format).toString()
+
     }, [currentRuntimeEnvironment])
 
-
-    const renderObj = (item: ListData) => {
-        if(!item) {
-            return undefined
-        }
-        else if(item.group) {
-            return (
-                <Stack spacing={1}>
-                    {item.group.map(subItem => {
-                        return (
-                            <EditableLabel
-                                key={item.key+subItem.key}
-                                itemKey={item.key}
-                                itemSubKey={subItem.key}
-                                label={subItem.label}
-                                value={(currentRuntimeEnvironment
-                                    ?.[item.key as keyof typeof currentRuntimeEnvironment] as {[key: string]: any})
-                                    ?.[subItem.key]
-                                    ?? ""}
-                                handleSubmit={handleSubmit}/>
-                        )
-                    })}
-                </Stack>
-            )
-        }
-        else {
-            return (
-                <EditableLabel itemKey={item.key} value={currentRuntimeEnvironment?.[item.key as keyof typeof currentRuntimeEnvironment] ?? ""} handleSubmit={handleSubmit}/>
-            )
-        }
-    }
 
     const handleNewAdvise = () => {
         setErrorMessage(undefined)
@@ -314,6 +273,42 @@ export const AdviseEnvironmentInfo = ({ runtime_environment, pipfile, pipfileLoc
                 setErrorMessage(error?.response?.data?.error ?? "An error occurred.")
             })
     }
+
+    const getIcon = (item: ListData) => {
+        let mode: string
+        if(item.group) {
+            if(item.group.some(subItem => subItem.original !== subItem.value)) {
+                mode = "warning"
+            }
+            else if(item.group.every(subItem => !subItem.original)) {
+                mode = "error"
+            }
+            else {
+                mode = "success"
+            }
+        }
+        else {
+            if (item.original !== item.value) {
+                mode = "warning"
+            }
+            else if(!item.original) {
+                mode = "error"
+            }
+            else {
+                mode = "success"
+            }
+        }
+
+        switch (mode) {
+            case "warning":
+                return <ChangeHistoryRoundedIcon color="warning"/>
+            case "error":
+                return <CloseRoundedIcon color="error" />
+            case "success":
+                return <DoneRoundedIcon color="success" />
+        }
+    }
+
 
     return (
         <Box>
@@ -378,38 +373,58 @@ export const AdviseEnvironmentInfo = ({ runtime_environment, pipfile, pipfileLoc
                                 <Typography variant="body1" fontWeight="bold">Environment Parameters</Typography>
                             </ListItemText>
                             <Typography variant="body1" fontWeight="bold">Value</Typography>
+                            {editMode
+                                ? (
+                                    <IconButton sx={{marginLeft: 1}} onClick={() => setEditMode(false)}>
+                                        <DoneRoundedIcon fontSize="small"/>
+                                    </IconButton>
+                                )
+                                : (<IconButton sx={{marginLeft: 1}} onClick={() => setEditMode(true)}><EditRoundedIcon fontSize="small"/></IconButton>)
+                            }
+
                         </ListItem>
                         {data.map((item, i) => {
                             return (
-                                <>
-                                    <ListItem key={item.label + i}>
+                                <React.Fragment key={item.key + i}>
+                                    <ListItem>
                                         <ListItemAvatar>
-                                            { (() => {
-                                                if(item.group) {
-                                                    return item.group.some(subItem => subItem.original !== subItem.value)
-                                                }
-                                                else {
-                                                    return item.original !== item.value
-                                                }
-                                            })()
-                                                ? <ChangeHistoryRoundedIcon color="warning"/>
-                                                : (item.original
-                                                    ? <DoneRoundedIcon color="success" />
-                                                    : <CloseRoundedIcon color="error" />
-                                                )
-                                                }
+                                            {getIcon(item)}
                                         </ListItemAvatar>
                                         <ListItemText  primary={item.label} secondary={item.detail}/>
-                                        { renderObj(item)}
+                                        { item.group
+                                            ? (
+                                                <Stack spacing={1}>
+                                                    {item.group.map(subItem => {
+                                                        return (
+                                                            <EditableLabel
+                                                                key={item.key+subItem.key}
+                                                                itemKey={item.key}
+                                                                itemSubKey={subItem.key}
+                                                                label={subItem.label}
+                                                                value={(currentRuntimeEnvironment
+                                                                        ?.[item.key as keyof typeof currentRuntimeEnvironment] as {[key: string]: any})
+                                                                        ?.[subItem.key]
+                                                                    ?? ""}
+                                                                handleSubmit={handleSubmit}
+                                                                editMode={editMode}
+                                                            />
+                                                        )
+                                                    })}
+                                                </Stack>
+                                            )
+                                            : (
+                                                <EditableLabel label={item.label} itemKey={item.key} value={currentRuntimeEnvironment?.[item.key as keyof typeof currentRuntimeEnvironment] ?? ""} handleSubmit={handleSubmit} editMode={editMode}/>
+                                            )
+                                        }
                                     </ListItem>
                                     <Divider variant="inset"/>
-                                </>
+                                </React.Fragment>
                             )
                         })}
                     </List>
                 </Grid>
                 <Grid item xs={4}>
-                    <Card sx={{marginTop: 2, width: "fit-content", marginX: "auto"}} variant="outlined">
+                    <Card sx={{marginTop: 2}} variant="outlined">
                         <CardHeader
                             title={currentRuntimeEnvironment?.name}
                             action={

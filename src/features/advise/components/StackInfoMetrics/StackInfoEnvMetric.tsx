@@ -26,7 +26,7 @@ export const StackInfoEnvMetric = ({
     const compact = useMediaQuery(theme.breakpoints.down("md"));
 
     return (
-        <>
+        <React.Fragment key={url}>
             {compact ? (
                 <Card variant="outlined">
                     <CardHeader
@@ -73,8 +73,8 @@ export const StackInfoEnvMetric = ({
                     />
                     <CardContent>
                         <Grid container>
-                            {metric.map(env => (
-                                <React.Fragment key={env.message}>
+                            {metric.map((env, i) => (
+                                <React.Fragment key={env.message + i}>
                                     <Grid item xs={1}>
                                         {env.provided ? (
                                             <CloseRoundedIcon color="error" />
@@ -93,6 +93,6 @@ export const StackInfoEnvMetric = ({
                     </CardContent>
                 </Card>
             )}
-        </>
+        </React.Fragment>
     );
 };

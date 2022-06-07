@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { usePackagesMetadata } from "api";
 import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
@@ -32,21 +32,34 @@ export function useGraph(
     const { updateLoading } = useContext(DispatchContext);
     const allMetadata = usePackagesMetadata(data);
 
-    const isLoading = useMemo(() => {
+    const [loading, setLoading] = useState(true)
+    const [graph, setGraph] = useState<Graph<Node<PackageNodeValue>>>()
+
+    useEffect(() => {
+        if(!allMetadata || allMetadata.length === 0) {
+            return
+        }
+
         updateLoading(
             "graph",
             "Loading package metadata",
             allMetadata.filter(query => !query.isLoading).length,
             allMetadata.length,
         );
-        return allMetadata.some(query => query.isLoading);
+
+        if(allMetadata.every(query => !query.isLoading)) {
+            setLoading(false)
+        }
+
     }, [allMetadata]);
 
-    return useMemo(() => {
-        if (isLoading) {
+    useEffect(() => {
+        if (loading) {
             return;
         }
-        updateLoading("graph");
+        else {
+            updateLoading("graph");
+        }
 
         // create graph
         const tempGraph = new Graph<Node<PackageNodeValue>>();
@@ -214,6 +227,8 @@ export function useGraph(
         // add edges to merged graph Object
         tempGraph["visEdges"] = Array.from(visGraphEdges.values());
 
-        return tempGraph;
-    }, [isLoading, knownRoots]);
+        setGraph(tempGraph)
+    }, [loading, knownRoots]);
+
+    return graph
 }

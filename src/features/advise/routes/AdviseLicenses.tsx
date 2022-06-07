@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 
 import { LicenseMetricType } from "hooks/metrics";
 import {
-    Box, Card, CardContent, CardHeader, Chip,
+    Box, Card, CardContent, CardHeader, Chip, Divider,
     Grid,
     List,
     ListItem,
@@ -10,10 +10,12 @@ import {
     ListItemText,
     Typography,
 } from "@mui/material";
-import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import Loading from "components/Elements/Loading/Loading";
 import { StateContext } from "stores/Global";
+import DoneRoundedIcon from "@mui/icons-material/DoneRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 
 interface IAdviseLicenses {
     metric: LicenseMetricType | null
@@ -38,12 +40,28 @@ export function AdviseLicenses({ metric }: IAdviseLicenses) {
     }
 
     return (
-        <Grid container spacing={4}>
+        <Grid container>
             <Grid item xs={12}>
                 <Typography variant="h4">Package Licenses</Typography>
                 <Typography variant="body1">The Open Source Initiative (OSI) approves open source licenses
                     that allow software to be freely used, modified, and shared.</Typography>
             </Grid>
+            <Grid container item xs={12} alignItems="center" sx={{marginLeft: 2, marginTop: 2,  marginBottom: 2}}>
+                <Grid item><DoneRoundedIcon color="success" sx={{marginRight: 2, verticalAlign: "middle"}}/></Grid>
+                <Grid item><Typography variant="body2"><i>OSI Approved</i></Typography></Grid>
+
+                <Grid item xs={12} />
+
+                <Grid item><CloseRoundedIcon color="error" sx={{marginRight: 2, verticalAlign: "middle"}}/></Grid>
+                <Grid item><Typography variant="body2"><i>Not OSI Approved</i></Typography></Grid>
+
+                <Grid item xs={12} />
+
+                <Grid item><WarningAmberOutlinedIcon color="warning" sx={{marginRight: 2, verticalAlign: "middle"}}/></Grid>
+                <Grid item><Typography variant="body2"><i>Unknown Approval</i></Typography></Grid>
+
+            </Grid>
+            <Grid item xs={12}><Divider/></Grid>
             <Grid item xs={6}>
                 <List>
                     <ListItem>
@@ -61,10 +79,10 @@ export function AdviseLicenses({ metric }: IAdviseLicenses) {
                                 <ListItemButton onClick={() => setSelected(name)} sx={{borderRadius: 100}}>
                                     <ListItemAvatar>
                                         {data.metadata?.isOsiApproved === null ? (
-                                            <HelpOutlineRoundedIcon color="info"/>
+                                            <WarningAmberOutlinedIcon color="warning"/>
                                         ) : data.metadata?.isOsiApproved ? (
                                             <CheckRoundedIcon color="success"/>
-                                        ) : null}
+                                        ) : <CloseRoundedIcon color="error"/>}
                                     </ListItemAvatar>
                                     <ListItemText>
                                         <Typography variant="body1">{name}</Typography>

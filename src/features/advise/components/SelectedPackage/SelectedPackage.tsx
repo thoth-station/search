@@ -111,7 +111,6 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
         }
     }, [justifications]);
 
-    console.log(linkData);
 
     const showError = useMemo(() => {
         return (
@@ -152,9 +151,9 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
                             icon={<GavelIcon />}
                         />
                     </Grid>
-                    {Object.values(linkData).map(value => {
+                    {Object.values(linkData).map((value, i) => {
                         return (
-                            <>
+                            <React.Fragment key={value.link ?? "" + i}>
                                 <Grid item>
                                     <Divider orientation="vertical" />
                                 </Grid>
@@ -165,7 +164,7 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
                                         link={value.link}
                                     />
                                 </Grid>
-                            </>
+                            </React.Fragment>
                         );
                     })}
                 </Grid>
@@ -200,10 +199,10 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
             ) : undefined}
 
             {browseLink
-                ? Array.from(justifications.values()).map(just => {
+                ? Array.from(justifications.values()).map((just, i) => {
                       return (
                           <Card
-                              key={just.message}
+                              key={just.message + i}
                               variant="outlined"
                               sx={{ marginTop: 2 }}
                           >
@@ -252,15 +251,14 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
                                   " as a direct dependency: "}
                             {dependents.map((dep, i) => {
                                 return (
-                                    <>
+                                    <React.Fragment key={dep + i}>
                                         <Link
-                                            key={dep + i}
                                             underline="hover"
                                             onClick={() => setSelected(dep)}
                                         >
                                             {dep}
                                         </Link>{" "}
-                                    </>
+                                    </React.Fragment>
                                 );
                             })}
                         </Typography>
