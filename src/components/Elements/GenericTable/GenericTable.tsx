@@ -151,7 +151,7 @@ export default function GenericTable({ headers, rows, action }: IGenericTable) {
                                         <TableRow
                                             hover
                                             tabIndex={-1}
-                                            key={index}
+                                            key={labelId}
                                         >
                                             {headers.map((header, j) => {
                                                 if (j === 0) {
@@ -160,6 +160,7 @@ export default function GenericTable({ headers, rows, action }: IGenericTable) {
                                                             component="th"
                                                             id={labelId}
                                                             scope="row"
+                                                            key={header.id + j}
                                                         >
                                                             {
                                                                 row[
@@ -170,7 +171,10 @@ export default function GenericTable({ headers, rows, action }: IGenericTable) {
                                                     );
                                                 } else {
                                                     return (
-                                                        <TableCell align="left">
+                                                        <TableCell
+                                                            key={header.id + j}
+                                                            align="left"
+                                                        >
                                                             {
                                                                 row[
                                                                     header.id

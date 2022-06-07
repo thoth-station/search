@@ -73,40 +73,41 @@ export default function Global({ children }: IGlobal) {
     // for state control
     const [state, dispatch] = React.useReducer(reducer, initState);
 
-    const actionMap: IActionMap = React.useMemo(() => {
-        return {
-            updateLoading: (
-                name: string,
-                text?: string,
-                value?: number,
-                total?: number,
-            ) => {
-                if (!value || !total) {
-                    dispatch({
-                        type: "loading",
-                        payload: {
-                            name: name,
-                            isLoading: false,
-                            value: 0,
-                            total: 1,
-                            text: text,
-                        },
-                    });
-                } else {
-                    dispatch({
-                        type: "loading",
-                        payload: {
-                            name: name,
-                            isLoading: true,
-                            value: value ?? 0,
-                            total: total ? total : 1,
-                            text: text,
-                        },
-                    });
-                }
-            },
-        };
-    }, []);
+    const actionMap: IActionMap = {
+        updateLoading: (
+            name: string,
+            text?: string,
+            value?: number,
+            total?: number,
+        ) => {
+            if (state.loading?.[name]?.value === value) {
+                return;
+            }
+            if (!value || !total) {
+                dispatch({
+                    type: "loading",
+                    payload: {
+                        name: name,
+                        isLoading: false,
+                        value: 0,
+                        total: 1,
+                        text: text,
+                    },
+                });
+            } else {
+                dispatch({
+                    type: "loading",
+                    payload: {
+                        name: name,
+                        isLoading: true,
+                        value: value ?? 0,
+                        total: total ? total : 1,
+                        text: text,
+                    },
+                });
+            }
+        },
+    };
 
     return (
         <StateContext.Provider value={state}>

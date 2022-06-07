@@ -127,7 +127,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
         if (obj1_mapped && obj2_mapped) {
             if (obj1_mapped === obj2_mapped) {
                 return (
-                    <>
+                    <React.Fragment key={label}>
                         {renderCompareLine(
                             obj1_mapped as string,
                             "equal",
@@ -138,11 +138,11 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                             "equal",
                             label,
                         )}
-                    </>
+                    </React.Fragment>
                 );
             } else {
                 return (
-                    <>
+                    <React.Fragment key={label}>
                         {renderCompareLine(
                             obj1_mapped as string,
                             "change",
@@ -153,22 +153,22 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                             "change",
                             label,
                         )}
-                    </>
+                    </React.Fragment>
                 );
             }
         } else if (obj1_mapped) {
             return (
-                <>
+                <React.Fragment key={label}>
                     {renderCompareLine(obj1_mapped as string, "old", label)}
                     {renderCompareLine(obj2_mapped as string, "", label)}
-                </>
+                </React.Fragment>
             );
         } else if (obj2_mapped) {
             return (
-                <>
+                <React.Fragment key={label}>
                     {renderCompareLine(obj1_mapped as string, "", label)}
                     {renderCompareLine(obj2_mapped as string, "new", label)}
-                </>
+                </React.Fragment>
             );
         } else {
             return undefined;
@@ -202,6 +202,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                         <Stack direction="row">
                             {compareType !== "equal" ? (
                                 <Typography
+                                    fontWeight="bold"
                                     sx={{
                                         textAlign: "center",
                                         minWidth: "2rem",
@@ -209,13 +210,11 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                                     }}
                                     variant="body2"
                                 >
-                                    <b>
-                                        {compareType === "old"
-                                            ? "-"
-                                            : compareType === "new"
-                                            ? "+"
-                                            : "~"}
-                                    </b>
+                                    {compareType === "old"
+                                        ? "-"
+                                        : compareType === "new"
+                                        ? "+"
+                                        : "~"}
                                 </Typography>
                             ) : (
                                 <Box sx={{ minWidth: "2rem" }} />
@@ -227,8 +226,9 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                                         color: COMPARE_COLORS[compareType].text,
                                     }}
                                     variant="body2"
+                                    fontWeight="bold"
                                 >
-                                    <b>{label + ":"}</b>
+                                    {label + ":"}
                                 </Typography>
                             ) : undefined}
                             <Typography
@@ -236,7 +236,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                                 display="inline"
                                 variant="body2"
                             >
-                                {value}
+                                {value.toString()}
                             </Typography>
                         </Stack>
                     </Paper>
@@ -371,7 +371,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
         ];
 
         return (
-            <>
+            <React.Fragment>
                 {dev_packages.length > 0
                     ? doubleRenderTypography("h6", "Pipfile Dev Packages", {
                           paddingTop: 0.5,
@@ -456,7 +456,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                         }
                     },
                 )}
-            </>
+            </React.Fragment>
         );
     };
 
@@ -641,7 +641,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
         if (!adviseDocument || !compareDoc.data?.data) {
             if (comparison === "Original Lockfile") {
                 return (
-                    <>
+                    <React.Fragment>
                         {createProjectCompare(
                             adviseDocument?.result?.report?.products?.[0]
                                 ?.project,
@@ -657,7 +657,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                             borderTopLeftRadius: 0,
                             borderTopRightRadius: 0,
                         })}
-                    </>
+                    </React.Fragment>
                 );
             }
             return undefined;
@@ -775,10 +775,10 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                                         <MenuItem disabled value="">
                                             <em>Select a comparison</em>
                                         </MenuItem>
-                                        {localHistory.map(item => {
+                                        {localHistory.map((item, i) => {
                                             return (
                                                 <MenuItem
-                                                    key={item}
+                                                    key={item + i}
                                                     value={item}
                                                 >
                                                     {item}

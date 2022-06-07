@@ -27,7 +27,6 @@ export const postAdvise = (
         {
             params: {
                 recommendation_type: "stable",
-                limit: 500,
             },
             headers: {
                 accept: "application/json",

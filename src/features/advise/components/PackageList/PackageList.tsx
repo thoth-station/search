@@ -20,9 +20,6 @@ import SearchBar from "components/Elements/SearchBar";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 
-import { activeColor } from "styles/Theme";
-import { hexFromArgb } from "@material/material-color-utilities";
-
 interface IPackageList {
     graph?: Graph<Node<PackageNodeValue>>;
 }
@@ -91,7 +88,7 @@ export function PackageList({ graph }: IPackageList) {
                 onChange={handleSearch}
                 lefticon={<SearchRoundedIcon />}
             />
-            <List sx={{ overflow: "scroll" }}>
+            <List sx={{ overflow: "scroll" }} dense>
                 {packageList
                     .filter(p => p.name.startsWith(search))
                     .map(p => {
@@ -100,23 +97,25 @@ export function PackageList({ graph }: IPackageList) {
                                 key={p.key}
                                 button
                                 onClick={() => setSelected(p.key)}
+                                selected={selected === p.key}
+                                // divider
                                 sx={{
-                                    borderRadius: 100,
-                                    marginY: 0.5,
-                                    backgroundColor:
-                                        selected === p.key
-                                            ? hexFromArgb(
-                                                  activeColor.light
-                                                      .colorContainer,
-                                              )
-                                            : undefined,
-                                    color:
-                                        selected === p.key
-                                            ? hexFromArgb(
-                                                  activeColor.light
-                                                      .onColorContainer,
-                                              )
-                                            : undefined,
+                                    borderRadius: 1.5,
+                                    // marginY: 0.5,
+                                    // backgroundColor:
+                                    //     selected === p.key
+                                    //         ? hexFromArgb(
+                                    //               activeColor.light
+                                    //                   .colorContainer,
+                                    //           )
+                                    //         : undefined,
+                                    // color:
+                                    //     selected === p.key
+                                    //         ? hexFromArgb(
+                                    //               activeColor.light
+                                    //                   .onColorContainer,
+                                    //           )
+                                    //         : undefined,
                                 }}
                             >
                                 <ListItemText
