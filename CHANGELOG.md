@@ -1,4 +1,12 @@
 
+## Release 0.6.0 (2022-06-08T01:01:43)
+* bb915a8 fixed test case
+* 1f37ac9 correct api calls after update
+* 7db1c20 prettier
+* 9620616 bugs and suggestions
+* 76505eb added license page
+* 2470a7a added env page with new advise creator
+
 ## Release 0.5.0 (2022-05-23T12:18:17)
 * 3aca69e prettier
 * 93d9c8e added footer image
