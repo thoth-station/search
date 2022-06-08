@@ -3,8 +3,8 @@ import { unmountComponentAtNode } from "react-dom";
 
 import { render_with_overlay } from "tests/test-utils";
 import { PackageOverview } from "../PackageOverview";
-import { useAllVersions, useSimpleGraph } from "../../hooks";
-import { usePackageEnvironments } from "../../api";
+import { useSimpleGraph } from "../../hooks";
+import { usePackageEnvironments, usePackageVersions } from "../../api";
 import { useParams } from "react-router-dom";
 import { waitFor } from "@testing-library/react";
 import { usePackageMetadata } from "api";
@@ -13,7 +13,7 @@ let container: HTMLElement;
 
 jest.mock("react-router-dom");
 
-jest.mock("../../hooks/useAllVersions");
+jest.mock("../../api/getPackageVersions");
 
 jest.mock("../../hooks/useSimpleGraph");
 
@@ -29,12 +29,19 @@ beforeEach(() => {
     (useParams as jest.Mock).mockClear();
 
     (useSimpleGraph as jest.Mock).mockReturnValue(undefined);
-    (useAllVersions as jest.Mock).mockReturnValue([
-        {
-            package_version: "fallback",
-            index_url: "fallback",
+    (usePackageVersions as jest.Mock).mockReturnValue({
+        data: {
+            data: {
+                versions: [
+                    {
+                        package_name: "fallback",
+                        package_version: "fallback",
+                        index_url: "fallback",
+                    },
+                ],
+            },
         },
-    ]);
+    });
     (usePackageEnvironments as jest.Mock).mockReturnValue({
         data: {
             data: {
@@ -109,7 +116,7 @@ it("calls metadata endpoint with undefined inputs", async () => {
         package_name: "package-name",
     });
 
-    (useAllVersions as jest.Mock).mockReturnValue([]);
+    (usePackageVersions as jest.Mock).mockReturnValue({});
     (usePackageEnvironments as jest.Mock).mockReturnValue({});
 
     render_with_overlay(<PackageOverview />, container);

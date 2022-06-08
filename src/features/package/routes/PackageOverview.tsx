@@ -80,7 +80,7 @@ export const PackageOverview = () => {
         // needs package name and versions list
         if (specs.package_name) {
             if (
-                allVersions.isSuccess &&
+                allVersions.data?.data &&
                 allVersions.data.data.versions.length > 0
             ) {
                 d.package_version =
