@@ -12,7 +12,6 @@ export const getPackageExists = async (name: requestParams["name"]) => {
         .get<requestResponseSuccess>(THOTH_URL + "/python/package/versions", {
             params: {
                 name: name,
-                per_page: 1,
             },
             headers: {
                 accept: "application/json",

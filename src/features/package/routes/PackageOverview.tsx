@@ -9,8 +9,8 @@ import { CircularProgress, Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { usePackageMetadata } from "api";
 import { PackageNotFound } from "./PackageNotFound";
-import { useAllVersions, useSimpleGraph } from "../hooks";
-import { usePackageEnvironments } from "../api";
+import { useSimpleGraph } from "../hooks";
+import { usePackageEnvironments, usePackageVersions } from "../api";
 import { ErrorPage } from "routes/ErrorPage";
 import { PackageMetadata } from "lib/types/PackageMetadata";
 
@@ -55,7 +55,7 @@ export const PackageOverview = () => {
     }, [params]);
 
     // get all pages of versions/indexes and merge them together
-    const allVersions = useAllVersions(specs.package_name);
+    const allVersions = usePackageVersions(specs.package_name);
 
     // get environments for specific package, version, index
     const allEnvironments = usePackageEnvironments(
@@ -79,9 +79,13 @@ export const PackageOverview = () => {
         // get default package version and index
         // needs package name and versions list
         if (specs.package_name) {
-            if (allVersions && allVersions.length > 0) {
-                d.package_version = allVersions.at(0)?.package_version;
-                d.index_url = allVersions.at(0)?.index_url;
+            if (
+                allVersions.isSuccess &&
+                allVersions.data.data.versions.length > 0
+            ) {
+                d.package_version =
+                    allVersions.data.data.versions.at(-1)?.package_version;
+                d.index_url = allVersions.data.data.versions.at(-1)?.index_url;
             }
         }
 
@@ -110,7 +114,7 @@ export const PackageOverview = () => {
         ) {
             setDefaultSpecs(d);
         }
-    }, [allVersions, allEnvironments, specs]);
+    }, [allVersions.data, allEnvironments, specs]);
 
     // get package metadata
     const metadata = usePackageMetadata(
@@ -125,7 +129,7 @@ export const PackageOverview = () => {
 
     const graph = useSimpleGraph(metadata);
 
-    if (metadata.isLoading || allVersions?.length === 0) {
+    if (metadata.isLoading || allVersions?.data?.data?.versions?.length === 0) {
         return (
             <div
                 className="w-full h-48 flex justify-center items-center"
@@ -167,7 +171,7 @@ export const PackageOverview = () => {
                             metadata.data.data.metadata.importlib_metadata
                                 .metadata as PackageMetadata
                         }
-                        allVersions={allVersions}
+                        allVersions={allVersions?.data?.data?.versions}
                         allEnvironments={
                             allEnvironments?.data?.data?.environments
                         }
