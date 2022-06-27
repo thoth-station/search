@@ -11,17 +11,26 @@ export type PackageVersionsRequestResponseSuccess =
 type requestResponseFailure =
     path["responses"]["404"]["content"]["application/json"];
 
+interface IConfig {
+    params: path["parameters"]["query"];
+    headers: {
+        accept: "application/json";
+    };
+}
+
 export const getPackageVersions = async (name: requestParams["name"]) => {
+    const config: IConfig = {
+        params: {
+            name: name,
+        },
+        headers: {
+            accept: "application/json",
+        },
+    };
+
     return axios.get<PackageVersionsRequestResponseSuccess>(
         THOTH_URL + "/python/package/versions",
-        {
-            params: {
-                name: name,
-            },
-            headers: {
-                accept: "application/json",
-            },
-        },
+        config,
     );
 };
 

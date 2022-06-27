@@ -7,18 +7,27 @@ type requestParams = path["parameters"]["query"];
 type requestResponseSuccess =
     path["responses"]["202"]["content"]["application/json"];
 
+interface IConfig {
+    params: path["parameters"]["query"];
+    headers: {
+        accept: "application/json";
+        "Content-Type": "application/json";
+    };
+}
+
 export const postImageAnalyze = (image: requestParams["image"]) => {
+    const config: IConfig = {
+        params: {
+            image: image,
+        },
+        headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+        },
+    };
     return axios.post<requestResponseSuccess>(
         THOTH_URL + "/analyze",
         {},
-        {
-            params: {
-                image: image,
-            },
-            headers: {
-                accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        },
+        config,
     );
 };

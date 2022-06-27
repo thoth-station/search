@@ -9,12 +9,19 @@ type requestParams = path["parameters"]["query"];
 type requestResponseSuccess =
     path["responses"]["200"]["content"]["application/json"];
 
+interface IConfig {
+    params: path["parameters"]["query"];
+    headers: {
+        accept: "application/json";
+    };
+}
+
 export const getPackageEnvironments = async (
-    name?: requestParams["name"],
-    version?: requestParams["version"],
-    index?: requestParams["index"],
+    name: requestParams["name"],
+    version: requestParams["version"],
+    index: requestParams["index"],
 ) => {
-    return axios.get(THOTH_URL + "/python/package/version/environments", {
+    const config: IConfig = {
         params: {
             name: name,
             version: version,
@@ -23,7 +30,11 @@ export const getPackageEnvironments = async (
         headers: {
             accept: "application/json",
         },
-    });
+    };
+    return axios.get(
+        THOTH_URL + "/python/package/version/environments",
+        config,
+    );
 };
 
 export const usePackageEnvironments = (
@@ -36,6 +47,7 @@ export const usePackageEnvironments = (
         ...config,
         enabled: !!name && !!version && !!index,
         queryKey: ["packageEnvironments", name, version, index],
-        queryFn: () => getPackageEnvironments(name, version, index),
+        queryFn: () =>
+            getPackageEnvironments(name ?? "", version ?? "", index ?? ""),
     });
 };
