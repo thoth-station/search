@@ -1,47 +1,43 @@
 // react
-import React, { useMemo } from "react";
+import React from "react";
 
 // material-ui
 import { Box, Grid, Skeleton, Stack, Typography } from "@mui/material";
 import { Chip } from "@mui/material";
-import {
-    ImageDocumentRequestResponseSuccess,
-    ImageMetadataRequestResponseSuccess,
-} from "../../api";
+import { ImageDocumentRequestResponseSuccess } from "../../api";
 
 export interface IImageInfo {
     imageDocument?: ImageDocumentRequestResponseSuccess;
-    imageMetadata?: ImageMetadataRequestResponseSuccess;
 }
+
+type ILabels = {
+    architecture: string;
+    "build-date": string;
+    "com.redhat.build-host": string;
+    "com.redhat.component": string;
+    "com.redhat.license_terms": string;
+    description: string;
+    "distribution-scope": string;
+    "io.k8s.description": string;
+    "io.k8s.display-name": string;
+    "io.openshift.expose-services": string;
+    "io.openshift.tags": string;
+    maintainer: string;
+    name: string;
+    release: string;
+    summary: string;
+    url: string;
+    "vcs-ref": string;
+    "vcs-type": string;
+    vendor: string;
+    version: string;
+};
 
 /**
  * A metric card displaying dependency information of a single package.
  */
-export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
-    const params = useMemo(() => {
-        if (imageMetadata) {
-            return imageMetadata as ImageMetadataRequestResponseSuccess & {
-                labels: { [key: string]: string };
-            };
-        } else if (imageDocument?.result?.["skopeo-inspect"]) {
-            return {
-                architecture:
-                    imageDocument.result["skopeo-inspect"].Architecture,
-                created: imageDocument.result["skopeo-inspect"].Created,
-                digest: imageDocument.result["skopeo-inspect"].Digest,
-                docker_version:
-                    imageDocument.result["skopeo-inspect"].DockerVersion,
-                labels: imageDocument.result["skopeo-inspect"].Labels as {
-                    [key: string]: string;
-                },
-                layers: imageDocument.result["skopeo-inspect"].Layers,
-                os: imageDocument.result["skopeo-inspect"].Os,
-                repo_tags: imageDocument.result["skopeo-inspect"].RepoTags,
-            };
-        }
-    }, [imageDocument, imageMetadata]);
-
-    if (!params) {
+export const ImageInfo = ({ imageDocument }: IImageInfo) => {
+    if (!imageDocument) {
         return (
             <Box data-testid="image-info-not-loaded">
                 <Skeleton />
@@ -56,9 +52,23 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
             <Grid item xs={12}>
                 <Stack direction="row" spacing={2} alignItems="center">
                     <Typography variant={"body1"}>
-                        <b>{params.labels?.["io.k8s.display-name"]}</b>
+                        <b>
+                            {
+                                (
+                                    imageDocument.result["skopeo-inspect"]
+                                        .Labels as ILabels
+                                )?.["io.k8s.display-name"]
+                            }
+                        </b>
                     </Typography>
-                    <Chip label={params.labels?.name.split(":").at(-1)} />
+                    <Chip
+                        label={(
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.name
+                            .split(":")
+                            .at(-1)}
+                    />
                 </Stack>
             </Grid>
             <Grid item xs={12}>
@@ -74,7 +84,12 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
             </Grid>
             <Grid item xs={9}>
                 <Typography variant={"body2"}>
-                    {params.labels?.summary}
+                    {
+                        (
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.summary
+                    }
                 </Typography>
             </Grid>
 
@@ -85,7 +100,12 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
             </Grid>
             <Grid item xs={9}>
                 <Typography variant={"body2"}>
-                    {params.labels?.description}
+                    {
+                        (
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.description
+                    }
                 </Typography>
             </Grid>
 
@@ -96,7 +116,12 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
             </Grid>
             <Grid item xs={9}>
                 <Typography variant={"body2"}>
-                    {params.labels?.vendor}
+                    {
+                        (
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.vendor
+                    }
                 </Typography>
             </Grid>
 
@@ -107,7 +132,12 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
             </Grid>
             <Grid item xs={9}>
                 <Typography variant={"body2"}>
-                    {params.labels?.maintainer}
+                    {
+                        (
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.maintainer
+                    }
                 </Typography>
             </Grid>
 
@@ -119,7 +149,10 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
             <Grid item xs={9}>
                 <Typography variant={"body2"}>
                     {new Date(
-                        params.labels?.["build-date"] as string,
+                        (
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.["build-date"] as string,
                     ).toLocaleDateString()}
                 </Typography>
             </Grid>
@@ -136,7 +169,14 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
                 </Typography>
             </Grid>
             <Grid item xs={9}>
-                <Typography variant={"body2"}>{params.labels?.name}</Typography>
+                <Typography variant={"body2"}>
+                    {
+                        (
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.name
+                    }
+                </Typography>
             </Grid>
 
             <Grid item xs={3}>
@@ -146,7 +186,12 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
             </Grid>
             <Grid item xs={9}>
                 <Typography variant={"body2"}>
-                    {params.labels?.version}
+                    {
+                        (
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.version
+                    }
                 </Typography>
             </Grid>
 
@@ -156,17 +201,8 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
                 </Typography>
             </Grid>
             <Grid item xs={9}>
-                <Typography variant={"body2"}>{params.architecture}</Typography>
-            </Grid>
-
-            <Grid item xs={3}>
-                <Typography variant={"body2"} mr={3} ml={2} mb={1}>
-                    Usage
-                </Typography>
-            </Grid>
-            <Grid item xs={9}>
                 <Typography variant={"body2"}>
-                    <code>{params.labels?.usage}</code>
+                    {imageDocument.result["skopeo-inspect"].Architecture}
                 </Typography>
             </Grid>
 
@@ -177,7 +213,12 @@ export const ImageInfo = ({ imageDocument, imageMetadata }: IImageInfo) => {
             </Grid>
             <Grid item xs={9}>
                 <Typography variant={"body2"}>
-                    {params.labels?.["io.openshift.expose-services"]}
+                    {
+                        (
+                            imageDocument.result["skopeo-inspect"]
+                                .Labels as ILabels
+                        )?.["io.openshift.expose-services"]
+                    }
                 </Typography>
             </Grid>
         </Grid>

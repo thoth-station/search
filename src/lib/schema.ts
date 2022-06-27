@@ -59,7 +59,7 @@ export interface paths {
         post: operations["schedule_kebechet_webhook"];
     };
     "/repo-init": {
-        post: operations["thoth_initialize_repo"];
+        post: operations["initialize_repo"];
     };
     "/build-analysis": {
         post: operations["post_build"];
@@ -154,13 +154,62 @@ export interface components {
             /**
              * @description Requirements stating direct dependencies of the project, the format is compatible with Pipenv
              *
-             * @example [object Object]
+             * @example {
+             *   "dev-packages": {},
+             *   "packages": {
+             *     "numpy": {
+             *       "index": "pypi",
+             *       "version": "*"
+             *     }
+             *   },
+             *   "requires": {
+             *     "python_version": "3.9"
+             *   },
+             *   "source": [
+             *     {
+             *       "name": "pypi",
+             *       "url": "https://pypi.org/simple",
+             *       "verify_ssl": true
+             *     }
+             *   ],
+             *   "thoth": {
+             *     "allow_prereleases": {},
+             *     "disable_index_adjustment": false
+             *   }
+             * }
              */
             requirements: { [key: string]: unknown };
             /**
              * @description A lock file stating all the dependencies pinned to a specific version togher with an explicit Python package index configuration
              *
-             * @example [object Object]
+             * @example {
+             *   "_meta": {
+             *     "hash": {
+             *       "sha256": "f6dd619becbaf7a5c233150a889ef85fbfdf8aa260d182f0874e3234f06ad2b5"
+             *     },
+             *     "pipfile-spec": 6,
+             *     "requires": {
+             *       "python_version": "3.9"
+             *     },
+             *     "sources": [
+             *       {
+             *         "name": "pypi",
+             *         "url": "https://pypi.org/simple",
+             *         "verify_ssl": true
+             *       }
+             *     ]
+             *   },
+             *   "default": {
+             *     "numpy": {
+             *       "hashes": [
+             *         "sha256:b1cca51512299841bf69add3b75361779962f9cee7d9ee3bb446d5982e925b69",
+             *         "sha256:c9591886fc9cbe5532d5df85cb8e0cc3b44ba8ce4367bd4cf1b93dc19713da72"
+             *       ],
+             *       "index": "pypi-org-simple",
+             *       "version": "==1.3.0"
+             *     }
+             *   }
+             * }
              */
             requirements_locked: { [key: string]: unknown };
             runtime_environment:
@@ -226,7 +275,7 @@ export interface components {
             };
             /**
              * @description Python version on which the application runs on
-             * @example 3.6
+             * @example 3.8
              */
             python_version?: string | null;
             /**
@@ -286,14 +335,24 @@ export interface components {
             runtime_environment?: components["schemas"]["RuntimeEnvironment"];
             /**
              * @description Labels used to label the request
-             * @example [object Object]
+             * @example {
+             *   "label_key": "label_value"
+             * }
              */
             labels?: { [key: string]: unknown } | null;
             /** @description Static analysis of libraries used within user's project */
             library_usage?: {
                 /** @example 0.2.0 */
                 version: string;
-                /** @example [object Object] */
+                /**
+                 * @example {
+                 *   "app.py": {
+                 *     "flask": [
+                 *       "flask.Flask"
+                 *     ]
+                 *   }
+                 * }
+                 */
                 report: { [key: string]: unknown };
             };
             kebechet_metadata?: components["schemas"]["KebechetMetadata"];
@@ -334,40 +393,6 @@ export interface components {
             Os: string;
             RepoTags: string[];
         };
-        /** @description Response information with image metadata as extracted by Skopeo */
-        ImageMetadataResponseLowercase: {
-            /**
-             * @description Target architecture of image
-             * @example amd64
-             */
-            architecture: string;
-            /**
-             * @description Image creation date and time
-             * @example 2016-03-04T18:40:02.92155334Z
-             */
-            created: string;
-            /**
-             * @description Digest of the image
-             * @example sha256:cfd8f071bf8da7a466748f522406f7ae5908d002af1b1a1c0dcf893e183e5b32''
-             */
-            digest: string;
-            /**
-             * @description Version of Docker
-             * @example 1.9.1
-             */
-            docker_version: string;
-            /** @description Environment variables from analyzed image */
-            env: string[];
-            /** @description Image labels */
-            labels: { [key: string]: unknown };
-            layers: string[];
-            /**
-             * @description Operating system identifier
-             * @example linux
-             */
-            os: string;
-            repo_tags: string[];
-        };
         /** @description Response for a submitted build analysis */
         BuildAnalysisResponse: {
             /** @description Response for a submitted analysis */
@@ -407,7 +432,7 @@ export interface components {
             /**
              * @description An id of submitted analysis for checking its status and its results
              *
-             * @example package-extract-220106085109-984feaa8a3862285
+             * @example adviser-220106085109-984feaa8a3862285
              */
             analysis_id: string;
             /** @description Parameters echoed back to user (with default parameters if omitted) */
@@ -586,6 +611,7 @@ export interface components {
                     minor: number;
                     /** @example final */
                     releaselevel: string;
+                    /** @example 0 */
                     serial: number;
                 };
                 /**
@@ -697,7 +723,23 @@ export interface components {
                 /**
                  * @description Systems symbols detected - a path mapping to exported symbols available
                  *
-                 * @example [object Object]
+                 * @example {
+                 *   "/usr/lib64/libz.so.1": [
+                 *     "ZLIB_1.2.3.5",
+                 *     "ZLIB_1.2.0.2",
+                 *     "ZLIB_1.2.2.3",
+                 *     "ZLIB_1.2.3.4",
+                 *     "ZLIB_1.2.2",
+                 *     "ZLIB_1.2.0",
+                 *     "ZLIB_1.2.5.1",
+                 *     "ZLIB_1.2.9",
+                 *     "ZLIB_1.2.7.1",
+                 *     "ZLIB_1.2.0.8",
+                 *     "ZLIB_1.2.5.2",
+                 *     "ZLIB_1.2.3.3",
+                 *     "ZLIB_1.2.2.4"
+                 *   ]
+                 * }
                  */
                 "system-symbols": { [key: string]: unknown };
             };
@@ -786,6 +828,7 @@ export interface components {
                     minor: number;
                     /** @example final */
                     releaselevel: string;
+                    /** @example 0 */
                     serial: number;
                 };
                 /**
@@ -801,7 +844,10 @@ export interface components {
             };
             /** @description Provenance check result */
             result: {
-                /** @description A flag set to true if an error was encountered */
+                /**
+                 * @description A flag set to true if an error was encountered
+                 * @example false
+                 */
                 error: boolean;
                 /**
                  * @description An error message reported to users
@@ -900,6 +946,7 @@ export interface components {
                     minor: number;
                     /** @example final */
                     releaselevel: string;
+                    /** @example 0 */
                     serial: number;
                 };
                 /**
@@ -915,7 +962,10 @@ export interface components {
             };
             /** @description Actual result of an analysis run */
             result: {
-                /** @description A flag indicating error during the advise */
+                /**
+                 * @description A flag indicating error during the advise
+                 * @example false
+                 */
                 error: boolean;
                 /**
                  * @description An error message describing the error encountered
@@ -959,7 +1009,9 @@ export interface components {
                     /** @description Products computed in the deployment, always holds only one item */
                     products?: {
                         /** @description Advised changes to manifest files */
-                        advised_manifest_changes: unknown[][] | null;
+                        advised_manifest_changes:
+                            | { [key: string]: unknown }[][]
+                            | null;
                         advised_runtime_environment:
                             | components["schemas"]["RuntimeEnvironment"]
                             | null;
@@ -985,7 +1037,7 @@ export interface components {
                      * @example 49945
                      */
                     resolver_iterations?: number;
-                    stack_info: components["schemas"]["StackInfo"];
+                    stack_info?: components["schemas"]["StackInfo"];
                 } | null;
             };
         };
@@ -1053,7 +1105,10 @@ export interface components {
                 image_analysis_url: string | null;
             }[];
             parameters: {
-                /** @description Page offset in the pagination */
+                /**
+                 * @description Page offset in the pagination
+                 * @example 0
+                 */
                 page: number;
             };
         };
@@ -1146,7 +1201,25 @@ export interface components {
                 package_version: string;
                 /**
                  * @description Dependency information
-                 * @example [object Object]
+                 * @example {
+                 *   "hypothesis": {
+                 *     "extra": [
+                 *       "test"
+                 *     ],
+                 *     "extras": [],
+                 *     "marker": "extra == \\\"test\\\"",
+                 *     "marker_evaluated": "python_version >= 0.0",
+                 *     "marker_evaluation_error": null,
+                 *     "marker_evaluation_result": true,
+                 *     "specifier": ">=3.58",
+                 *     "versions": [
+                 *       "3.58.0",
+                 *       "3.58.1",
+                 *       "3.59.0",
+                 *       "3.59.1"
+                 *     ]
+                 *   }
+                 * }
                  */
                 dependencies: { [key: string]: unknown };
                 importlib_metadata: {
@@ -1162,12 +1235,62 @@ export interface components {
                         | null;
                     /**
                      * @description Files shipped with the Python package
-                     * @example [object Object]
+                     * @example {
+                     *   "hash": {
+                     *     "mode": "sha256",
+                     *     "value": "aX-7A9PosUb6vSa8tNbfjhZTOtr99gSCyjl1q9bN2WU"
+                     *   },
+                     *   "path": "pandas-1.1.4.dist-info/METADATA",
+                     *   "size": 4729
+                     * }
                      */
                     files: { [key: string]: unknown }[];
                     /**
                      * @description Core Python packaging metadata extracted
-                     * @example [object Object]
+                     * @example {
+                     *   "Classifier": [
+                     *     "Development Status :: 5 - Production/Stable",
+                     *     "Environment :: Console",
+                     *     "Operating System :: OS Independent",
+                     *     "Intended Audience :: Science/Research",
+                     *     "Programming Language :: Python",
+                     *     "Programming Language :: Python :: 3",
+                     *     "Programming Language :: Python :: 3.6",
+                     *     "Programming Language :: Python :: 3.7",
+                     *     "Programming Language :: Python :: 3.8",
+                     *     "Programming Language :: Python :: 3.9",
+                     *     "Programming Language :: Cython",
+                     *     "Topic :: Scientific/Engineering"
+                     *   ],
+                     *   "Home-page": "https://pandas.pydata.org",
+                     *   "License": "BSD",
+                     *   "Maintainer": "The PyData Development Team",
+                     *   "Maintainer-email": "pydata@googlegroups.com",
+                     *   "Metadata-Version": "2.1",
+                     *   "Name": "pandas",
+                     *   "Platform": [
+                     *     "any"
+                     *   ],
+                     *   "Project-URL": [
+                     *     "Bug Tracker, https://github.com/pandas-dev/pandas/issues",
+                     *     "Documentation, https://pandas.pydata.org/pandas-docs/stable/",
+                     *     "Source Code, https://github.com/pandas-dev/pandas"
+                     *   ],
+                     *   "Provides-Extra": [
+                     *     "test"
+                     *   ],
+                     *   "Requires-Dist": [
+                     *     "python-dateutil (>=2.7.3)",
+                     *     "pytz (>=2017.2)",
+                     *     "numpy (>=1.15.4)",
+                     *     "pytest (>=4.0.2) ; extra == 'test'",
+                     *     "pytest-xdist ; extra == 'test'",
+                     *     "hypothesis (>=3.58) ; extra == 'test'"
+                     *   ],
+                     *   "Requires-Python": ">=3.6.1",
+                     *   "Summary": "Powerful data structures for data analysis, time series, and statistics",
+                     *   "Version": "1.1.4"
+                     * }
                      */
                     metadata: { [key: string]: unknown };
                     /** @description Python requirements of the given package */
@@ -1318,6 +1441,10 @@ export interface components {
         verify_tls: boolean;
         /** @description An identifier of the requested analysis */
         analysis_id: string;
+        /** @description Sort the response list */
+        order_by: "ASC" | "DESC";
+        /** @description Filter Python package name by string. (wildcard characters "%" and "_" are supported) */
+        starts_with: string;
         /** @description Page offset in pagination */
         page: number;
         /** @description Number of items returned per page */
@@ -1345,10 +1472,6 @@ export interface components {
             | "latest"
             | "performance"
             | "security";
-        /** @description Number of software stacks that should be returned */
-        count: number;
-        /** @description Limit number of software stacks scored */
-        limit: number;
         /**
          * @description A flag marking what Thoth integration is requesting adviser:
          * * cli: Thamos CLI
@@ -1415,6 +1538,8 @@ export interface components {
         "x-thoth-version"?: string;
         /** Full Thoth User API version identifier used for debugging */
         "x-user-api-service-version"?: string;
+        /** Thoth Search UI URL */
+        "x-thoth-search-ui-url"?: string;
         /** Current page */
         page?: number;
         /** Page size */
@@ -1449,7 +1574,7 @@ export interface operations {
             200: {
                 headers: {};
                 content: {
-                    "application/json": components["schemas"]["ImageMetadataResponseLowercase"];
+                    "application/json": components["schemas"]["ImageMetadataResponse"];
                 };
             };
             /** On an invalid request */
@@ -1803,10 +1928,6 @@ export interface operations {
             query: {
                 /** Recommendation type */
                 recommendation_type: components["parameters"]["recommendation_type"];
-                /** Number of software stacks that should be returned */
-                count?: components["parameters"]["count"];
-                /** Limit number of software stacks scored */
-                limit?: components["parameters"]["limit"];
                 /** A repository where the application stack is used */
                 origin?: components["parameters"]["origin_py"];
                 /**
@@ -2033,7 +2154,7 @@ export interface operations {
             };
         };
     };
-    thoth_initialize_repo: {
+    initialize_repo: {
         responses: {
             /** Repository initialization has been scheduled */
             202: unknown;
@@ -2165,6 +2286,8 @@ export interface operations {
                 os_version?: components["parameters"]["os_version"];
                 /** Version of Python interpreter provided */
                 python_version?: components["parameters"]["python_version"];
+                /** Filter Python package name by string. (wildcard characters "%" and "_" are supported) */
+                like?: components["parameters"]["starts_with"];
             };
         };
         responses: {
@@ -2180,10 +2303,8 @@ export interface operations {
     list_python_package_versions: {
         parameters: {
             query: {
-                /** Page offset in pagination */
-                page?: components["parameters"]["page"];
-                /** Number of items returned per page */
-                per_page?: components["parameters"]["per_page"];
+                /** Sort the response list */
+                order_by?: components["parameters"]["order_by"];
                 /** Name of the Python Package */
                 name: components["parameters"]["name"];
                 /** Name of the operating system to consider */

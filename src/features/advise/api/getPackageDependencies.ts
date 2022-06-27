@@ -10,23 +10,31 @@ type requestResponseSuccess =
 type requestResponseFailure =
     path["responses"]["404"]["content"]["application/json"];
 
+interface IConfig {
+    params: path["parameters"]["query"];
+    headers: {
+        accept: "application/json";
+    };
+}
+
 export const getPackageDependencies = (
     name: requestParams["name"],
     version: requestParams["version"],
     index: requestParams["index"] = "https://pypi.org/simple",
 ) => {
+    const config: IConfig = {
+        params: {
+            name: name,
+            version: version,
+            index: index,
+        },
+        headers: {
+            accept: "application/json",
+        },
+    };
     return axios.get<requestResponseSuccess>(
         THOTH_URL + "/python/package/dependencies",
-        {
-            params: {
-                name: name,
-                version: version,
-                index: index,
-            },
-            headers: {
-                accept: "application/json",
-            },
-        },
+        config,
     );
 };
 

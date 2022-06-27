@@ -11,11 +11,18 @@ type requestResponseSuccess =
 type requestResponseFailure =
     path["responses"]["400"]["content"]["application/json"];
 
+interface IConfig {
+    params: path["parameters"]["query"];
+    headers: {
+        accept: "application/json";
+    };
+}
+
 export const getContainerImages = async (
     page: requestParams["page"] = 0,
     per_page: requestParams["per_page"] = 100,
 ) => {
-    return axios.get<requestResponseSuccess>(THOTH_URL + "/container-images", {
+    const config: IConfig = {
         params: {
             page: page,
             per_page: per_page,
@@ -23,7 +30,11 @@ export const getContainerImages = async (
         headers: {
             accept: "application/json",
         },
-    });
+    };
+    return axios.get<requestResponseSuccess>(
+        THOTH_URL + "/container-images",
+        config,
+    );
 };
 
 export const useContainerImages = (config: { [key: string]: unknown }) => {

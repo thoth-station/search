@@ -11,29 +11,37 @@ export type PackageMetadataRequestResponseSuccess =
 type requestResponseFailure =
     path["responses"]["404"]["content"]["application/json"];
 
+interface IConfig {
+    params: path["parameters"]["query"];
+    headers: {
+        accept: "application/json";
+    };
+}
+
 export const getPackageMetadata = (
-    name?: requestParams["name"],
-    version?: requestParams["version"],
-    index?: requestParams["index"],
-    os_name?: requestParams["os_name"],
-    os_version?: requestParams["os_version"],
-    python_version?: requestParams["python_version"],
+    name: requestParams["name"],
+    version: requestParams["version"],
+    index: requestParams["index"],
+    os_name: requestParams["os_name"],
+    os_version: requestParams["os_version"],
+    python_version: requestParams["python_version"],
 ) => {
+    const config: IConfig = {
+        params: {
+            name: name,
+            version: version,
+            index: index,
+            os_name: os_name,
+            os_version: os_version,
+            python_version: python_version,
+        },
+        headers: {
+            accept: "application/json",
+        },
+    };
     return axios.get<PackageMetadataRequestResponseSuccess>(
         THOTH_URL + "/python/package/version/metadata",
-        {
-            params: {
-                name: name,
-                version: version,
-                index: index,
-                os_name: os_name,
-                os_version: os_version,
-                python_version: python_version,
-            },
-            headers: {
-                accept: "application/json",
-            },
-        },
+        config,
     );
 };
 
@@ -72,12 +80,12 @@ export const usePackageMetadata = (
         ],
         queryFn: () =>
             getPackageMetadata(
-                name,
-                version,
-                index,
-                os_name,
-                os_version,
-                python_version,
+                name ?? "",
+                version ?? "",
+                index ?? "",
+                os_name ?? "",
+                os_version ?? "",
+                python_version ?? "",
             ),
     });
 };

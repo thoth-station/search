@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ImageSummary } from "./ImageSummary";
 
 // feature specific imports
-import { useImageDocument, useImageLogs, useImageMetadata } from "../api";
+import { useImageDocument, useImageLogs } from "../api";
 
 // misc
 import { CircularProgress } from "@mui/material";
@@ -39,15 +39,6 @@ export const ImageRoutes = () => {
             return false;
         },
     });
-
-    const imageMetadata = useImageMetadata(
-        (state as { image_name?: string })?.image_name ??
-            (
-                imageDocument.data?.data?.metadata?.arguments as {
-                    "extract-image": { image: string };
-                }
-            )?.["extract-image"]?.image,
-    );
 
     const logs = useImageLogs(analysis_id, {
         useErrorBoundary: false,
@@ -128,7 +119,6 @@ export const ImageRoutes = () => {
                     logs={logs.data?.data?.log}
                 />
                 <ImageSummary
-                    imageMetadata={imageMetadata.data?.data}
                     metrics={metrics}
                     imageDocument={imageDocument.data?.data}
                 />
