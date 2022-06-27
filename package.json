@@ -53,7 +53,7 @@
         "lint-staged": "lint-staged --config lint-staged.js",
         "husky-install": "husky install",
         "dev": "tsc --watch",
-        "pull-schema": "openapi-typescript https://raw.githubusercontent.com/thoth-station/user-api/master/openapi/openapi.yaml --output src/lib/schema.ts"
+        "pull-schema": "openapi-typescript https://raw.githubusercontent.com/thoth-station/user-api/master/openapi/openapi.yaml --output src/lib/schema.ts && prettier src/lib/schema.ts -w"
     },
     "eslintConfig": {
         "extends": [
