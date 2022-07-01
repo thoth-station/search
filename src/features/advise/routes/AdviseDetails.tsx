@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { SelectedPackage } from "../components";
 import { Graph } from "lib/interfaces/Graph";
@@ -7,6 +7,7 @@ import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 import { PackageList } from "../components/PackageList";
 import Loading from "components/Elements/Loading/Loading";
 import { StateContext } from "stores/Global";
+import { useParams } from "react-router-dom";
 
 type SelectedPackageType = {
     selected: string;
@@ -22,8 +23,15 @@ interface IAdviseDetails {
 }
 
 export const AdviseDetails = ({ graph }: IAdviseDetails) => {
+    const params = useParams();
     const [selected, setSelected] = useState<string>("");
     const state = useContext(StateContext);
+
+    useEffect(() => {
+        if (params.pkg) {
+            setSelected(params.pkg);
+        }
+    }, [params.pkg]);
 
     if (!graph) {
         return (

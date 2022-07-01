@@ -198,7 +198,7 @@ export const AdviserLayout = ({ children, chipData }: IProps) => {
     const [open, setOpen] = React.useState(false);
 
     const currentTab = useMemo(() => {
-        return location.pathname.split("/").at(-1);
+        return location.pathname.split("/").at(3);
     }, [location.pathname]);
 
     return (

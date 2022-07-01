@@ -19,6 +19,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import SearchBar from "components/Elements/SearchBar";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
+import { useNavigate } from "react-router-dom";
 
 interface IPackageList {
     graph?: Graph<Node<PackageNodeValue>>;
@@ -38,6 +39,8 @@ type PackageList = {
  * python packages.
  */
 export function PackageList({ graph }: IPackageList) {
+    const navigate = useNavigate();
+
     const { selected, setSelected } = useContext(SelectedPackageContext) ?? {
         setSelected: () => console.log("missing callback"),
     };
@@ -96,7 +99,10 @@ export function PackageList({ graph }: IPackageList) {
                             <ListItem
                                 key={p.key}
                                 button
-                                onClick={() => setSelected(p.key)}
+                                onClick={() => {
+                                    setSelected(p.key);
+                                    navigate("../packages/" + p.key);
+                                }}
                                 selected={selected === p.key}
                                 // divider
                                 sx={{

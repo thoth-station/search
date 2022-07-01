@@ -178,13 +178,16 @@ export const AdviseRoutes = () => {
                             element={
                                 <AdviseSummary
                                     adviseDocument={adviseDocument?.data?.data}
-                                    metrics={metrics}
                                     lastLog={lastLog}
                                 />
                             }
                         />
                         <Route
                             path="packages"
+                            element={<AdviseDetails graph={graph} />}
+                        />
+                        <Route
+                            path="packages/:pkg"
                             element={<AdviseDetails graph={graph} />}
                         />
                         <Route

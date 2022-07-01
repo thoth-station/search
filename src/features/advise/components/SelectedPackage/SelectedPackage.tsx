@@ -33,6 +33,7 @@ import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberOutlined";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import { useNavigate } from "react-router-dom";
 
 interface ISelectedPackage {
     graph: Graph<Node<PackageNodeValue>>;
@@ -44,6 +45,7 @@ interface ISelectedPackage {
  */
 export const SelectedPackage = ({ graph }: ISelectedPackage) => {
     const { selected, setSelected } = useContext(SelectedPackageContext);
+    const navigate = useNavigate();
 
     const selectedPackage = useMemo<Node<PackageNodeValue> | undefined>(() => {
         return graph.nodes.get(selected);
@@ -253,7 +255,10 @@ export const SelectedPackage = ({ graph }: ISelectedPackage) => {
                                     <React.Fragment key={dep + i}>
                                         <Link
                                             underline="hover"
-                                            onClick={() => setSelected(dep)}
+                                            onClick={() => {
+                                                setSelected(dep);
+                                                navigate("../packages/" + dep);
+                                            }}
                                         >
                                             {dep}
                                         </Link>{" "}
