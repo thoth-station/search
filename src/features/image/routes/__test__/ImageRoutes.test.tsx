@@ -14,38 +14,38 @@ jest.mock("react-router-dom");
 jest.mock("axios");
 
 beforeEach(() => {
-    // setup a DOM element as a render target
-    container = document.createElement("div");
-    document.body.appendChild(container);
+  // setup a DOM element as a render target
+  container = document.createElement("div");
+  document.body.appendChild(container);
 
-    (useLocation as jest.Mock).mockClear();
-    (useParams as jest.Mock).mockClear();
-    (useNavigate as jest.Mock).mockClear();
+  (useLocation as jest.Mock).mockClear();
+  (useParams as jest.Mock).mockClear();
+  (useNavigate as jest.Mock).mockClear();
 });
 
 afterEach(() => {
-    // cleanup on exiting
-    unmountComponentAtNode(container);
-    container.remove();
+  // cleanup on exiting
+  unmountComponentAtNode(container);
+  container.remove();
 
-    jest.restoreAllMocks();
+  jest.restoreAllMocks();
 });
 
 it("renders not found page when all api calls reject", async () => {
-    (useParams as jest.Mock).mockReturnValue({
-        analysis_id: "package-extract-test",
-    });
+  (useParams as jest.Mock).mockReturnValue({
+    analysis_id: "package-extract-test",
+  });
 
-    (useLocation as jest.Mock).mockReturnValue({
-        state: {},
-    });
+  (useLocation as jest.Mock).mockReturnValue({
+    state: {},
+  });
 
-    // mock error for all calls
-    (axios.get as jest.Mock).mockRejectedValue({});
-    (axios.post as jest.Mock).mockRejectedValue({});
+  // mock error for all calls
+  (axios.get as jest.Mock).mockRejectedValue({});
+  (axios.post as jest.Mock).mockRejectedValue({});
 
-    render_with_overlay(<ImageRoutes />, container);
+  render_with_overlay(<ImageRoutes />, container);
 
-    const exists = await findByTestId(container, "image-not-loaded");
-    expect(exists).toBeTruthy();
+  const exists = await findByTestId(container, "image-not-loaded");
+  expect(exists).toBeTruthy();
 });

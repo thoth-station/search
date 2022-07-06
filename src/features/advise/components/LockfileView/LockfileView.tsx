@@ -5,8 +5,8 @@ import React from "react";
 import { Typography } from "@mui/material";
 
 interface ILockfileView {
-    /** The Pipfile.lock json object */
-    file: { default: { [key: string]: unknown } };
+  /** The Pipfile.lock json object */
+  file: { default: { [key: string]: unknown } };
 }
 
 /**
@@ -15,28 +15,20 @@ interface ILockfileView {
  *  scroll to certain spot in the lock file
  */
 export const LockfileView = ({ file }: ILockfileView) => {
-    return (
-        <Typography variant="caption">
-            <pre>
-                <div
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(file, undefined, 4)?.replaceAll(
-                            new RegExp(
-                                '("' +
-                                    Object.keys(file?.default)?.join('"|"') +
-                                    '")',
-                                "g",
-                            ),
-                            (match: string) => {
-                                return `<a id="${match.slice(
-                                    1,
-                                    -1,
-                                )}">${match}</a>`;
-                            },
-                        ),
-                    }}
-                />
-            </pre>
-        </Typography>
-    );
+  return (
+    <Typography variant="caption">
+      <pre>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(file, undefined, 4)?.replaceAll(
+              new RegExp('("' + Object.keys(file?.default)?.join('"|"') + '")', "g"),
+              (match: string) => {
+                return `<a id="${match.slice(1, -1)}">${match}</a>`;
+              },
+            ),
+          }}
+        />
+      </pre>
+    </Typography>
+  );
 };

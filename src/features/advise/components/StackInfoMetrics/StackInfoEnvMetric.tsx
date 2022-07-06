@@ -1,13 +1,5 @@
 import React from "react";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    Chip,
-    Grid,
-    IconButton,
-    Typography,
-} from "@mui/material";
+import { Card, CardContent, CardHeader, Chip, Grid, IconButton, Typography } from "@mui/material";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
@@ -16,83 +8,61 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 export const StackInfoEnvMetric = ({
-    url,
-    metric,
+  url,
+  metric,
 }: {
-    url: string;
-    metric: { provided: boolean; message: string }[];
+  url: string;
+  metric: { provided: boolean; message: string }[];
 }) => {
-    const theme = useTheme();
-    const compact = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme();
+  const compact = useMediaQuery(theme.breakpoints.down("md"));
 
-    return (
-        <React.Fragment key={url}>
-            {compact ? (
-                <Card variant="outlined">
-                    <CardHeader
-                        title="Environment Parameters"
-                        titleTypographyProps={{
-                            variant: "h6",
-                        }}
-                        action={
-                            <IconButton
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <OpenInNewRoundedIcon />
-                            </IconButton>
-                        }
-                        avatar={
-                            <Chip
-                                icon={<InfoOutlinedIcon />}
-                                label={
-                                    metric.filter(env => env.provided).length
-                                }
-                                color="info"
-                            />
-                        }
-                    />
-                </Card>
-            ) : (
-                <Card variant="outlined">
-                    <CardHeader
-                        title="Environment Parameters"
-                        subheader={`The advisor input was provided with ${
-                            metric.filter(env => env.provided).length
-                        } environment parameters`}
-                        action={
-                            <IconButton
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <OpenInNewRoundedIcon />
-                            </IconButton>
-                        }
-                    />
-                    <CardContent>
-                        <Grid container>
-                            {metric.map((env, i) => (
-                                <React.Fragment key={env.message + i}>
-                                    <Grid item xs={1}>
-                                        {env.provided ? (
-                                            <CloseRoundedIcon color="error" />
-                                        ) : (
-                                            <DoneRoundedIcon color="success" />
-                                        )}
-                                    </Grid>
-                                    <Grid item xs={11}>
-                                        <Typography variant="body2">
-                                            {env.message}
-                                        </Typography>
-                                    </Grid>
-                                </React.Fragment>
-                            ))}
-                        </Grid>
-                    </CardContent>
-                </Card>
-            )}
-        </React.Fragment>
-    );
+  return (
+    <React.Fragment key={url}>
+      {compact ? (
+        <Card variant="outlined">
+          <CardHeader
+            title="Environment Parameters"
+            titleTypographyProps={{
+              variant: "h6",
+            }}
+            action={
+              <IconButton href={url} target="_blank" rel="noopener noreferrer">
+                <OpenInNewRoundedIcon />
+              </IconButton>
+            }
+            avatar={<Chip icon={<InfoOutlinedIcon />} label={metric.filter(env => env.provided).length} color="info" />}
+          />
+        </Card>
+      ) : (
+        <Card variant="outlined">
+          <CardHeader
+            title="Environment Parameters"
+            subheader={`The advisor input was provided with ${
+              metric.filter(env => env.provided).length
+            } environment parameters`}
+            action={
+              <IconButton href={url} target="_blank" rel="noopener noreferrer">
+                <OpenInNewRoundedIcon />
+              </IconButton>
+            }
+          />
+          <CardContent>
+            <Grid container>
+              {metric.map((env, i) => (
+                <React.Fragment key={env.message + i}>
+                  <Grid item xs={1}>
+                    {env.provided ? <CloseRoundedIcon color="error" /> : <DoneRoundedIcon color="success" />}
+                  </Grid>
+                  <Grid item xs={11}>
+                    <Typography variant="body2">{env.message}</Typography>
+                  </Grid>
+                </React.Fragment>
+              ))}
+            </Grid>
+          </CardContent>
+        </Card>
+      )}
+    </React.Fragment>
+  );
 };

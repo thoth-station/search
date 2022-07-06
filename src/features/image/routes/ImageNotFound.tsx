@@ -1,9 +1,9 @@
 import React from "react";
 
 interface IImageNotFound {
-    analysis_id?: string;
+  analysis_id?: string;
 }
 
 export const ImageNotFound = ({ analysis_id }: IImageNotFound) => {
-    return <div> &quot;{analysis_id}&quot; not found</div>;
+  return <div> &quot;{analysis_id}&quot; not found</div>;
 };

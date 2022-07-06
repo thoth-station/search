@@ -59,21 +59,18 @@ _version_ - the version of the package
 Examples
 
 ```jsx static
-import {
-    usePackageDependencies,
-    usePackagesDependencies,
-} from "./getPackageDependencies";
+import { usePackageDependencies, usePackagesDependencies } from "./getPackageDependencies";
 
 const package_deps = usePackageDependencies("kafka", "2.0");
 const packages_deps = usePackagesDependencies([
-    {
-        name: "kafka",
-        version: "2.0",
-    },
-    {
-        name: "tensorflow",
-        version: "1.0",
-    },
+  {
+    name: "kafka",
+    version: "2.0",
+  },
+  {
+    name: "tensorflow",
+    version: "1.0",
+  },
 ]);
 ```
 
@@ -91,14 +88,14 @@ Example
 import { useGraph } from "./useGraph";
 
 const data = [
-    {
-        name: "kafka",
-        version: "2.0",
-    },
-    {
-        name: "tensorflow",
-        version: "1.0",
-    },
+  {
+    name: "kafka",
+    version: "2.0",
+  },
+  {
+    name: "tensorflow",
+    version: "1.0",
+  },
 ];
 
 const knownRoots = { kafka: null };

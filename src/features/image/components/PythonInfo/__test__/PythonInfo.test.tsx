@@ -13,47 +13,38 @@ let imageDocument: ImageDocumentRequestResponseSuccess;
 jest.mock("react-router-dom");
 
 beforeAll(() => {
-    imageDocument = generateImageDocument();
+  imageDocument = generateImageDocument();
 });
 
 beforeEach(() => {
-    // setup a DOM element as a render target
-    container = document.createElement("div");
-    document.body.appendChild(container);
+  // setup a DOM element as a render target
+  container = document.createElement("div");
+  document.body.appendChild(container);
 });
 
 afterEach(() => {
-    // cleanup on exiting
-    unmountComponentAtNode(container);
-    container.remove();
+  // cleanup on exiting
+  unmountComponentAtNode(container);
+  container.remove();
 });
 
 it("renders without any documents", async () => {
-    render_with_overlay(<PythonInfo />, container);
+  render_with_overlay(<PythonInfo />, container);
 
-    const exists = await findByTestId(container, "python-info-not-loaded");
-    expect(exists).toBeTruthy();
+  const exists = await findByTestId(container, "python-info-not-loaded");
+  expect(exists).toBeTruthy();
 });
 
 it("renders with the document", async () => {
-    render_with_overlay(
-        <PythonInfo imageDocument={imageDocument} />,
-        container,
-    );
+  render_with_overlay(<PythonInfo imageDocument={imageDocument} />, container);
 
-    const exists = await findByTestId(container, "python-info-loaded");
-    expect(exists).toBeTruthy();
+  const exists = await findByTestId(container, "python-info-loaded");
+  expect(exists).toBeTruthy();
 });
 
 it("renders correct number of Python files", async () => {
-    render_with_overlay(
-        <PythonInfo imageDocument={imageDocument} />,
-        container,
-    );
+  render_with_overlay(<PythonInfo imageDocument={imageDocument} />, container);
 
-    const exists = await findAllByText(
-        container,
-        imageDocument.result["python-files"].length,
-    );
-    expect(exists).toBeTruthy();
+  const exists = await findAllByText(container, imageDocument.result["python-files"].length);
+  expect(exists).toBeTruthy();
 });
