@@ -4,14 +4,21 @@ import { Box, Grid } from "@mui/material";
 import { AdviseDocumentRequestResponseSuccess } from "../api";
 import { useImportantJustifications } from "../hooks/useImportantJustifications";
 import { CVEPackages, WarningPackages } from "../components/SummaryCharts";
+import { useMetrics } from "../hooks";
+import { LicenseSummary } from "../components/SummaryCharts/LicenseSummary";
+import { Graph } from "lib/interfaces/Graph";
+import { Node } from "lib/interfaces/Node";
+import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 
 interface IAdviseSummary {
   adviseDocument?: AdviseDocumentRequestResponseSuccess;
+  graph?: Graph<Node<PackageNodeValue>>,
   lastLog?: { [key: string]: string };
 }
 
-export const AdviseSummary = ({ adviseDocument, lastLog }: IAdviseSummary) => {
+export const AdviseSummary = ({ adviseDocument, graph, lastLog }: IAdviseSummary) => {
   const summary = useImportantJustifications(adviseDocument);
+  const metrics = useMetrics(graph, adviseDocument);
 
   return (
     <Box>
@@ -25,6 +32,9 @@ export const AdviseSummary = ({ adviseDocument, lastLog }: IAdviseSummary) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <CVEPackages cvePackages={summary?.cvePackages} />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <LicenseSummary licenses={metrics?.licenses} />
         </Grid>
       </Grid>
     </Box>

@@ -158,7 +158,7 @@ export const AdviseRoutes = () => {
           <Routes>
             <Route
               path="summary"
-              element={<AdviseSummary adviseDocument={adviseDocument?.data?.data} lastLog={lastLog} />}
+              element={<AdviseSummary adviseDocument={adviseDocument?.data?.data} graph={graph} lastLog={lastLog} />}
             />
             <Route path="packages" element={<AdviseDetails graph={graph} />} />
             <Route path="packages/:pkg" element={<AdviseDetails graph={graph} />} />
