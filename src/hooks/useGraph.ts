@@ -91,6 +91,7 @@ export function useGraph(
           name: metadata.package_name,
           version: metadata.package_version,
           metadata: metadata.importlib_metadata.metadata as PackageMetadata,
+          size: metadata.importlib_metadata.files.reduce((prev, cur) => prev + (cur as {size: number})?.size, 0)
         };
 
         // add package to graph

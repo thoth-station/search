@@ -95,7 +95,7 @@ export const BubbleHistogram = ({ source, handleClick }: IBubbleHistogram) => {
 
   return (
     <div>
-      <FlexibleWidthXYPlot margin={{ left: 8, right: 8 }} height={150} u>
+      <FlexibleWidthXYPlot margin={{ left: 8, right: 8 }} height={150}>
         <XAxis
           tickFormat={value => value.toString()}
           tickTotal={(data?.length ?? 0) / 2}

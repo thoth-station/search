@@ -1,14 +1,15 @@
 import React  from "react";
 import { AdviseHeader } from "../components";
-import { Box, Grid } from "@mui/material";
 import { AdviseDocumentRequestResponseSuccess } from "../api";
 import { useImportantJustifications } from "../hooks/useImportantJustifications";
-import { CVEPackages, WarningPackages } from "../components/SummaryCharts";
+import { CVEPackages, UnmaintainedPackages, WarningPackages } from "../components/SummaryCharts";
 import { useMetrics } from "../hooks";
 import { LicenseSummary } from "../components/SummaryCharts/LicenseSummary";
 import { Graph } from "lib/interfaces/Graph";
 import { Node } from "lib/interfaces/Node";
 import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
+import { DependencySummary } from "../components/SummaryCharts/DependencySummary";
+import { Masonry } from "@mui/lab";
 
 interface IAdviseSummary {
   adviseDocument?: AdviseDocumentRequestResponseSuccess;
@@ -21,22 +22,13 @@ export const AdviseSummary = ({ adviseDocument, graph, lastLog }: IAdviseSummary
   const metrics = useMetrics(graph, adviseDocument);
 
   return (
-    <Box>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <AdviseHeader adviseDocument={adviseDocument} lastLog={lastLog} />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <WarningPackages warningPackages={summary?.warningPackages} />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <CVEPackages cvePackages={summary?.cvePackages} />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <LicenseSummary licenses={metrics?.licenses} />
-        </Grid>
-      </Grid>
-    </Box>
+    <Masonry columns={{ xs: 1, md: 2 }} spacing={3} sx={{ mb: 3, mt: 1 }}>
+      <AdviseHeader adviseDocument={adviseDocument} lastLog={lastLog} />
+      <WarningPackages warningPackages={summary?.warningPackages} />
+      <CVEPackages cvePackages={summary?.cvePackages} />
+      <LicenseSummary licenses={metrics?.licenses} />
+      <DependencySummary dependencies={metrics?.dependencies} />
+      <UnmaintainedPackages unmaintainedPackages={summary?.unmaintainedPackages} />
+    </Masonry>
   );
 };

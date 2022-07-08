@@ -74,7 +74,7 @@ export const LicenseSummary = ({ licenses }: ILicenseSummary) => {
               <Grid item>
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <WarningAmberOutlinedIcon color="warning"/>
-                  <Typography variant="h4">Unknown</Typography>
+                  <Typography variant="h4">Unknown Approval</Typography>
                 </Stack>
               </Grid>
               <Grid item>
