@@ -9,224 +9,208 @@ import { PackageMetadata } from "../lib/types/PackageMetadata";
 import { DispatchContext } from "../stores/Global";
 
 export type Requirements = {
-    "dev-packages": { [key: string]: string };
-    packages: { [key: string]: string };
-    requires: {
-        python_version: string;
-    };
-    source: {
-        name: string;
-        url: string;
-        verify_ssl: boolean;
-    }[];
+  "dev-packages": { [key: string]: string };
+  packages: { [key: string]: string };
+  requires: {
+    python_version: string;
+  };
+  source: {
+    name: string;
+    url: string;
+    verify_ssl: boolean;
+  }[];
 };
 
 /**
  * Given a list of packages, create a graph using metadata information.
  */
 export function useGraph(
-    data: operations["get_python_package_version_metadata"]["parameters"]["query"][] = [],
-    knownRoots?: Requirements["packages"],
-    justifications?: components["schemas"]["Justification"],
+  data: operations["get_python_package_version_metadata"]["parameters"]["query"][] = [],
+  knownRoots?: Requirements["packages"],
+  justifications?: components["schemas"]["Justification"],
 ) {
-    const { updateLoading } = useContext(DispatchContext);
-    const allMetadata = usePackagesMetadata(data);
+  const { updateLoading } = useContext(DispatchContext);
+  const allMetadata = usePackagesMetadata(data);
 
-    const [loading, setLoading] = useState(true);
-    const [graph, setGraph] = useState<Graph<Node<PackageNodeValue>>>();
+  const [loading, setLoading] = useState(true);
+  const [graph, setGraph] = useState<Graph<Node<PackageNodeValue>>>();
 
-    useEffect(() => {
-        if (!allMetadata || allMetadata.length === 0) {
-            return;
-        }
+  useEffect(() => {
+    if (!allMetadata || allMetadata.length === 0) {
+      return;
+    }
 
-        updateLoading(
-            "graph",
-            "Loading package metadata",
-            allMetadata.filter(query => !query.isLoading).length,
-            allMetadata.length,
-        );
+    updateLoading(
+      "graph",
+      "Loading package metadata",
+      allMetadata.filter(query => !query.isLoading).length,
+      allMetadata.length,
+    );
 
-        if (allMetadata.every(query => !query.isLoading)) {
-            setLoading(false);
-        }
-    }, [allMetadata]);
+    if (allMetadata.every(query => !query.isLoading)) {
+      setLoading(false);
+    }
+  }, [allMetadata]);
 
-    useEffect(() => {
-        if (loading) {
-            return;
-        } else {
-            updateLoading("graph");
-        }
+  useEffect(() => {
+    if (loading) {
+      return;
+    } else {
+      updateLoading("graph");
+    }
 
-        // create graph
-        const tempGraph = new Graph<Node<PackageNodeValue>>();
-        const notRoot: unknown[] = [];
+    // create graph
+    const tempGraph = new Graph<Node<PackageNodeValue>>();
+    const notRoot: unknown[] = [];
 
-        // add data to graph
-        allMetadata.forEach(query => {
-            // if could not find metadata
-            if (query.error) {
-                const error = query.error;
-                const params =
-                    error.response?.data?.parameters ??
-                    error.response?.config?.params;
+    // add data to graph
+    allMetadata.forEach(query => {
+      // if could not find metadata
+      if (query.error) {
+        const error = query.error;
+        const params = error.response?.data?.parameters ?? error.response?.config?.params;
 
-                const value: PackageNodeValue = {
-                    id: params.name.toLowerCase(),
-                    label: params.name + " " + params.version,
-                    name: params.name,
-                    version: params.version,
-                    metadata: null,
-                    depth: 0,
-                };
+        const value: PackageNodeValue = {
+          id: params.name.toLowerCase(),
+          label: params.name + " " + params.version,
+          name: params.name,
+          version: params.version,
+          metadata: null,
+          depth: 0,
+        };
 
-                // add package to graph
-                tempGraph.addVertex(value.id, value, Node);
-            }
-            // metadata was found
-            else if (query.isSuccess) {
-                const metadata = query.data.data.metadata;
-                const value = {
-                    id: metadata.package_name.toLowerCase(),
-                    label:
-                        metadata.package_name + " " + metadata.package_version,
-                    name: metadata.package_name,
-                    version: metadata.package_version,
-                    metadata: metadata.importlib_metadata
-                        .metadata as PackageMetadata,
-                };
+        // add package to graph
+        tempGraph.addVertex(value.id, value, Node);
+      }
+      // metadata was found
+      else if (query.isSuccess) {
+        const metadata = query.data.data.metadata;
+        const value = {
+          id: metadata.package_name.toLowerCase(),
+          label: metadata.package_name + " " + metadata.package_version,
+          name: metadata.package_name,
+          version: metadata.package_version,
+          metadata: metadata.importlib_metadata.metadata as PackageMetadata,
+          size: metadata.importlib_metadata.files.reduce((prev, cur) => prev + (cur as { size: number })?.size, 0),
+        };
 
-                // add package to graph
-                tempGraph.addVertex(value.id, value, Node);
-            }
+        // add package to graph
+        tempGraph.addVertex(value.id, value, Node);
+      }
+    });
+
+    // set edges
+    allMetadata.forEach(query => {
+      if (query.status === "error" || !query.data?.data) {
+        return;
+      }
+
+      const currentNode = tempGraph.nodes.get(query.data.data.metadata.package_name.toLowerCase());
+
+      if (currentNode) {
+        Object.keys(query.data.data.metadata.dependencies).forEach(dep => {
+          const adjacentNode = tempGraph.nodes.get(dep);
+
+          // if package exists in lockfile
+          if (adjacentNode) {
+            // add edge connecting parent and dependency
+            tempGraph.addEdge(currentNode.value.id, adjacentNode.value.id);
+            // set parent
+            adjacentNode.parents.add(currentNode.value.id);
+            notRoot.push(adjacentNode.value.id);
+          }
         });
+      }
+    });
 
-        // set edges
-        allMetadata.forEach(query => {
-            if (query.status === "error" || !query.data?.data) {
-                return;
-            }
+    // add app node to graph
+    const app = tempGraph.addVertex(
+      "*App",
+      {
+        id: "*App",
+        label: "App",
+        depth: -1,
+      },
+      Node,
+    );
 
-            const currentNode = tempGraph.nodes.get(
-                query.data.data.metadata.package_name.toLowerCase(),
-            );
+    notRoot.push("*App");
 
-            if (currentNode) {
-                Object.keys(query.data.data.metadata.dependencies).forEach(
-                    dep => {
-                        const adjacentNode = tempGraph.nodes.get(dep);
+    const visited = new Set();
+    const visitList: Node<PackageNodeValue>[] = [];
 
-                        // if package exists in lockfile
-                        if (adjacentNode) {
-                            // add edge connecting parent and dependency
-                            tempGraph.addEdge(
-                                currentNode.value.id,
-                                adjacentNode.value.id,
-                            );
-                            // set parent
-                            adjacentNode.parents.add(currentNode.value.id);
-                            notRoot.push(adjacentNode.value.id);
-                        }
-                    },
-                );
-            }
-        });
+    // get roots and connect to app
+    tempGraph.nodes.forEach((value, key) => {
+      if (!notRoot.includes(key) || Object.keys(knownRoots ?? {}).includes(key)) {
+        value.value.depth = 0;
+        value.parents.add("*App");
+        visitList.push(value);
+        tempGraph.addEdge(app.key, value.key);
+      }
+    });
 
-        // add app node to graph
-        const app = tempGraph.addVertex(
-            "*App",
-            {
-                id: "*App",
-                label: "App",
-                depth: -1,
-            },
-            Node,
-        );
+    const justifiedPackages = new Map();
 
-        notRoot.push("*App");
+    if (justifications) {
+      justifications.forEach(
+        (
+          justification: components["schemas"]["Justification"][number] & {
+            package_name?: string;
+          },
+        ) => {
+          const key = justification.package_name ?? "*App";
+          if (justifiedPackages.has(key)) {
+            justifiedPackages.set(key, [...justifiedPackages.get(key), justification]);
+          } else {
+            justifiedPackages.set(key, [justification]);
+          }
+        },
+      );
+    }
 
-        const visited = new Set();
-        const visitList: Node<PackageNodeValue>[] = [];
+    // set depth and parent packages using dfs
+    while (visitList.length !== 0) {
+      const node = visitList.pop();
+      if (node && !visited.has(node)) {
+        visited.add(node);
 
-        // get roots and connect to app
-        tempGraph.nodes.forEach((value, key) => {
-            if (
-                !notRoot.includes(key) ||
-                Object.keys(knownRoots ?? {}).includes(key)
-            ) {
-                value.value.depth = 0;
-                value.parents.add("*App");
-                visitList.push(value);
-                tempGraph.addEdge(app.key, value.key);
-            }
-        });
-
-        const justifiedPackages = new Map();
-
-        if (justifications) {
-            justifications.forEach(
-                (
-                    justification: components["schemas"]["Justification"][number] & {
-                        package_name?: string;
-                    },
-                ) => {
-                    const key = justification.package_name ?? "*App";
-                    if (justifiedPackages.has(key)) {
-                        justifiedPackages.set(key, [
-                            ...justifiedPackages.get(key),
-                            justification,
-                        ]);
-                    } else {
-                        justifiedPackages.set(key, [justification]);
-                    }
-                },
-            );
+        // check if there is a justification for change
+        if (justifiedPackages.has(node.key)) {
+          node.value.justifications = justifiedPackages.get(node.key);
         }
 
-        // set depth and parent packages using dfs
-        while (visitList.length !== 0) {
-            const node = visitList.pop();
-            if (node && !visited.has(node)) {
-                visited.add(node);
+        const adjs = node.getAdjacents();
 
-                // check if there is a justification for change
-                if (justifiedPackages.has(node.key)) {
-                    node.value.justifications = justifiedPackages.get(node.key);
-                }
-
-                const adjs = node.getAdjacents();
-
-                for (let i = 0; i < adjs.length; i++) {
-                    // update depth
-                    adjs[i].value.depth = Math.min(
-                        (node.value?.depth ?? 0) + 1,
-                        adjs[i].value.depth ?? (node.value?.depth ?? 0) + 2,
-                    );
-                    visitList.push(adjs[i]);
-                }
-            }
+        for (let i = 0; i < adjs.length; i++) {
+          // update depth
+          adjs[i].value.depth = Math.min(
+            (node.value?.depth ?? 0) + 1,
+            adjs[i].value.depth ?? (node.value?.depth ?? 0) + 2,
+          );
+          visitList.push(adjs[i]);
         }
+      }
+    }
 
-        const visGraphEdges = new Map();
+    const visGraphEdges = new Map();
 
-        // add edges from old graph
-        tempGraph.nodes.forEach(value => {
-            // set package edges
-            value.adjacents.forEach(adj => {
-                visGraphEdges.set(value.value.id + adj.value.id, {
-                    id: value.value.id + adj.value.id,
-                    to: value.value.id,
-                    from: adj.value.id,
-                });
-            });
+    // add edges from old graph
+    tempGraph.nodes.forEach(value => {
+      // set package edges
+      value.adjacents.forEach(adj => {
+        visGraphEdges.set(value.value.id + adj.value.id, {
+          id: value.value.id + adj.value.id,
+          to: value.value.id,
+          from: adj.value.id,
         });
+      });
+    });
 
-        // add edges to merged graph Object
-        tempGraph["visEdges"] = Array.from(visGraphEdges.values());
+    // add edges to merged graph Object
+    tempGraph["visEdges"] = Array.from(visGraphEdges.values());
 
-        setGraph(tempGraph);
-    }, [loading, knownRoots]);
+    setGraph(tempGraph);
+  }, [loading, knownRoots]);
 
-    return graph;
+  return graph;
 }

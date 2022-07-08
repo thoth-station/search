@@ -16,115 +16,104 @@ import { Node } from "lib/interfaces/Node";
 import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 
 interface INetworkGraph {
-    graph: Graph<Node<PackageNodeValue>>;
+  graph: Graph<Node<PackageNodeValue>>;
 }
 
 /**
  * Renders a network graph visualization using `vis-network`.
  */
 const NetworkGraph = ({ graph, ...props }: INetworkGraph) => {
-    const visJsRef = useRef<HTMLDivElement>(null);
-    const { selected } = useContext(SelectedPackageContext);
+  const visJsRef = useRef<HTMLDivElement>(null);
+  const { selected } = useContext(SelectedPackageContext);
 
-    // create the graph
-    useEffect(() => {
-        if (!selected || !graph) {
-            return;
+  // create the graph
+  useEffect(() => {
+    if (!selected || !graph) {
+      return;
+    }
+
+    const selectedNode = graph.nodes.get(selected);
+
+    if (selectedNode) {
+      const nodes = graph.findAllNodesOnAllPaths(selectedNode, "*App");
+
+      const app_node = graph.nodes.get("*App");
+      if (app_node) {
+        nodes.set("*App", app_node);
+      }
+
+      // convert to vis graph format
+      const convertedNodes = new DataSet<PackageNodeValue>();
+      nodes.forEach(value => {
+        // popup element
+        const popup = document.createElement("div");
+        ReactDOM.render(<Popup node={value} />, popup);
+
+        // default colors
+        let color = value.value.color ?? options.nodes.color.background;
+        let font = undefined;
+
+        // if node is root
+        if (value.key === "*App") {
+          color = "#4fc1ea";
+          font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
+        }
+        // if selected node
+        else if (value.key === selectedNode.key) {
+          color = "#f39200";
         }
 
-        const selectedNode = graph.nodes.get(selected);
+        convertedNodes.add({
+          ...value.value,
+          color: color,
+          title: value.key === selectedNode.key || value.key === "*App" ? undefined : popup,
+          font: font,
+        });
+      });
 
-        if (selectedNode) {
-            const nodes = graph.findAllNodesOnAllPaths(selectedNode, "*App");
+      const visData: Data = {
+        nodes: convertedNodes,
+        edges: new DataSet(graph.visEdges),
+      };
 
-            const app_node = graph.nodes.get("*App");
-            if (app_node) {
-                nodes.set("*App", app_node);
-            }
+      const network = visJsRef.current && new Network(visJsRef.current, visData, options);
 
-            // convert to vis graph format
-            const convertedNodes = new DataSet<PackageNodeValue>();
-            nodes.forEach(value => {
-                // popup element
-                const popup = document.createElement("div");
-                ReactDOM.render(<Popup node={value} />, popup);
+      // change cursor when hovering and grabbing
+      // Get the canvas HTML element
+      const networkCanvas = document?.getElementById("mynetwork")?.getElementsByTagName("canvas")[0];
 
-                // default colors
-                let color = value.value.color ?? options.nodes.color.background;
-                let font = undefined;
-
-                // if node is root
-                if (value.key === "*App") {
-                    color = "#4fc1ea";
-                    font = { color: "#4fc1ea", strokeWidth: 3, size: 20 };
-                }
-                // if selected node
-                else if (value.key === selectedNode.key) {
-                    color = "#f39200";
-                }
-
-                convertedNodes.add({
-                    ...value.value,
-                    color: color,
-                    title:
-                        value.key === selectedNode.key || value.key === "*App"
-                            ? undefined
-                            : popup,
-                    font: font,
-                });
-            });
-
-            const visData: Data = {
-                nodes: convertedNodes,
-                edges: new DataSet(graph.visEdges),
-            };
-
-            const network =
-                visJsRef.current &&
-                new Network(visJsRef.current, visData, options);
-
-            // change cursor when hovering and grabbing
-            // Get the canvas HTML element
-            const networkCanvas = document
-                ?.getElementById("mynetwork")
-                ?.getElementsByTagName("canvas")[0];
-
-            // changes the cursor graphic depending on where and what the mouse is doing
-            const changeCursor = (newCursorStyle: string) => {
-                if (networkCanvas) {
-                    networkCanvas.style.cursor = newCursorStyle;
-                }
-            };
-
-            if (network) {
-                network.on("hoverNode", function () {
-                    changeCursor("grab");
-                });
-                network.on("blurNode", function () {
-                    changeCursor("default");
-                });
-                network.on("dragStart", function () {
-                    changeCursor("grabbing");
-                });
-                network.on("dragging", function () {
-                    changeCursor("grabbing");
-                });
-                network.on("dragEnd", function () {
-                    changeCursor("grab");
-                });
-            }
+      // changes the cursor graphic depending on where and what the mouse is doing
+      const changeCursor = (newCursorStyle: string) => {
+        if (networkCanvas) {
+          networkCanvas.style.cursor = newCursorStyle;
         }
-    }, [selected, graph, visJsRef]);
+      };
 
-    return (
-        <div {...props} style={{ display: "flex", flexFlow: "column nowrap" }}>
-            <div
-                ref={visJsRef}
-                id="mynetwork"
-                style={{ flex: "1 1 auto", height: "50vh" }}
-            />
-        </div>
-    );
+      if (network) {
+        network.on("hoverNode", function () {
+          changeCursor("grab");
+        });
+        network.on("blurNode", function () {
+          changeCursor("default");
+        });
+        network.on("dragStart", function () {
+          changeCursor("grabbing");
+        });
+        network.on("dragging", function () {
+          changeCursor("grabbing");
+        });
+        network.on("dragEnd", function () {
+          changeCursor("grab");
+        });
+      }
+    }
+  }, [selected, graph, visJsRef]);
+
+  return (
+    <div {...props} style={{ display: "flex", flexFlow: "column nowrap" }}>
+      <div ref={visJsRef} id="mynetwork" style={{ flex: "1 1 auto", height: "50vh" }} />
+    </div>
+  );
 };
 
 export default NetworkGraph;

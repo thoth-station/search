@@ -1,65 +1,34 @@
 import React from "react";
-import InfoCard from "components/Elements/InfoCard";
-import {
-    AdviseMetric,
-    DependenciesMetric,
-    LicenseMetric,
-} from "components/Metrics";
-import { AllMetrics } from "../hooks";
 import { AdviseHeader } from "../components";
-import { Box, Grid } from "@mui/material";
 import { AdviseDocumentRequestResponseSuccess } from "../api";
+import { useImportantJustifications } from "../hooks/useImportantJustifications";
+import { CVEPackages, UnmaintainedPackages, WarningPackages } from "../components/SummaryCharts";
+import { useMetrics } from "../hooks";
+import { LicenseSummary } from "../components/SummaryCharts/LicenseSummary";
+import { Graph } from "lib/interfaces/Graph";
+import { Node } from "lib/interfaces/Node";
+import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
+import { DependencySummary } from "../components/SummaryCharts/DependencySummary";
+import { Masonry } from "@mui/lab";
 
 interface IAdviseSummary {
-    metrics: AllMetrics;
-    adviseDocument?: AdviseDocumentRequestResponseSuccess;
-    lastLog?: { [key: string]: string };
+  adviseDocument?: AdviseDocumentRequestResponseSuccess;
+  graph?: Graph<Node<PackageNodeValue>>;
+  lastLog?: { [key: string]: string };
 }
 
-export const AdviseSummary = ({
-    metrics,
-    adviseDocument,
-    lastLog,
-}: IAdviseSummary) => {
-    return (
-        <Box>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <AdviseHeader
-                        adviseDocument={adviseDocument}
-                        lastLog={lastLog}
-                    />
-                </Grid>
+export const AdviseSummary = ({ adviseDocument, graph, lastLog }: IAdviseSummary) => {
+  const summary = useImportantJustifications(adviseDocument);
+  const metrics = useMetrics(graph, adviseDocument);
 
-                <Grid item xs={12} sm={6}>
-                    <InfoCard
-                        cardMeta={{
-                            title: "Thoth Advise Summary",
-                        }}
-                        cardBody={<AdviseMetric metric={metrics?.advise} />}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <InfoCard
-                        cardMeta={{
-                            title: "Dependencies Summary",
-                        }}
-                        cardBody={
-                            <DependenciesMetric
-                                metric={metrics?.dependencies}
-                            />
-                        }
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <InfoCard
-                        cardMeta={{
-                            title: "Licenses Summary",
-                        }}
-                        cardBody={<LicenseMetric metric={metrics?.licenses} />}
-                    />
-                </Grid>
-            </Grid>
-        </Box>
-    );
+  return (
+    <Masonry columns={{ xs: 1, md: 2 }} spacing={3} sx={{ mb: 3, mt: 1 }}>
+      <AdviseHeader adviseDocument={adviseDocument} lastLog={lastLog} />
+      <WarningPackages warningPackages={summary?.warningPackages} />
+      <CVEPackages cvePackages={summary?.cvePackages} />
+      <LicenseSummary licenses={metrics?.licenses} />
+      <DependencySummary dependencies={metrics?.dependencies} />
+      <UnmaintainedPackages unmaintainedPackages={summary?.unmaintainedPackages} />
+    </Masonry>
+  );
 };

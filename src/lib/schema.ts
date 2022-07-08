@@ -4,2413 +4,2396 @@
  */
 
 export interface paths {
-    "/image/metadata": {
-        post: operations["post_image_metadata"];
-    };
-    "/analyze": {
-        post: operations["post_analyze"];
-    };
-    "/analyze/{analysis_id}": {
-        get: operations["get_analyze"];
-    };
-    "/analyze/by-hash/{image_hash}": {
-        get: operations["get_analyze_by_hash"];
-    };
-    "/analyze/{analysis_id}/log": {
-        get: operations["get_analyze_log"];
-    };
-    "/analyze/{analysis_id}/status": {
-        get: operations["get_analyze_status"];
-    };
-    "/provenance/python": {
-        post: operations["post_provenance_python"];
-    };
-    "/provenance/python/{analysis_id}": {
-        get: operations["get_provenance_python"];
-    };
-    "/provenance/python/{analysis_id}/log": {
-        get: operations["get_provenance_python_log"];
-    };
-    "/provenance/python/{analysis_id}/status": {
-        get: operations["get_provenance_python_status"];
-    };
-    "/python-package-index": {
-        get: operations["list_python_package_indexes"];
-    };
-    "/advise/python": {
-        post: operations["post_advise_python"];
-    };
-    "/container-images": {
-        get: operations["list_thoth_container_images"];
-    };
-    "/advise/python/{analysis_id}/log": {
-        get: operations["get_advise_python_log"];
-    };
-    "/advise/python/{analysis_id}/status": {
-        get: operations["get_advise_python_status"];
-    };
-    "/advise/python/{analysis_id}": {
-        get: operations["get_advise_python"];
-    };
-    "/buildlog/{document_id}": {
-        get: operations["get_buildlog"];
-    };
-    "/kebechet-webhook": {
-        post: operations["schedule_kebechet_webhook"];
-    };
-    "/repo-init": {
-        post: operations["initialize_repo"];
-    };
-    "/build-analysis": {
-        post: operations["post_build"];
-    };
-    "/python/platform": {
-        get: operations["get_python_platform"];
-    };
-    "/python/environment": {
-        get: operations["list_python_environments"];
-    };
-    "/python/package/dependencies": {
-        get: operations["get_python_package_dependencies"];
-    };
-    "/python/package": {
-        get: operations["list_python_packages"];
-    };
-    "/python/package/versions": {
-        get: operations["list_python_package_versions"];
-    };
-    "/python/package/version/environments": {
-        get: operations["list_python_package_version_environments"];
-    };
-    "/python/package/version/metadata": {
-        get: operations["get_python_package_version_metadata"];
-    };
-    "/python/imports": {
-        get: operations["get_package_from_imported_packages"];
-    };
+  "/image/metadata": {
+    post: operations["post_image_metadata"];
+  };
+  "/analyze": {
+    post: operations["post_analyze"];
+  };
+  "/analyze/{analysis_id}": {
+    get: operations["get_analyze"];
+  };
+  "/analyze/by-hash/{image_hash}": {
+    get: operations["get_analyze_by_hash"];
+  };
+  "/analyze/{analysis_id}/log": {
+    get: operations["get_analyze_log"];
+  };
+  "/analyze/{analysis_id}/status": {
+    get: operations["get_analyze_status"];
+  };
+  "/provenance/python": {
+    post: operations["post_provenance_python"];
+  };
+  "/provenance/python/{analysis_id}": {
+    get: operations["get_provenance_python"];
+  };
+  "/provenance/python/{analysis_id}/log": {
+    get: operations["get_provenance_python_log"];
+  };
+  "/provenance/python/{analysis_id}/status": {
+    get: operations["get_provenance_python_status"];
+  };
+  "/python-package-index": {
+    get: operations["list_python_package_indexes"];
+  };
+  "/advise/python": {
+    post: operations["post_advise_python"];
+  };
+  "/container-images": {
+    get: operations["list_thoth_container_images"];
+  };
+  "/advise/python/{analysis_id}/log": {
+    get: operations["get_advise_python_log"];
+  };
+  "/advise/python/{analysis_id}/status": {
+    get: operations["get_advise_python_status"];
+  };
+  "/advise/python/{analysis_id}": {
+    get: operations["get_advise_python"];
+  };
+  "/buildlog/{document_id}": {
+    get: operations["get_buildlog"];
+  };
+  "/kebechet-webhook": {
+    post: operations["schedule_kebechet_webhook"];
+  };
+  "/repo-init": {
+    post: operations["initialize_repo"];
+  };
+  "/build-analysis": {
+    post: operations["post_build"];
+  };
+  "/python/platform": {
+    get: operations["get_python_platform"];
+  };
+  "/python/environment": {
+    get: operations["list_python_environments"];
+  };
+  "/python/package/dependencies": {
+    get: operations["get_python_package_dependencies"];
+  };
+  "/python/package": {
+    get: operations["list_python_packages"];
+  };
+  "/python/package/versions": {
+    get: operations["list_python_package_versions"];
+  };
+  "/python/package/version/environments": {
+    get: operations["list_python_package_version_environments"];
+  };
+  "/python/package/version/metadata": {
+    get: operations["get_python_package_version_metadata"];
+  };
+  "/python/imports": {
+    get: operations["get_package_from_imported_packages"];
+  };
 }
 
 export interface components {
-    schemas: {
-        Build: {
-            /**
-             * @description Name of base image used by the s2i build
-             *
-             * @example quay.io/thoth-station/s2i-thoth-ubi8-py38:v0.32.3
-             */
-            base_image?: string | null;
-            /**
-             * @description Name of output image - can also specify remote registry to pull image from
-             *
-             * @example quay.io/thoth-station/s2i-thoth-ubi8-py38
-             */
-            output_image?: string | null;
-            /** @description A full build details along with the log */
-            build_log?: {
-                /**
-                 * @description A full build or installation log that was output during image build
-                 * @example Collecting tensorflow Downloading tensorflow-1.4.1-cp36-cp36m-manylinux1_x86_64.whl (41.2MB) Successfully installed tensorflow-1.4.1
-                 */
-                log?: string | null;
-                /**
-                 * @description BuildLog api version
-                 * @example apis/build.openshift.io/v1/namespaces/$NAMESPACE/builds HTTP/1.1
-                 */
-                apiversion?: string | null;
-                /**
-                 * @description Type of the log
-                 *
-                 * @example BuildLog
-                 */
-                kind?: string | null;
-                metadata?: string | null;
-            };
-        };
-        UnitDef: {
-            /** @example SomeUnit */
-            name: string;
-            configuration: { [key: string]: unknown };
-            /** @description Flag set to true if the pipeline unit was run during the resolution process */
-            unit_run: boolean;
-        };
-        ProjectDef: {
-            constraints: {
-                /**
-                 * @description Name of the package that was constrained
-                 * @example flask
-                 */
-                name: string;
-                /**
-                 * @description Version range specifier for the constrain
-                 * @example ~=2.0.0
-                 */
-                version: string;
-                /**
-                 * @description An environment marker used with the version constrain
-                 * @example python_version >= "3.8"
-                 */
-                markers: string;
-            }[];
-            /**
-             * @description Requirements stating direct dependencies of the project, the format is compatible with Pipenv
-             *
-             * @example {
-             *   "dev-packages": {},
-             *   "packages": {
-             *     "numpy": {
-             *       "index": "pypi",
-             *       "version": "*"
-             *     }
-             *   },
-             *   "requires": {
-             *     "python_version": "3.9"
-             *   },
-             *   "source": [
-             *     {
-             *       "name": "pypi",
-             *       "url": "https://pypi.org/simple",
-             *       "verify_ssl": true
-             *     }
-             *   ],
-             *   "thoth": {
-             *     "allow_prereleases": {},
-             *     "disable_index_adjustment": false
-             *   }
-             * }
-             */
-            requirements: { [key: string]: unknown };
-            /**
-             * @description A lock file stating all the dependencies pinned to a specific version togher with an explicit Python package index configuration
-             *
-             * @example {
-             *   "_meta": {
-             *     "hash": {
-             *       "sha256": "f6dd619becbaf7a5c233150a889ef85fbfdf8aa260d182f0874e3234f06ad2b5"
-             *     },
-             *     "pipfile-spec": 6,
-             *     "requires": {
-             *       "python_version": "3.9"
-             *     },
-             *     "sources": [
-             *       {
-             *         "name": "pypi",
-             *         "url": "https://pypi.org/simple",
-             *         "verify_ssl": true
-             *       }
-             *     ]
-             *   },
-             *   "default": {
-             *     "numpy": {
-             *       "hashes": [
-             *         "sha256:b1cca51512299841bf69add3b75361779962f9cee7d9ee3bb446d5982e925b69",
-             *         "sha256:c9591886fc9cbe5532d5df85cb8e0cc3b44ba8ce4367bd4cf1b93dc19713da72"
-             *       ],
-             *       "index": "pypi-org-simple",
-             *       "version": "==1.3.0"
-             *     }
-             *   }
-             * }
-             */
-            requirements_locked: { [key: string]: unknown };
-            runtime_environment:
-                | components["schemas"]["RuntimeEnvironment"]
-                | null;
-        };
-        DebDependencyItem: {
-            /** @description Dependency name */
-            name: string;
-            /** @description Dependency version */
-            version: string;
-        };
+  schemas: {
+    Build: {
+      /**
+       * @description Name of base image used by the s2i build
+       *
+       * @example quay.io/thoth-station/s2i-thoth-ubi8-py38:v0.32.3
+       */
+      base_image?: string | null;
+      /**
+       * @description Name of output image - can also specify remote registry to pull image from
+       *
+       * @example quay.io/thoth-station/s2i-thoth-ubi8-py38
+       */
+      output_image?: string | null;
+      /** @description A full build details along with the log */
+      build_log?: {
         /**
-         * @description Direct dependencies for the application stack
-         * @example [[source]]
-         * url = "https://pypi.python.org/simple"
-         * verify_ssl = true
-         * name = "pypi"
-         *
-         * [packages]
-         * daiquiri = "*"
-         *
-         * [dev-packages]
+         * @description A full build or installation log that was output during image build
+         * @example Collecting tensorflow Downloading tensorflow-1.4.1-cp36-cp36m-manylinux1_x86_64.whl (41.2MB) Successfully installed tensorflow-1.4.1
          */
-        RequirementsDef: string;
+        log?: string | null;
         /**
-         * @description Fully pinned down dependency stack
-         * @example { "_meta": { "hash": { "sha256": "fecd8a66514e1129f796d7a45a1f5b2f7733e3ae0ead487ca63752da680ab8e4" }, "pipfile-spec": 6, "requires": {}, "sources": [ { "name": "pypi", "url": "https://pypi.python.org/simple", "verify_ssl": true } ] }, "default": { "daiquiri": { "hashes": [ "sha256:1c4942ef0d40920100162ede6024edd43734e40b8dca9b13ebaf4b52ea198457", "sha256:eb300dfddae43dfdb157938a854b1387298b8fb340d6ecb7b5ae867283af763e" ], "index": "pypi", "version": "==1.4.0" } }, "develop": {} }
+         * @description BuildLog api version
+         * @example apis/build.openshift.io/v1/namespaces/$NAMESPACE/builds HTTP/1.1
          */
-        RequirementsLockDef: string;
-        PythonStack: {
-            requirements: components["schemas"]["RequirementsDef"];
-            requirements_lock: components["schemas"]["RequirementsLockDef"];
-            /**
-             * @description Lockfile format - defaults to pipenv if not explicitly specified
-             *
-             * @example pipenv
-             * @enum {string}
-             */
-            requirements_format?: "pipenv";
-        };
-        /** @description Input for repo-init workflow */
-        RepoInitInput: {
-            /** @example https://github.com/foo/bar */
-            project_url?: string;
-        };
-        /** @description Runtime environment description, see Thamos configuration for more info */
-        RuntimeEnvironment: {
-            /** @description Hardware configuration used */
-            hardware?: {
-                /** @example 6 */
-                cpu_model?: number | null;
-                /** @example 142 */
-                cpu_family?: number | null;
-                gpu_model?: string | null;
-            } | null;
-            /** @description Operating system used */
-            operating_system?: {
-                /** @example rhel */
-                name: string | null;
-                /** @example 8 */
-                version: string | null;
-            };
-            /**
-             * @description Python version on which the application runs on
-             * @example 3.8
-             */
-            python_version?: string | null;
-            /**
-             * @description Nvidia CUDA version which the application uses
-             * @example 11.1
-             */
-            cuda_version?: string | null;
-            /**
-             * @description OpenBLAS version used, if any
-             * @example 0.3.13
-             */
-            openblas_version?: string | null;
-            /**
-             * @description Open MPI version used, if any
-             * @example 4.1
-             */
-            openmpi_version?: string | null;
-            /**
-             * @description NVIDIA cuDNN version used, if any
-             * @example 8
-             */
-            cudnn_version?: string | null;
-            /**
-             * @description Intel® Math Kernel Library version used, if any
-             * @example 2021.1.1
-             */
-            mkl_version?: string | null;
-            /**
-             * @description Platform used - corresponds to sysconfig.get_platform() call
-             * @enum {string|null}
-             */
-            platform?: "linux-x86_64" | null;
-            /**
-             * @description A base container image used to run the application
-             * @example quay.io/thoth-station/s2i-thoth-ubi8-py38:v0.32.3
-             */
-            base_image?: string | null;
-            /**
-             * @description User defined name of the runtime environment
-             * @example ubi8-prod
-             */
-            name?: string | null;
-        };
-        ProvenanceInput: {
-            application_stack: components["schemas"]["PythonStack"];
-            kebechet_metadata?: components["schemas"]["KebechetMetadata"];
-            justification?: components["schemas"]["Justification"];
-            stack_info?: components["schemas"]["StackInfo"];
-        };
-        AdviseInput: {
-            application_stack: components["schemas"]["PythonStack"];
-            /**
-             * @description Constraints to apply during the resolution
-             * @example flask>=1.0
-             */
-            constraints?: string | null;
-            runtime_environment?: components["schemas"]["RuntimeEnvironment"];
-            /**
-             * @description Labels used to label the request
-             * @example {
-             *   "label_key": "label_value"
-             * }
-             */
-            labels?: { [key: string]: unknown } | null;
-            /** @description Static analysis of libraries used within user's project */
-            library_usage?: {
-                /** @example 0.2.0 */
-                version: string;
-                /**
-                 * @example {
-                 *   "app.py": {
-                 *     "flask": [
-                 *       "flask.Flask"
-                 *     ]
-                 *   }
-                 * }
-                 */
-                report: { [key: string]: unknown };
-            };
-            kebechet_metadata?: components["schemas"]["KebechetMetadata"];
-            justification?: components["schemas"]["Justification"];
-            stack_info?: components["schemas"]["StackInfo"];
-        };
-        /** @description Response information with image metadata as extracted by Skopeo */
-        ImageMetadataResponse: {
-            /**
-             * @description Target architecture of image
-             * @example amd64
-             */
-            Architecture: string;
-            /**
-             * @description Image creation date and time
-             * @example 2016-03-04T18:40:02.92155334Z
-             */
-            Created: string;
-            /**
-             * @description Digest of the image
-             * @example sha256:cfd8f071bf8da7a466748f522406f7ae5908d002af1b1a1c0dcf893e183e5b32''
-             */
-            Digest: string;
-            /**
-             * @description Version of Docker
-             * @example 1.9.1
-             */
-            DockerVersion: string;
-            /** @description Environment variables from analyzed image */
-            Env: string[];
-            /** @description Image labels */
-            Labels: { [key: string]: unknown };
-            Layers: string[];
-            /**
-             * @description Operating system identifier
-             * @example linux
-             */
-            Os: string;
-            RepoTags: string[];
-        };
-        /** @description Response for a submitted build analysis */
-        BuildAnalysisResponse: {
-            /** @description Response for a submitted analysis */
-            base_image_analysis?: {
-                /**
-                 * @description An identifier of submitted analysis for checking its status and its results
-                 *
-                 * @example package-extract-220106085109-984feaa8a3862285
-                 */
-                analysis_id?: string;
-                /** @description If set to true the given analysis was picked from cache */
-                cached?: boolean;
-            } | null;
-            /** @description Response for a submitted analysis */
-            output_image_analysis?: {
-                /**
-                 * @description An identifier of submitted analysis for checking its status and its results
-                 *
-                 * @example package-extract-220106085109-984feaa8a3862285
-                 */
-                analysis_id?: string;
-                /** @description If set to true the given analysis was picked from cache */
-                cached?: boolean;
-            } | null;
-            /** @description Response for a submitted analysis */
-            buildlog_analysis?: {
-                /** @description An identifier of submitted analysis for checking its status and its results */
-                analysis_id?: string;
-                /** @description If set to true the given analysis was picked from cache */
-                cached?: boolean;
-            } | null;
-            /** @description Document identifier for the stored build log */
-            buildlog_document_id?: string;
-        };
-        /** @description Response for a submitted analysis */
-        AnalysisWithAuthenticationResponse: {
-            /**
-             * @description An id of submitted analysis for checking its status and its results
-             *
-             * @example adviser-220106085109-984feaa8a3862285
-             */
-            analysis_id: string;
-            /** @description Parameters echoed back to user (with default parameters if omitted) */
-            parameters: { [key: string]: unknown };
-            /** @description If set to true the given analysis was picked from cache */
-            cached: boolean;
-            /** @description If set to true the given analysis was authenticated */
-            authenticated: boolean;
-        };
-        /** @description Response for a submitted analysis */
-        AnalysisResponse: {
-            /**
-             * @description An id of submitted analysis for checking its status and its results
-             *
-             * @example package-extract-220106085109-984feaa8a3862285
-             */
-            analysis_id: string;
-            /** @description Parameters echoed back to user (with default parameters if omitted) */
-            parameters: { [key: string]: unknown };
-            /** @description If set to true the given analysis was picked from cache */
-            cached: boolean;
-        };
-        /** @description A listing of Python package indexes */
-        PythonPackageIndexes: {
-            indexes: {
-                /**
-                 * @description URL to the Python simple repository as described in PEP 503
-                 * @example http://pypi.org/simple
-                 */
-                url: string;
-                /**
-                 * @description URL to the warehouse API
-                 * @example https://pypi.org/pypi
-                 */
-                warehouse_api_url: string | null;
-                /**
-                 * @description Use secured connection to warehouse
-                 * @example true
-                 */
-                verify_ssl: boolean;
-                /**
-                 * @description The backend is configured to monitor only releases of already seen packages
-                 *
-                 * @example true
-                 */
-                only_if_package_seen: boolean;
-            }[];
-        };
-        /** @description Error response for a submitted build analysis */
-        BuildAnalysisResponseError: {
-            base_image_analysis: {
-                /**
-                 * @description Error information for users
-                 * @example Some error message reported back to users
-                 */
-                error?: string;
-                /** @description Parameters echoed back to user for debugging */
-                parameters?: { [key: string]: unknown };
-            };
-            output_image_analysis: {
-                /**
-                 * @description Error information for user
-                 * @example Some error message reported back to users
-                 */
-                error?: string;
-                /** @description Parameters echoed back to user for debugging */
-                parameters?: { [key: string]: unknown };
-            };
-            build_log_analysis: {
-                /**
-                 * @description Error information for user
-                 * @example Some error message reported back to users
-                 */
-                error?: string;
-                /** @description Parameters echoed back to user for debugging */
-                parameters?: { [key: string]: unknown };
-            };
-        };
-        AnalysisUnauthorizedError: {
-            /**
-             * @description Unauthorized error information
-             * @example Some error message reported back to users
-             */
-            error: string;
-        };
-        AnalysisResponseError: {
-            /**
-             * @description Error information for user
-             * @example Some error message reported back to users
-             */
-            error: string;
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-        };
-        /** @description Result of an avise */
-        AnalysisResultResponse: {
-            /** @description Metadata for container image analysis run */
-            metadata: {
-                /**
-                 * @description Analyzer name which handled container image analysis
-                 *
-                 * @example package-extract
-                 */
-                analyzer: string;
-                /**
-                 * @description Version of analyzer handling the container image analysis
-                 *
-                 * @example v1.0.0
-                 */
-                analyzer_version: string;
-                /** @description Arguments passed to the analyzer */
-                arguments: { [key: string]: unknown };
-                /**
-                 * @description Date and time of analysis end in ISO format
-                 * @example 2021-02-23T09:29:45.254Z
-                 */
-                datetime: string;
-                /** @description Information about environment in which the analysis was performed */
-                distribution: {
-                    /**
-                     * @description Codename of environment in which the analysis was performed
-                     *
-                     * @example Ootpa
-                     */
-                    codename: string;
-                    /**
-                     * @description Identifier of environment in which the analysis was performed
-                     *
-                     * @example rhel
-                     */
-                    id: string;
-                    /**
-                     * @description Similar environments in comparison to environment in which the analysis was performed
-                     *
-                     * @example fedora
-                     */
-                    like: string;
-                    /**
-                     * @description A string representation of environment version
-                     * @example 8.3
-                     */
-                    version: string;
-                    /** @description Parts of version identifier of the analysing environment */
-                    version_parts: {
-                        /** @example 1 */
-                        build_number: string;
-                        /** @example 8 */
-                        major: string;
-                        /** @example 3 */
-                        minor: string;
-                    };
-                };
-                /**
-                 * @description A unique identifier of the document
-                 * @example package-extract-211022015031-eb53ce1939b6c12e
-                 */
-                document_id: string;
-                /** @description Number of seconds for which the analyzer was running */
-                duration: number;
-                /**
-                 * @description Pod name where the analysis was done
-                 * @example package-extract-211022015031-eb53ce1939b6c12e-1359347945
-                 */
-                hostname: string;
-                os_release: { [key: string]: unknown };
-                python: {
-                    /** @example 1013 */
-                    api_version: number;
-                    /** @example cpython */
-                    implementation_name: string;
-                    /** @example 3 */
-                    major: number;
-                    /** @example 3 */
-                    micro: number;
-                    /** @example 8 */
-                    minor: number;
-                    /** @example final */
-                    releaselevel: string;
-                    /** @example 0 */
-                    serial: number;
-                };
-                /**
-                 * @description Name of Thoth's deployment that computed results
-                 * @example ocp4-stage
-                 */
-                thoth_deployment_name: string;
-                /**
-                 * @description Timestamp when results were computed
-                 * @example 1634867650
-                 */
-                timestamp: number;
-            };
-            result: {
-                /** @description Information supplied by AICoE-CI during the image build */
-                "aicoe-ci": {
-                    requirements:
-                        | components["schemas"]["RequirementsDef"]
-                        | null;
-                    requirements_lock:
-                        | components["schemas"]["RequirementsLockDef"]
-                        | null;
-                };
-                /** @description Nvidia CUDA version detected - path is the key and CUDA version is the object value */
-                "cuda-version": { [key: string]: unknown };
-                /** @description Debian packages detected (experimental) */
-                deb: {
-                    /** @description Name of the Debian package */
-                    name: string;
-                    /** @description Version identifier of the Debian package */
-                    version: string;
-                    /** @description Package architecture */
-                    arch: string;
-                }[];
-                /** @description Dependencies of Debian packages detected */
-                "deb-dependencies": {
-                    /** @description Debian package name */
-                    name: string;
-                    /** @description Debian package version */
-                    version: string;
-                    /** @description Debian package epoch */
-                    epoch: string;
-                    depends: components["schemas"]["DebDependencyItem"];
-                    "pre-depends": components["schemas"]["DebDependencyItem"];
-                    replaces: components["schemas"]["DebDependencyItem"];
-                }[];
-                /**
-                 * @description Size of the container image in bytes
-                 * @example 393012461
-                 */
-                image_size: number;
-                /** @description Container image layers, sorted based on the layer precedence */
-                layers: string[];
-                /** @description Mercator (TM) output */
-                mercator: { [key: string]: unknown }[] | null;
-                /** @description Operating System information */
-                "operating-system": { [key: string]: unknown };
-                /** @description Python files detected in the container image */
-                "python-files": {
-                    /** @example /opt/app-root/lib/python3.9/site-packages/micropipenv.py */
-                    filepath: string;
-                    /**
-                     * @description SHA256 of the file
-                     * @example 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
-                     */
-                    sha256: string;
-                }[];
-                /** @description Python interpreters detected inside the container image */
-                "python-interpreters": {
-                    /**
-                     * @description A dereferenced symlink (if any) to the Python interpreter
-                     * @example /usr/bin/python3.9
-                     */
-                    link: string;
-                    /**
-                     * @description A path to the Python interpreter executable
-                     * @example /usr/bin/python3.9
-                     */
-                    path: string;
-                    /**
-                     * @description Python interpreter version
-                     * @example 3.9.1
-                     */
-                    version: string | null;
-                }[];
-                /** @description Detected Python packages inside the container image */
-                "python-packages": {
-                    /**
-                     * @description A location where the Python package is installed
-                     * @example /opt/app-root/lib/python3.9/site-packages
-                     */
-                    location: string;
-                    /**
-                     * @description Python package name
-                     * @example pip
-                     */
-                    package_name: string;
-                    /**
-                     * @description Python package version
-                     * @example 21.1.3
-                     */
-                    package_version: string;
-                }[];
-                /** @description A listing of container images found inside the analyzed container image */
-                rpm: string[];
-                /** @description Information about RPM packages and their dependencies */
-                "rpm-dependencies": unknown[];
-                "skopeo-inspect": components["schemas"]["ImageMetadataResponse"];
-                /**
-                 * @description Systems symbols detected - a path mapping to exported symbols available
-                 *
-                 * @example {
-                 *   "/usr/lib64/libz.so.1": [
-                 *     "ZLIB_1.2.3.5",
-                 *     "ZLIB_1.2.0.2",
-                 *     "ZLIB_1.2.2.3",
-                 *     "ZLIB_1.2.3.4",
-                 *     "ZLIB_1.2.2",
-                 *     "ZLIB_1.2.0",
-                 *     "ZLIB_1.2.5.1",
-                 *     "ZLIB_1.2.9",
-                 *     "ZLIB_1.2.7.1",
-                 *     "ZLIB_1.2.0.8",
-                 *     "ZLIB_1.2.5.2",
-                 *     "ZLIB_1.2.3.3",
-                 *     "ZLIB_1.2.2.4"
-                 *   ]
-                 * }
-                 */
-                "system-symbols": { [key: string]: unknown };
-            };
-        };
-        /** @description Result of an avise */
-        ProvenanceResultResponse: {
-            /** @description Metadata for container image analysis run */
-            metadata: {
-                /**
-                 * @description Name of the component used to check provenance
-                 *
-                 * @example provenance-checker
-                 */
-                analyzer: string;
-                /**
-                 * @description Version of the component used to check provenance
-                 *
-                 * @example v1.0.0
-                 */
-                analyzer_version: string;
-                /** @description Arguments passed to the provenance checker */
-                arguments: { [key: string]: unknown };
-                /**
-                 * @description Date and time of analysis end in ISO format
-                 * @example 2021-02-23T09:29:45.254Z
-                 */
-                datetime: string;
-                /** @description Information about environment in which provenance checker run */
-                distribution: {
-                    /**
-                     * @description Codename of environment in which the provenance check was run
-                     *
-                     * @example Ootpa
-                     */
-                    codename: string;
-                    /**
-                     * @description Identifier of environment in which the provenance check was run
-                     *
-                     * @example rhel
-                     */
-                    id: string;
-                    /**
-                     * @description Similar environments in comparison to environment in which the provenance check was run
-                     *
-                     * @example fedora
-                     */
-                    like: string;
-                    /**
-                     * @description A string representation of environment version
-                     * @example 8.3
-                     */
-                    version: string;
-                    /** @description Parts of version identifier of the environment */
-                    version_parts: {
-                        /** @example 1 */
-                        build_number: string;
-                        /** @example 8 */
-                        major: string;
-                        /** @example 3 */
-                        minor: string;
-                    };
-                };
-                /**
-                 * @description A unique identifier of the document
-                 * @example provenance-checker-211022015031-eb53ce1939b6c12e
-                 */
-                document_id: string;
-                /** @description Number of seconds for which the provenance-checker was running */
-                duration: number;
-                /**
-                 * @description Pod name where the provenance checks were done
-                 * @example provenance-checker-211022015031-eb53ce1939b6c12e-1359347945
-                 */
-                hostname: string;
-                os_release: { [key: string]: unknown };
-                python: {
-                    /** @example 1013 */
-                    api_version: number;
-                    /** @example cpython */
-                    implementation_name: string;
-                    /** @example 3 */
-                    major: number;
-                    /** @example 3 */
-                    micro: number;
-                    /** @example 8 */
-                    minor: number;
-                    /** @example final */
-                    releaselevel: string;
-                    /** @example 0 */
-                    serial: number;
-                };
-                /**
-                 * @description Name of Thoth's deployment that computed results
-                 * @example ocp4-stage
-                 */
-                thoth_deployment_name: string;
-                /**
-                 * @description Timestamp when results were computed
-                 * @example 1634867650
-                 */
-                timestamp: number;
-            };
-            /** @description Provenance check result */
-            result: {
-                /**
-                 * @description A flag set to true if an error was encountered
-                 * @example false
-                 */
-                error: boolean;
-                /**
-                 * @description An error message reported to users
-                 * @example Failed to parse input
-                 */
-                error_msg: string | null;
-                input: { [key: string]: unknown } | null;
-                parameters: {
-                    /** @description Python package indexes whitelisted */
-                    whitelisted_sources?: string[];
-                    project: components["schemas"]["ProjectDef"];
-                };
-                /** @description A provenance check report */
-                report: { [key: string]: unknown }[];
-            };
-        };
-        /** @description Result of a container image analysis */
-        AdviserResultResponse: {
-            /** @description Metadata for analysis run */
-            metadata: {
-                /**
-                 * @description Analyzer name which handled analysis
-                 * @example thoth-adviser
-                 */
-                analyzer: string;
-                /**
-                 * @description Version of analyzer handling analysis
-                 * @example v1.0.0
-                 */
-                analyzer_version: string;
-                /** @description Arguments passed to the analyzer */
-                arguments: { [key: string]: unknown };
-                /**
-                 * @description Date and time of analysis end in ISO format
-                 * @example 2021-02-23T09:29:45.254Z
-                 */
-                datetime: string;
-                /** @description Information about environment in which the analysis was performed */
-                distribution: {
-                    /**
-                     * @description Codename of environment in which the analysis was performed
-                     *
-                     * @example Ootpa
-                     */
-                    codename: string;
-                    /**
-                     * @description Identifier of environment in which the analysis was performed
-                     *
-                     * @example rhel
-                     */
-                    id: string;
-                    /**
-                     * @description Similar environments in comparison to environment in which the analysis was performed
-                     *
-                     * @example fedora
-                     */
-                    like: string;
-                    /**
-                     * @description A string representation of environment version
-                     * @example 8.3
-                     */
-                    version: string;
-                    /** @description Parts of version identifier of the analysing environment */
-                    version_parts: {
-                        /** @example 1 */
-                        build_number: string;
-                        /** @example 8 */
-                        major: string;
-                        /** @example 3 */
-                        minor: string;
-                    };
-                };
-                /**
-                 * @description A unique identifier of the document
-                 * @example adviser-211022015031-eb53ce1939b6c12e
-                 */
-                document_id: string;
-                /** @description Number of seconds for which the analyzer was running */
-                duration: number;
-                /**
-                 * @description Pod name where the analysis was done
-                 * @example adviser-211022015031-eb53ce1939b6c12e-1359347945
-                 */
-                hostname: string;
-                os_release: { [key: string]: unknown };
-                python: {
-                    /** @example 1013 */
-                    api_version: number;
-                    /** @example cpython */
-                    implementation_name: string;
-                    /** @example 3 */
-                    major: number;
-                    /** @example 3 */
-                    micro: number;
-                    /** @example 8 */
-                    minor: number;
-                    /** @example final */
-                    releaselevel: string;
-                    /** @example 0 */
-                    serial: number;
-                };
-                /**
-                 * @description Name of Thoth's deployment that computed results
-                 * @example ocp4-stage
-                 */
-                thoth_deployment_name: string;
-                /**
-                 * @description Timestamp when results were computed
-                 * @example 1634867650
-                 */
-                timestamp: number;
-            };
-            /** @description Actual result of an analysis run */
-            result: {
-                /**
-                 * @description A flag indicating error during the advise
-                 * @example false
-                 */
-                error: boolean;
-                /**
-                 * @description An error message describing the error encountered
-                 * @example Cannot satisfy direct dependency flask
-                 */
-                error_msg: string | null;
-                /** @description Parameters supplied on advise together with user inputs */
-                parameters: { [key: string]: unknown };
-                /** @description Report with results computed */
-                report: {
-                    /**
-                     * @description Error message describing advise failure
-                     * @example No results were resolved,, see logs for more info
-                     */
-                    ERROR?: string;
-                    /**
-                     * @description Number of resolved states that were accepted
-                     * @example 1
-                     */
-                    accepted_final_states_count?: number;
-                    /**
-                     * @description Number of states that were discarded during the resolution
-                     * @example 1
-                     */
-                    discarded_final_states_count?: number;
-                    /** @description Pipeline configuration used during the resolution process, available only on debug */
-                    pipeline?: {
-                        /** @description Boot pipeline unit types registered to the resolution process */
-                        boots: components["schemas"]["UnitDef"][];
-                        /** @description Pseudonym pipeline unit types registered to the resolution process */
-                        pseudonyms: components["schemas"]["UnitDef"][];
-                        /** @description Sieve pipeline unit types registered to the resolution process */
-                        sieves: components["schemas"]["UnitDef"][];
-                        /** @description Step pipeline unit types registered to the resolution process */
-                        steps: components["schemas"]["UnitDef"][];
-                        /** @description Stride pipeline unit types registered to the resolution process */
-                        strides: components["schemas"]["UnitDef"][];
-                        /** @description Wrap pipeline unit types registered to the resolution process */
-                        wraps: components["schemas"]["UnitDef"][];
-                    } | null;
-                    /** @description Products computed in the deployment, always holds only one item */
-                    products?: {
-                        /** @description Advised changes to manifest files */
-                        advised_manifest_changes:
-                            | { [key: string]: unknown }[][]
-                            | null;
-                        advised_runtime_environment:
-                            | components["schemas"]["RuntimeEnvironment"]
-                            | null;
-                        /** @description Serialized dependency graph */
-                        dependency_graph: {
-                            /** @description Edge represented as a source-destination pair, representing indexes to the nodes listing */
-                            edges: number[][];
-                            /** @description A listing of nodes (package names) in the dependency graph */
-                            nodes: string[];
-                        };
-                        justification: components["schemas"]["Justification"];
-                        project: components["schemas"]["ProjectDef"];
-                        /**
-                         * Format: float
-                         * @description Score of the computed product
-                         * @example 0.25
-                         */
-                        score: number;
-                    }[];
-                    /**
-                     * @description Number of iterations done by the resolver to compute products
-                     *
-                     * @example 49945
-                     */
-                    resolver_iterations?: number;
-                    stack_info?: components["schemas"]["StackInfo"];
-                } | null;
-            };
-        };
-        /** @description Information about the current analysis status */
-        AnalysisStatusResponse: {
-            /** @description Status information about the analysis run */
-            status: {
-                /**
-                 * @description Datetime in ISO format informing about when the analysis has finished
-                 *
-                 * @example 2022-01-10T20:46:39.000Z
-                 */
-                finished_at: string | null;
-                /**
-                 * @description Reasoning on finished run
-                 * @example success
-                 */
-                reason: string | null;
-                /**
-                 * @description Datetime in ISO format informing about when the analysis has started
-                 *
-                 * @example 2022-01-10T20:46:39.000Z
-                 */
-                started_at: string | null;
-                /** @example success */
-                state: string;
-            };
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-        };
-        ContainerImagesResponse: {
-            container_images: {
-                /** @example quay.io/thoth-station/s2i-custom-notebook:v0.2.0 */
-                environment_name: string | null;
-                /** @example 3.8 */
-                python_version: string | null;
-                /** @example s2i-minimal-notebook */
-                env_image_name: string | null;
-                /** @example v1.2.3 */
-                env_image_tag: string | null;
-                /** @example 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b */
-                image_sha: string | null;
-                /** @example rhel */
-                os_name: string | null;
-                /** @example 8 */
-                os_version: string | null;
-                /** @example quay.io/thoth-station/s2i-thoth-ubi8-py38 */
-                thoth_image_name: string | null;
-                /** @example v1.0.0 */
-                thoth_image_version: string | null;
-                /** @example 11.1 */
-                cuda_version: string | null;
-                /**
-                 * @example RUNTIME
-                 * @enum {string}
-                 */
-                environment_type: "BUILDTIME" | "RUNTIME";
-                /** @example package-extract-220106085109-984feaa8a3862285 */
-                package_extract_document_id: string;
-                /** @example 2021-02-23T09:29:45.254Z */
-                datetime: string;
-                /** @example https://quay.io/thoth-station/s2i-custom-notebook:v0.2.0 */
-                quay_repo_url: string | null;
-                /** @example /api/v1/analyze/package-extract-220106085109-984feaa8a3862285 */
-                image_analysis_url: string | null;
-            }[];
-            parameters: {
-                /**
-                 * @description Page offset in the pagination
-                 * @example 0
-                 */
-                page: number;
-            };
-        };
-        ContainerImagesResponseError: {
-            /**
-             * @description Error information for user
-             * @example Some error message reported back to users
-             */
-            error: string;
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-        };
-        AnalysisLogResponse: {
-            /**
-             * @description Analyzer logs printed to stdout/stderr as a plain text
-             * @example Starting an analysis
-             * Analyzer version is v1.0.0
-             */
-            log: string | null;
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-        };
-        PythonPackagesResponse: {
-            packages: {
-                /**
-                 * @description Name of the package
-                 * @example flask
-                 */
-                package_name: string;
-            }[];
-        };
-        PythonPackageVersionsResponse: {
-            versions: {
-                /**
-                 * @description Name of the package
-                 * @example tensorflow
-                 */
-                package_name: string;
-                /**
-                 * @description Version of the package
-                 * @example 2.0.0
-                 */
-                package_version: string;
-                /**
-                 * @description Source index URL of the package
-                 * @example https://pypi.org/simple
-                 */
-                index_url: string;
-            }[];
-        };
-        PythonPackageVersionEnvironmentsResponse: {
-            environments: {
-                /**
-                 * @description Operating system name
-                 * @example rhel
-                 */
-                os_name: string;
-                /**
-                 * @description Operating system version
-                 * @example 9
-                 */
-                os_version: string;
-                /**
-                 * @description Python version
-                 * @example 3.9
-                 */
-                python_version: string;
-            }[];
-        };
-        PythonPackageVersionMetadataResponse: {
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-            metadata: {
-                /** @description Python packages (modules) the given package provides */
-                packages: string[];
-                /**
-                 * @description Index URL from where the given package comes from
-                 * @example https://pypi.org/simple
-                 */
-                index_url: string;
-                /**
-                 * @description Name of the Python package
-                 * @example pandas
-                 */
-                package_name: string;
-                /**
-                 * @description Version of the Python package
-                 * @example 1.1.4
-                 */
-                package_version: string;
-                /**
-                 * @description Dependency information
-                 * @example {
-                 *   "hypothesis": {
-                 *     "extra": [
-                 *       "test"
-                 *     ],
-                 *     "extras": [],
-                 *     "marker": "extra == \\\"test\\\"",
-                 *     "marker_evaluated": "python_version >= 0.0",
-                 *     "marker_evaluation_error": null,
-                 *     "marker_evaluation_result": true,
-                 *     "specifier": ">=3.58",
-                 *     "versions": [
-                 *       "3.58.0",
-                 *       "3.58.1",
-                 *       "3.59.0",
-                 *       "3.59.1"
-                 *     ]
-                 *   }
-                 * }
-                 */
-                dependencies: { [key: string]: unknown };
-                importlib_metadata: {
-                    entry_points:
-                        | {
-                              /** @example pandas_plotting_backends */
-                              group: string;
-                              /** @example matplotlib */
-                              name: string;
-                              /** @example pandas.plotting._matplotlib */
-                              value: string;
-                          }[]
-                        | null;
-                    /**
-                     * @description Files shipped with the Python package
-                     * @example {
-                     *   "hash": {
-                     *     "mode": "sha256",
-                     *     "value": "aX-7A9PosUb6vSa8tNbfjhZTOtr99gSCyjl1q9bN2WU"
-                     *   },
-                     *   "path": "pandas-1.1.4.dist-info/METADATA",
-                     *   "size": 4729
-                     * }
-                     */
-                    files: { [key: string]: unknown }[];
-                    /**
-                     * @description Core Python packaging metadata extracted
-                     * @example {
-                     *   "Classifier": [
-                     *     "Development Status :: 5 - Production/Stable",
-                     *     "Environment :: Console",
-                     *     "Operating System :: OS Independent",
-                     *     "Intended Audience :: Science/Research",
-                     *     "Programming Language :: Python",
-                     *     "Programming Language :: Python :: 3",
-                     *     "Programming Language :: Python :: 3.6",
-                     *     "Programming Language :: Python :: 3.7",
-                     *     "Programming Language :: Python :: 3.8",
-                     *     "Programming Language :: Python :: 3.9",
-                     *     "Programming Language :: Cython",
-                     *     "Topic :: Scientific/Engineering"
-                     *   ],
-                     *   "Home-page": "https://pandas.pydata.org",
-                     *   "License": "BSD",
-                     *   "Maintainer": "The PyData Development Team",
-                     *   "Maintainer-email": "pydata@googlegroups.com",
-                     *   "Metadata-Version": "2.1",
-                     *   "Name": "pandas",
-                     *   "Platform": [
-                     *     "any"
-                     *   ],
-                     *   "Project-URL": [
-                     *     "Bug Tracker, https://github.com/pandas-dev/pandas/issues",
-                     *     "Documentation, https://pandas.pydata.org/pandas-docs/stable/",
-                     *     "Source Code, https://github.com/pandas-dev/pandas"
-                     *   ],
-                     *   "Provides-Extra": [
-                     *     "test"
-                     *   ],
-                     *   "Requires-Dist": [
-                     *     "python-dateutil (>=2.7.3)",
-                     *     "pytz (>=2017.2)",
-                     *     "numpy (>=1.15.4)",
-                     *     "pytest (>=4.0.2) ; extra == 'test'",
-                     *     "pytest-xdist ; extra == 'test'",
-                     *     "hypothesis (>=3.58) ; extra == 'test'"
-                     *   ],
-                     *   "Requires-Python": ">=3.6.1",
-                     *   "Summary": "Powerful data structures for data analysis, time series, and statistics",
-                     *   "Version": "1.1.4"
-                     * }
-                     */
-                    metadata: { [key: string]: unknown };
-                    /** @description Python requirements of the given package */
-                    requires: string[] | null;
-                    /**
-                     * @description Version of the Python package based on importlib metadata detection
-                     *
-                     * @example 1.1.4
-                     */
-                    version: string;
-                };
-            };
-        };
-        PythonPackageVersionMetadataResponseError: {
-            /**
-             * @description Error information for user
-             * @example Some error message reported back to users
-             */
-            error: string;
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-        };
-        PythonPackageNameImportResponse: {
-            package_names: {
-                /**
-                 * @description Name of the package
-                 * @example scikit-learn
-                 */
-                package_name: string;
-                /**
-                 * @description Version of the package
-                 * @example 1.0.1
-                 */
-                package_version: string;
-                /**
-                 * @description Source index URL of the package
-                 * @example https://pypi.org/simple
-                 */
-                index_url: string;
-                /**
-                 * @description A module import matching the given criteria
-                 * @example sklearn.neural_network
-                 */
-                package_import: string;
-            }[];
-            parameters: { [key: string]: unknown };
-        };
-        PythonPackageVersionsResponseError: {
-            /**
-             * @description Error information for user
-             * @example Some error message reported back to users
-             */
-            error: string;
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-        };
-        PythonPackageNameResponseError: {
-            /**
-             * @description Error information for user
-             * @example Some error message reported back to users
-             */
-            error: string;
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-        };
-        /** @description Webhook payload from Github event */
-        KebechetWebhookInput: { [key: string]: unknown };
-        /** @description A listing of available platforms */
-        PythonPlatforms: {
-            platform: string[];
-        };
-        /** @description A listing of available environments */
-        PythonEnvironments: {
-            environment: {
-                /**
-                 * @description Operating system name
-                 * @example rhel
-                 */
-                os_name: string;
-                /**
-                 * @description Operating system version
-                 * @example 9
-                 */
-                os_version: string;
-                /**
-                 * @description Python version
-                 * @example 3.9
-                 */
-                python_version: string;
-            }[];
-        };
-        PythonPackageDependencies: {
-            parameters: { [key: string]: unknown };
-            dependencies: {
-                environment_marker: string | null;
-                extra: string | null;
-                name: string;
-                version: string;
-            }[];
-        };
-        PythonPackageDependenciesError: {
-            /**
-             * @description Error information for user
-             * @example Some error message reported back to users
-             */
-            error: string;
-            /** @description Parameters echoed back to user for debugging */
-            parameters: { [key: string]: unknown };
-        };
-        /** @description Dict containing kebechet specific metadata for justification */
-        KebechetMetadata: {
-            message_justification?: number | null;
-            package_name?: string | null;
-            package_version?: string | null;
-            package_index?: string | null;
-        };
-        StackInfo: {
-            /** @example An example justification message */
-            message: string;
-            /**
-             * @example INFO
-             * @enum {string}
-             */
-            type: "WARNING" | "INFO" | "ERROR";
-            /** @example https://thoth-station.ninja/j/cve */
-            link: string;
-        }[];
-        Justification: {
-            /** @example An example justification message */
-            message: string;
-            /**
-             * @example INFO
-             * @enum {string}
-             */
-            type: "WARNING" | "INFO" | "ERROR";
-            /** @example https://thoth-station.ninja/j/cve */
-            link: string;
-        }[];
+        apiversion?: string | null;
+        /**
+         * @description Type of the log
+         *
+         * @example BuildLog
+         */
+        kind?: string | null;
+        metadata?: string | null;
+      };
     };
-    parameters: {
-        /** @description Name of an image - can also specify remote registry to pull image from */
-        image: string;
-        /** @description Registry user to be used for pulling images from registry */
-        registry_user: string;
-        /** @description Registry password or token to be used for pulling images from registry */
-        registry_password: string;
-        /** @description Verify TLS certificates of registry from where images are pulled from */
-        verify_tls: boolean;
-        /** @description An identifier of the requested analysis */
-        analysis_id: string;
-        /** @description Sort the response list */
-        order_by: "ASC" | "DESC";
-        /** @description Filter Python package name by string. (wildcard characters "%" and "_" are supported) */
-        starts_with: string;
-        /** @description Page offset in pagination */
-        page: number;
-        /** @description Number of items returned per page */
-        per_page: number;
-        /** @description Software environment name for run for which analyses should be retrieved */
-        environment_name: string;
-        /** @description Type of environment (runtime or buildtime) which is being analyzed */
-        environment_type: "buildtime" | "runtime";
-        /** @description A remote where the image is being used */
-        origin: string;
-        /** @description A repository where the application stack is used */
-        origin_py: string;
-        /** @description Run the given analyzer in a verbose mode so developers can debug it */
-        debug: boolean;
-        /** @description Do not use cached results, always run the analysis */
-        force: boolean;
-        /** @description Image hash for identifying image (including hash type, now supported only "sha256") */
-        image_hash: string;
-        /** @description An API token for authenticated requests */
-        token: string;
-        /** @description Recommendation type */
-        recommendation_type:
-            | "stable"
-            | "testing"
-            | "latest"
-            | "performance"
-            | "security";
+    UnitDef: {
+      /** @example SomeUnit */
+      name: string;
+      configuration: { [key: string]: unknown };
+      /** @description Flag set to true if the pipeline unit was run during the resolution process */
+      unit_run: boolean;
+    };
+    ProjectDef: {
+      constraints: {
         /**
-         * @description A flag marking what Thoth integration is requesting adviser:
+         * @description Name of the package that was constrained
+         * @example flask
+         */
+        name: string;
+        /**
+         * @description Version range specifier for the constrain
+         * @example ~=2.0.0
+         */
+        version: string;
+        /**
+         * @description An environment marker used with the version constrain
+         * @example python_version >= "3.8"
+         */
+        markers: string;
+      }[];
+      /**
+       * @description Requirements stating direct dependencies of the project, the format is compatible with Pipenv
+       *
+       * @example {
+       *   "dev-packages": {},
+       *   "packages": {
+       *     "numpy": {
+       *       "index": "pypi",
+       *       "version": "*"
+       *     }
+       *   },
+       *   "requires": {
+       *     "python_version": "3.9"
+       *   },
+       *   "source": [
+       *     {
+       *       "name": "pypi",
+       *       "url": "https://pypi.org/simple",
+       *       "verify_ssl": true
+       *     }
+       *   ],
+       *   "thoth": {
+       *     "allow_prereleases": {},
+       *     "disable_index_adjustment": false
+       *   }
+       * }
+       */
+      requirements: { [key: string]: unknown };
+      /**
+       * @description A lock file stating all the dependencies pinned to a specific version togher with an explicit Python package index configuration
+       *
+       * @example {
+       *   "_meta": {
+       *     "hash": {
+       *       "sha256": "f6dd619becbaf7a5c233150a889ef85fbfdf8aa260d182f0874e3234f06ad2b5"
+       *     },
+       *     "pipfile-spec": 6,
+       *     "requires": {
+       *       "python_version": "3.9"
+       *     },
+       *     "sources": [
+       *       {
+       *         "name": "pypi",
+       *         "url": "https://pypi.org/simple",
+       *         "verify_ssl": true
+       *       }
+       *     ]
+       *   },
+       *   "default": {
+       *     "numpy": {
+       *       "hashes": [
+       *         "sha256:b1cca51512299841bf69add3b75361779962f9cee7d9ee3bb446d5982e925b69",
+       *         "sha256:c9591886fc9cbe5532d5df85cb8e0cc3b44ba8ce4367bd4cf1b93dc19713da72"
+       *       ],
+       *       "index": "pypi-org-simple",
+       *       "version": "==1.3.0"
+       *     }
+       *   }
+       * }
+       */
+      requirements_locked: { [key: string]: unknown };
+      runtime_environment: components["schemas"]["RuntimeEnvironment"] | null;
+    };
+    DebDependencyItem: {
+      /** @description Dependency name */
+      name: string;
+      /** @description Dependency version */
+      version: string;
+    };
+    /**
+     * @description Direct dependencies for the application stack
+     * @example [[source]]
+     * url = "https://pypi.python.org/simple"
+     * verify_ssl = true
+     * name = "pypi"
+     *
+     * [packages]
+     * daiquiri = "*"
+     *
+     * [dev-packages]
+     */
+    RequirementsDef: string;
+    /**
+     * @description Fully pinned down dependency stack
+     * @example { "_meta": { "hash": { "sha256": "fecd8a66514e1129f796d7a45a1f5b2f7733e3ae0ead487ca63752da680ab8e4" }, "pipfile-spec": 6, "requires": {}, "sources": [ { "name": "pypi", "url": "https://pypi.python.org/simple", "verify_ssl": true } ] }, "default": { "daiquiri": { "hashes": [ "sha256:1c4942ef0d40920100162ede6024edd43734e40b8dca9b13ebaf4b52ea198457", "sha256:eb300dfddae43dfdb157938a854b1387298b8fb340d6ecb7b5ae867283af763e" ], "index": "pypi", "version": "==1.4.0" } }, "develop": {} }
+     */
+    RequirementsLockDef: string;
+    PythonStack: {
+      requirements: components["schemas"]["RequirementsDef"];
+      requirements_lock: components["schemas"]["RequirementsLockDef"];
+      /**
+       * @description Lockfile format - defaults to pipenv if not explicitly specified
+       *
+       * @example pipenv
+       * @enum {string}
+       */
+      requirements_format?: "pipenv";
+    };
+    /** @description Input for repo-init workflow */
+    RepoInitInput: {
+      /** @example https://github.com/foo/bar */
+      project_url?: string;
+    };
+    /** @description Runtime environment description, see Thamos configuration for more info */
+    RuntimeEnvironment: {
+      /** @description Hardware configuration used */
+      hardware?: {
+        /** @example 6 */
+        cpu_model?: number | null;
+        /** @example 142 */
+        cpu_family?: number | null;
+        gpu_model?: string | null;
+      } | null;
+      /** @description Operating system used */
+      operating_system?: {
+        /** @example rhel */
+        name: string | null;
+        /** @example 8 */
+        version: string | null;
+      };
+      /**
+       * @description Python version on which the application runs on
+       * @example 3.8
+       */
+      python_version?: string | null;
+      /**
+       * @description Nvidia CUDA version which the application uses
+       * @example 11.1
+       */
+      cuda_version?: string | null;
+      /**
+       * @description OpenBLAS version used, if any
+       * @example 0.3.13
+       */
+      openblas_version?: string | null;
+      /**
+       * @description Open MPI version used, if any
+       * @example 4.1
+       */
+      openmpi_version?: string | null;
+      /**
+       * @description NVIDIA cuDNN version used, if any
+       * @example 8
+       */
+      cudnn_version?: string | null;
+      /**
+       * @description Intel® Math Kernel Library version used, if any
+       * @example 2021.1.1
+       */
+      mkl_version?: string | null;
+      /**
+       * @description Platform used - corresponds to sysconfig.get_platform() call
+       * @enum {string|null}
+       */
+      platform?: "linux-x86_64" | null;
+      /**
+       * @description A base container image used to run the application
+       * @example quay.io/thoth-station/s2i-thoth-ubi8-py38:v0.32.3
+       */
+      base_image?: string | null;
+      /**
+       * @description User defined name of the runtime environment
+       * @example ubi8-prod
+       */
+      name?: string | null;
+    };
+    ProvenanceInput: {
+      application_stack: components["schemas"]["PythonStack"];
+      kebechet_metadata?: components["schemas"]["KebechetMetadata"];
+      justification?: components["schemas"]["Justification"];
+      stack_info?: components["schemas"]["StackInfo"];
+    };
+    AdviseInput: {
+      application_stack: components["schemas"]["PythonStack"];
+      /**
+       * @description Constraints to apply during the resolution
+       * @example flask>=1.0
+       */
+      constraints?: string | null;
+      runtime_environment?: components["schemas"]["RuntimeEnvironment"];
+      /**
+       * @description Labels used to label the request
+       * @example {
+       *   "label_key": "label_value"
+       * }
+       */
+      labels?: { [key: string]: unknown } | null;
+      /** @description Static analysis of libraries used within user's project */
+      library_usage?: {
+        /** @example 0.2.0 */
+        version: string;
+        /**
+         * @example {
+         *   "app.py": {
+         *     "flask": [
+         *       "flask.Flask"
+         *     ]
+         *   }
+         * }
+         */
+        report: { [key: string]: unknown };
+      };
+      kebechet_metadata?: components["schemas"]["KebechetMetadata"];
+      justification?: components["schemas"]["Justification"];
+      stack_info?: components["schemas"]["StackInfo"];
+    };
+    /** @description Response information with image metadata as extracted by Skopeo */
+    ImageMetadataResponse: {
+      /**
+       * @description Target architecture of image
+       * @example amd64
+       */
+      Architecture: string;
+      /**
+       * @description Image creation date and time
+       * @example 2016-03-04T18:40:02.92155334Z
+       */
+      Created: string;
+      /**
+       * @description Digest of the image
+       * @example sha256:cfd8f071bf8da7a466748f522406f7ae5908d002af1b1a1c0dcf893e183e5b32''
+       */
+      Digest: string;
+      /**
+       * @description Version of Docker
+       * @example 1.9.1
+       */
+      DockerVersion: string;
+      /** @description Environment variables from analyzed image */
+      Env: string[];
+      /** @description Image labels */
+      Labels: { [key: string]: unknown };
+      Layers: string[];
+      /**
+       * @description Operating system identifier
+       * @example linux
+       */
+      Os: string;
+      RepoTags: string[];
+    };
+    /** @description Response for a submitted build analysis */
+    BuildAnalysisResponse: {
+      /** @description Response for a submitted analysis */
+      base_image_analysis?: {
+        /**
+         * @description An identifier of submitted analysis for checking its status and its results
+         *
+         * @example package-extract-220106085109-984feaa8a3862285
+         */
+        analysis_id?: string;
+        /** @description If set to true the given analysis was picked from cache */
+        cached?: boolean;
+      } | null;
+      /** @description Response for a submitted analysis */
+      output_image_analysis?: {
+        /**
+         * @description An identifier of submitted analysis for checking its status and its results
+         *
+         * @example package-extract-220106085109-984feaa8a3862285
+         */
+        analysis_id?: string;
+        /** @description If set to true the given analysis was picked from cache */
+        cached?: boolean;
+      } | null;
+      /** @description Response for a submitted analysis */
+      buildlog_analysis?: {
+        /** @description An identifier of submitted analysis for checking its status and its results */
+        analysis_id?: string;
+        /** @description If set to true the given analysis was picked from cache */
+        cached?: boolean;
+      } | null;
+      /** @description Document identifier for the stored build log */
+      buildlog_document_id?: string;
+    };
+    /** @description Response for a submitted analysis */
+    AnalysisWithAuthenticationResponse: {
+      /**
+       * @description An id of submitted analysis for checking its status and its results
+       *
+       * @example adviser-220106085109-984feaa8a3862285
+       */
+      analysis_id: string;
+      /** @description Parameters echoed back to user (with default parameters if omitted) */
+      parameters: { [key: string]: unknown };
+      /** @description If set to true the given analysis was picked from cache */
+      cached: boolean;
+      /** @description If set to true the given analysis was authenticated */
+      authenticated: boolean;
+    };
+    /** @description Response for a submitted analysis */
+    AnalysisResponse: {
+      /**
+       * @description An id of submitted analysis for checking its status and its results
+       *
+       * @example package-extract-220106085109-984feaa8a3862285
+       */
+      analysis_id: string;
+      /** @description Parameters echoed back to user (with default parameters if omitted) */
+      parameters: { [key: string]: unknown };
+      /** @description If set to true the given analysis was picked from cache */
+      cached: boolean;
+    };
+    /** @description A listing of Python package indexes */
+    PythonPackageIndexes: {
+      indexes: {
+        /**
+         * @description URL to the Python simple repository as described in PEP 503
+         * @example http://pypi.org/simple
+         */
+        url: string;
+        /**
+         * @description URL to the warehouse API
+         * @example https://pypi.org/pypi
+         */
+        warehouse_api_url: string | null;
+        /**
+         * @description Use secured connection to warehouse
+         * @example true
+         */
+        verify_ssl: boolean;
+        /**
+         * @description The backend is configured to monitor only releases of already seen packages
+         *
+         * @example true
+         */
+        only_if_package_seen: boolean;
+      }[];
+    };
+    /** @description Error response for a submitted build analysis */
+    BuildAnalysisResponseError: {
+      base_image_analysis: {
+        /**
+         * @description Error information for users
+         * @example Some error message reported back to users
+         */
+        error?: string;
+        /** @description Parameters echoed back to user for debugging */
+        parameters?: { [key: string]: unknown };
+      };
+      output_image_analysis: {
+        /**
+         * @description Error information for user
+         * @example Some error message reported back to users
+         */
+        error?: string;
+        /** @description Parameters echoed back to user for debugging */
+        parameters?: { [key: string]: unknown };
+      };
+      build_log_analysis: {
+        /**
+         * @description Error information for user
+         * @example Some error message reported back to users
+         */
+        error?: string;
+        /** @description Parameters echoed back to user for debugging */
+        parameters?: { [key: string]: unknown };
+      };
+    };
+    AnalysisUnauthorizedError: {
+      /**
+       * @description Unauthorized error information
+       * @example Some error message reported back to users
+       */
+      error: string;
+    };
+    AnalysisResponseError: {
+      /**
+       * @description Error information for user
+       * @example Some error message reported back to users
+       */
+      error: string;
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+    };
+    /** @description Result of an avise */
+    AnalysisResultResponse: {
+      /** @description Metadata for container image analysis run */
+      metadata: {
+        /**
+         * @description Analyzer name which handled container image analysis
+         *
+         * @example package-extract
+         */
+        analyzer: string;
+        /**
+         * @description Version of analyzer handling the container image analysis
+         *
+         * @example v1.0.0
+         */
+        analyzer_version: string;
+        /** @description Arguments passed to the analyzer */
+        arguments: { [key: string]: unknown };
+        /**
+         * @description Date and time of analysis end in ISO format
+         * @example 2021-02-23T09:29:45.254Z
+         */
+        datetime: string;
+        /** @description Information about environment in which the analysis was performed */
+        distribution: {
+          /**
+           * @description Codename of environment in which the analysis was performed
+           *
+           * @example Ootpa
+           */
+          codename: string;
+          /**
+           * @description Identifier of environment in which the analysis was performed
+           *
+           * @example rhel
+           */
+          id: string;
+          /**
+           * @description Similar environments in comparison to environment in which the analysis was performed
+           *
+           * @example fedora
+           */
+          like: string;
+          /**
+           * @description A string representation of environment version
+           * @example 8.3
+           */
+          version: string;
+          /** @description Parts of version identifier of the analysing environment */
+          version_parts: {
+            /** @example 1 */
+            build_number: string;
+            /** @example 8 */
+            major: string;
+            /** @example 3 */
+            minor: string;
+          };
+        };
+        /**
+         * @description A unique identifier of the document
+         * @example package-extract-211022015031-eb53ce1939b6c12e
+         */
+        document_id: string;
+        /** @description Number of seconds for which the analyzer was running */
+        duration: number;
+        /**
+         * @description Pod name where the analysis was done
+         * @example package-extract-211022015031-eb53ce1939b6c12e-1359347945
+         */
+        hostname: string;
+        os_release: { [key: string]: unknown };
+        python: {
+          /** @example 1013 */
+          api_version: number;
+          /** @example cpython */
+          implementation_name: string;
+          /** @example 3 */
+          major: number;
+          /** @example 3 */
+          micro: number;
+          /** @example 8 */
+          minor: number;
+          /** @example final */
+          releaselevel: string;
+          /** @example 0 */
+          serial: number;
+        };
+        /**
+         * @description Name of Thoth's deployment that computed results
+         * @example ocp4-stage
+         */
+        thoth_deployment_name: string;
+        /**
+         * @description Timestamp when results were computed
+         * @example 1634867650
+         */
+        timestamp: number;
+      };
+      result: {
+        /** @description Information supplied by AICoE-CI during the image build */
+        "aicoe-ci": {
+          requirements: components["schemas"]["RequirementsDef"] | null;
+          requirements_lock: components["schemas"]["RequirementsLockDef"] | null;
+        };
+        /** @description Nvidia CUDA version detected - path is the key and CUDA version is the object value */
+        "cuda-version": { [key: string]: unknown };
+        /** @description Debian packages detected (experimental) */
+        deb: {
+          /** @description Name of the Debian package */
+          name: string;
+          /** @description Version identifier of the Debian package */
+          version: string;
+          /** @description Package architecture */
+          arch: string;
+        }[];
+        /** @description Dependencies of Debian packages detected */
+        "deb-dependencies": {
+          /** @description Debian package name */
+          name: string;
+          /** @description Debian package version */
+          version: string;
+          /** @description Debian package epoch */
+          epoch: string;
+          depends: components["schemas"]["DebDependencyItem"];
+          "pre-depends": components["schemas"]["DebDependencyItem"];
+          replaces: components["schemas"]["DebDependencyItem"];
+        }[];
+        /**
+         * @description Size of the container image in bytes
+         * @example 393012461
+         */
+        image_size: number;
+        /** @description Container image layers, sorted based on the layer precedence */
+        layers: string[];
+        /** @description Mercator (TM) output */
+        mercator: { [key: string]: unknown }[] | null;
+        /** @description Operating System information */
+        "operating-system": { [key: string]: unknown };
+        /** @description Python files detected in the container image */
+        "python-files": {
+          /** @example /opt/app-root/lib/python3.9/site-packages/micropipenv.py */
+          filepath: string;
+          /**
+           * @description SHA256 of the file
+           * @example 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+           */
+          sha256: string;
+        }[];
+        /** @description Python interpreters detected inside the container image */
+        "python-interpreters": {
+          /**
+           * @description A dereferenced symlink (if any) to the Python interpreter
+           * @example /usr/bin/python3.9
+           */
+          link: string;
+          /**
+           * @description A path to the Python interpreter executable
+           * @example /usr/bin/python3.9
+           */
+          path: string;
+          /**
+           * @description Python interpreter version
+           * @example 3.9.1
+           */
+          version: string | null;
+        }[];
+        /** @description Detected Python packages inside the container image */
+        "python-packages": {
+          /**
+           * @description A location where the Python package is installed
+           * @example /opt/app-root/lib/python3.9/site-packages
+           */
+          location: string;
+          /**
+           * @description Python package name
+           * @example pip
+           */
+          package_name: string;
+          /**
+           * @description Python package version
+           * @example 21.1.3
+           */
+          package_version: string;
+        }[];
+        /** @description A listing of container images found inside the analyzed container image */
+        rpm: string[];
+        /** @description Information about RPM packages and their dependencies */
+        "rpm-dependencies": unknown[];
+        "skopeo-inspect": components["schemas"]["ImageMetadataResponse"];
+        /**
+         * @description Systems symbols detected - a path mapping to exported symbols available
+         *
+         * @example {
+         *   "/usr/lib64/libz.so.1": [
+         *     "ZLIB_1.2.3.5",
+         *     "ZLIB_1.2.0.2",
+         *     "ZLIB_1.2.2.3",
+         *     "ZLIB_1.2.3.4",
+         *     "ZLIB_1.2.2",
+         *     "ZLIB_1.2.0",
+         *     "ZLIB_1.2.5.1",
+         *     "ZLIB_1.2.9",
+         *     "ZLIB_1.2.7.1",
+         *     "ZLIB_1.2.0.8",
+         *     "ZLIB_1.2.5.2",
+         *     "ZLIB_1.2.3.3",
+         *     "ZLIB_1.2.2.4"
+         *   ]
+         * }
+         */
+        "system-symbols": { [key: string]: unknown };
+      };
+    };
+    /** @description Result of an avise */
+    ProvenanceResultResponse: {
+      /** @description Metadata for container image analysis run */
+      metadata: {
+        /**
+         * @description Name of the component used to check provenance
+         *
+         * @example provenance-checker
+         */
+        analyzer: string;
+        /**
+         * @description Version of the component used to check provenance
+         *
+         * @example v1.0.0
+         */
+        analyzer_version: string;
+        /** @description Arguments passed to the provenance checker */
+        arguments: { [key: string]: unknown };
+        /**
+         * @description Date and time of analysis end in ISO format
+         * @example 2021-02-23T09:29:45.254Z
+         */
+        datetime: string;
+        /** @description Information about environment in which provenance checker run */
+        distribution: {
+          /**
+           * @description Codename of environment in which the provenance check was run
+           *
+           * @example Ootpa
+           */
+          codename: string;
+          /**
+           * @description Identifier of environment in which the provenance check was run
+           *
+           * @example rhel
+           */
+          id: string;
+          /**
+           * @description Similar environments in comparison to environment in which the provenance check was run
+           *
+           * @example fedora
+           */
+          like: string;
+          /**
+           * @description A string representation of environment version
+           * @example 8.3
+           */
+          version: string;
+          /** @description Parts of version identifier of the environment */
+          version_parts: {
+            /** @example 1 */
+            build_number: string;
+            /** @example 8 */
+            major: string;
+            /** @example 3 */
+            minor: string;
+          };
+        };
+        /**
+         * @description A unique identifier of the document
+         * @example provenance-checker-211022015031-eb53ce1939b6c12e
+         */
+        document_id: string;
+        /** @description Number of seconds for which the provenance-checker was running */
+        duration: number;
+        /**
+         * @description Pod name where the provenance checks were done
+         * @example provenance-checker-211022015031-eb53ce1939b6c12e-1359347945
+         */
+        hostname: string;
+        os_release: { [key: string]: unknown };
+        python: {
+          /** @example 1013 */
+          api_version: number;
+          /** @example cpython */
+          implementation_name: string;
+          /** @example 3 */
+          major: number;
+          /** @example 3 */
+          micro: number;
+          /** @example 8 */
+          minor: number;
+          /** @example final */
+          releaselevel: string;
+          /** @example 0 */
+          serial: number;
+        };
+        /**
+         * @description Name of Thoth's deployment that computed results
+         * @example ocp4-stage
+         */
+        thoth_deployment_name: string;
+        /**
+         * @description Timestamp when results were computed
+         * @example 1634867650
+         */
+        timestamp: number;
+      };
+      /** @description Provenance check result */
+      result: {
+        /**
+         * @description A flag set to true if an error was encountered
+         * @example false
+         */
+        error: boolean;
+        /**
+         * @description An error message reported to users
+         * @example Failed to parse input
+         */
+        error_msg: string | null;
+        input: { [key: string]: unknown } | null;
+        parameters: {
+          /** @description Python package indexes whitelisted */
+          whitelisted_sources?: string[];
+          project: components["schemas"]["ProjectDef"];
+        };
+        /** @description A provenance check report */
+        report: { [key: string]: unknown }[];
+      };
+    };
+    /** @description Result of a container image analysis */
+    AdviserResultResponse: {
+      /** @description Metadata for analysis run */
+      metadata: {
+        /**
+         * @description Analyzer name which handled analysis
+         * @example thoth-adviser
+         */
+        analyzer: string;
+        /**
+         * @description Version of analyzer handling analysis
+         * @example v1.0.0
+         */
+        analyzer_version: string;
+        /** @description Arguments passed to the analyzer */
+        arguments: { [key: string]: unknown };
+        /**
+         * @description Date and time of analysis end in ISO format
+         * @example 2021-02-23T09:29:45.254Z
+         */
+        datetime: string;
+        /** @description Information about environment in which the analysis was performed */
+        distribution: {
+          /**
+           * @description Codename of environment in which the analysis was performed
+           *
+           * @example Ootpa
+           */
+          codename: string;
+          /**
+           * @description Identifier of environment in which the analysis was performed
+           *
+           * @example rhel
+           */
+          id: string;
+          /**
+           * @description Similar environments in comparison to environment in which the analysis was performed
+           *
+           * @example fedora
+           */
+          like: string;
+          /**
+           * @description A string representation of environment version
+           * @example 8.3
+           */
+          version: string;
+          /** @description Parts of version identifier of the analysing environment */
+          version_parts: {
+            /** @example 1 */
+            build_number: string;
+            /** @example 8 */
+            major: string;
+            /** @example 3 */
+            minor: string;
+          };
+        };
+        /**
+         * @description A unique identifier of the document
+         * @example adviser-211022015031-eb53ce1939b6c12e
+         */
+        document_id: string;
+        /** @description Number of seconds for which the analyzer was running */
+        duration: number;
+        /**
+         * @description Pod name where the analysis was done
+         * @example adviser-211022015031-eb53ce1939b6c12e-1359347945
+         */
+        hostname: string;
+        os_release: { [key: string]: unknown };
+        python: {
+          /** @example 1013 */
+          api_version: number;
+          /** @example cpython */
+          implementation_name: string;
+          /** @example 3 */
+          major: number;
+          /** @example 3 */
+          micro: number;
+          /** @example 8 */
+          minor: number;
+          /** @example final */
+          releaselevel: string;
+          /** @example 0 */
+          serial: number;
+        };
+        /**
+         * @description Name of Thoth's deployment that computed results
+         * @example ocp4-stage
+         */
+        thoth_deployment_name: string;
+        /**
+         * @description Timestamp when results were computed
+         * @example 1634867650
+         */
+        timestamp: number;
+      };
+      /** @description Actual result of an analysis run */
+      result: {
+        /**
+         * @description A flag indicating error during the advise
+         * @example false
+         */
+        error: boolean;
+        /**
+         * @description An error message describing the error encountered
+         * @example Cannot satisfy direct dependency flask
+         */
+        error_msg: string | null;
+        /** @description Parameters supplied on advise together with user inputs */
+        parameters: { [key: string]: unknown };
+        /** @description Report with results computed */
+        report: {
+          /**
+           * @description Error message describing advise failure
+           * @example No results were resolved,, see logs for more info
+           */
+          ERROR?: string;
+          /**
+           * @description Number of resolved states that were accepted
+           * @example 1
+           */
+          accepted_final_states_count?: number;
+          /**
+           * @description Number of states that were discarded during the resolution
+           * @example 1
+           */
+          discarded_final_states_count?: number;
+          /** @description Pipeline configuration used during the resolution process, available only on debug */
+          pipeline?: {
+            /** @description Boot pipeline unit types registered to the resolution process */
+            boots: components["schemas"]["UnitDef"][];
+            /** @description Pseudonym pipeline unit types registered to the resolution process */
+            pseudonyms: components["schemas"]["UnitDef"][];
+            /** @description Sieve pipeline unit types registered to the resolution process */
+            sieves: components["schemas"]["UnitDef"][];
+            /** @description Step pipeline unit types registered to the resolution process */
+            steps: components["schemas"]["UnitDef"][];
+            /** @description Stride pipeline unit types registered to the resolution process */
+            strides: components["schemas"]["UnitDef"][];
+            /** @description Wrap pipeline unit types registered to the resolution process */
+            wraps: components["schemas"]["UnitDef"][];
+          } | null;
+          /** @description Products computed in the deployment, always holds only one item */
+          products?: {
+            /** @description Advised changes to manifest files */
+            advised_manifest_changes: { [key: string]: unknown }[][] | null;
+            advised_runtime_environment: components["schemas"]["RuntimeEnvironment"] | null;
+            /** @description Serialized dependency graph */
+            dependency_graph: {
+              /** @description Edge represented as a source-destination pair, representing indexes to the nodes listing */
+              edges: number[][];
+              /** @description A listing of nodes (package names) in the dependency graph */
+              nodes: string[];
+            };
+            justification: components["schemas"]["Justification"];
+            project: components["schemas"]["ProjectDef"];
+            /**
+             * Format: float
+             * @description Score of the computed product
+             * @example 0.25
+             */
+            score: number;
+          }[];
+          /**
+           * @description Number of iterations done by the resolver to compute products
+           *
+           * @example 49945
+           */
+          resolver_iterations?: number;
+          stack_info?: components["schemas"]["StackInfo"];
+        } | null;
+      };
+    };
+    /** @description Information about the current analysis status */
+    AnalysisStatusResponse: {
+      /** @description Status information about the analysis run */
+      status: {
+        /**
+         * @description Datetime in ISO format informing about when the analysis has finished
+         *
+         * @example 2022-01-10T20:46:39.000Z
+         */
+        finished_at: string | null;
+        /**
+         * @description Reasoning on finished run
+         * @example success
+         */
+        reason: string | null;
+        /**
+         * @description Datetime in ISO format informing about when the analysis has started
+         *
+         * @example 2022-01-10T20:46:39.000Z
+         */
+        started_at: string | null;
+        /** @example success */
+        state: string;
+      };
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+    };
+    ContainerImagesResponse: {
+      container_images: {
+        /** @example quay.io/thoth-station/s2i-custom-notebook:v0.2.0 */
+        environment_name: string | null;
+        /** @example 3.8 */
+        python_version: string | null;
+        /** @example s2i-minimal-notebook */
+        env_image_name: string | null;
+        /** @example v1.2.3 */
+        env_image_tag: string | null;
+        /** @example 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b */
+        image_sha: string | null;
+        /** @example rhel */
+        os_name: string | null;
+        /** @example 8 */
+        os_version: string | null;
+        /** @example quay.io/thoth-station/s2i-thoth-ubi8-py38 */
+        thoth_image_name: string | null;
+        /** @example v1.0.0 */
+        thoth_image_version: string | null;
+        /** @example 11.1 */
+        cuda_version: string | null;
+        /**
+         * @example RUNTIME
+         * @enum {string}
+         */
+        environment_type: "BUILDTIME" | "RUNTIME";
+        /** @example package-extract-220106085109-984feaa8a3862285 */
+        package_extract_document_id: string;
+        /** @example 2021-02-23T09:29:45.254Z */
+        datetime: string;
+        /** @example https://quay.io/thoth-station/s2i-custom-notebook:v0.2.0 */
+        quay_repo_url: string | null;
+        /** @example /api/v1/analyze/package-extract-220106085109-984feaa8a3862285 */
+        image_analysis_url: string | null;
+      }[];
+      parameters: {
+        /**
+         * @description Page offset in the pagination
+         * @example 0
+         */
+        page: number;
+      };
+    };
+    ContainerImagesResponseError: {
+      /**
+       * @description Error information for user
+       * @example Some error message reported back to users
+       */
+      error: string;
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+    };
+    AnalysisLogResponse: {
+      /**
+       * @description Analyzer logs printed to stdout/stderr as a plain text
+       * @example Starting an analysis
+       * Analyzer version is v1.0.0
+       */
+      log: string | null;
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+    };
+    PythonPackagesResponse: {
+      packages: {
+        /**
+         * @description Name of the package
+         * @example flask
+         */
+        package_name: string;
+      }[];
+    };
+    PythonPackageVersionsResponse: {
+      versions: {
+        /**
+         * @description Name of the package
+         * @example tensorflow
+         */
+        package_name: string;
+        /**
+         * @description Version of the package
+         * @example 2.0.0
+         */
+        package_version: string;
+        /**
+         * @description Source index URL of the package
+         * @example https://pypi.org/simple
+         */
+        index_url: string;
+      }[];
+    };
+    PythonPackageVersionEnvironmentsResponse: {
+      environments: {
+        /**
+         * @description Operating system name
+         * @example rhel
+         */
+        os_name: string;
+        /**
+         * @description Operating system version
+         * @example 9
+         */
+        os_version: string;
+        /**
+         * @description Python version
+         * @example 3.9
+         */
+        python_version: string;
+      }[];
+    };
+    PythonPackageVersionMetadataResponse: {
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+      metadata: {
+        /** @description Python packages (modules) the given package provides */
+        packages: string[];
+        /**
+         * @description Index URL from where the given package comes from
+         * @example https://pypi.org/simple
+         */
+        index_url: string;
+        /**
+         * @description Name of the Python package
+         * @example pandas
+         */
+        package_name: string;
+        /**
+         * @description Version of the Python package
+         * @example 1.1.4
+         */
+        package_version: string;
+        /**
+         * @description Dependency information
+         * @example {
+         *   "hypothesis": {
+         *     "extra": [
+         *       "test"
+         *     ],
+         *     "extras": [],
+         *     "marker": "extra == \\\"test\\\"",
+         *     "marker_evaluated": "python_version >= 0.0",
+         *     "marker_evaluation_error": null,
+         *     "marker_evaluation_result": true,
+         *     "specifier": ">=3.58",
+         *     "versions": [
+         *       "3.58.0",
+         *       "3.58.1",
+         *       "3.59.0",
+         *       "3.59.1"
+         *     ]
+         *   }
+         * }
+         */
+        dependencies: { [key: string]: unknown };
+        importlib_metadata: {
+          entry_points:
+            | {
+                /** @example pandas_plotting_backends */
+                group: string;
+                /** @example matplotlib */
+                name: string;
+                /** @example pandas.plotting._matplotlib */
+                value: string;
+              }[]
+            | null;
+          /**
+           * @description Files shipped with the Python package
+           * @example {
+           *   "hash": {
+           *     "mode": "sha256",
+           *     "value": "aX-7A9PosUb6vSa8tNbfjhZTOtr99gSCyjl1q9bN2WU"
+           *   },
+           *   "path": "pandas-1.1.4.dist-info/METADATA",
+           *   "size": 4729
+           * }
+           */
+          files: { [key: string]: unknown }[];
+          /**
+           * @description Core Python packaging metadata extracted
+           * @example {
+           *   "Classifier": [
+           *     "Development Status :: 5 - Production/Stable",
+           *     "Environment :: Console",
+           *     "Operating System :: OS Independent",
+           *     "Intended Audience :: Science/Research",
+           *     "Programming Language :: Python",
+           *     "Programming Language :: Python :: 3",
+           *     "Programming Language :: Python :: 3.6",
+           *     "Programming Language :: Python :: 3.7",
+           *     "Programming Language :: Python :: 3.8",
+           *     "Programming Language :: Python :: 3.9",
+           *     "Programming Language :: Cython",
+           *     "Topic :: Scientific/Engineering"
+           *   ],
+           *   "Home-page": "https://pandas.pydata.org",
+           *   "License": "BSD",
+           *   "Maintainer": "The PyData Development Team",
+           *   "Maintainer-email": "pydata@googlegroups.com",
+           *   "Metadata-Version": "2.1",
+           *   "Name": "pandas",
+           *   "Platform": [
+           *     "any"
+           *   ],
+           *   "Project-URL": [
+           *     "Bug Tracker, https://github.com/pandas-dev/pandas/issues",
+           *     "Documentation, https://pandas.pydata.org/pandas-docs/stable/",
+           *     "Source Code, https://github.com/pandas-dev/pandas"
+           *   ],
+           *   "Provides-Extra": [
+           *     "test"
+           *   ],
+           *   "Requires-Dist": [
+           *     "python-dateutil (>=2.7.3)",
+           *     "pytz (>=2017.2)",
+           *     "numpy (>=1.15.4)",
+           *     "pytest (>=4.0.2) ; extra == 'test'",
+           *     "pytest-xdist ; extra == 'test'",
+           *     "hypothesis (>=3.58) ; extra == 'test'"
+           *   ],
+           *   "Requires-Python": ">=3.6.1",
+           *   "Summary": "Powerful data structures for data analysis, time series, and statistics",
+           *   "Version": "1.1.4"
+           * }
+           */
+          metadata: { [key: string]: unknown };
+          /** @description Python requirements of the given package */
+          requires: string[] | null;
+          /**
+           * @description Version of the Python package based on importlib metadata detection
+           *
+           * @example 1.1.4
+           */
+          version: string;
+        };
+      };
+    };
+    PythonPackageVersionMetadataResponseError: {
+      /**
+       * @description Error information for user
+       * @example Some error message reported back to users
+       */
+      error: string;
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+    };
+    PythonPackageNameImportResponse: {
+      package_names: {
+        /**
+         * @description Name of the package
+         * @example scikit-learn
+         */
+        package_name: string;
+        /**
+         * @description Version of the package
+         * @example 1.0.1
+         */
+        package_version: string;
+        /**
+         * @description Source index URL of the package
+         * @example https://pypi.org/simple
+         */
+        index_url: string;
+        /**
+         * @description A module import matching the given criteria
+         * @example sklearn.neural_network
+         */
+        package_import: string;
+      }[];
+      parameters: { [key: string]: unknown };
+    };
+    PythonPackageVersionsResponseError: {
+      /**
+       * @description Error information for user
+       * @example Some error message reported back to users
+       */
+      error: string;
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+    };
+    PythonPackageNameResponseError: {
+      /**
+       * @description Error information for user
+       * @example Some error message reported back to users
+       */
+      error: string;
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+    };
+    /** @description Webhook payload from Github event */
+    KebechetWebhookInput: { [key: string]: unknown };
+    /** @description A listing of available platforms */
+    PythonPlatforms: {
+      platform: string[];
+    };
+    /** @description A listing of available environments */
+    PythonEnvironments: {
+      environment: {
+        /**
+         * @description Operating system name
+         * @example rhel
+         */
+        os_name: string;
+        /**
+         * @description Operating system version
+         * @example 9
+         */
+        os_version: string;
+        /**
+         * @description Python version
+         * @example 3.9
+         */
+        python_version: string;
+      }[];
+    };
+    PythonPackageDependencies: {
+      parameters: { [key: string]: unknown };
+      dependencies: {
+        environment_marker: string | null;
+        extra: string | null;
+        name: string;
+        version: string;
+      }[];
+    };
+    PythonPackageDependenciesError: {
+      /**
+       * @description Error information for user
+       * @example Some error message reported back to users
+       */
+      error: string;
+      /** @description Parameters echoed back to user for debugging */
+      parameters: { [key: string]: unknown };
+    };
+    /** @description Dict containing kebechet specific metadata for justification */
+    KebechetMetadata: {
+      message_justification?: number | null;
+      package_name?: string | null;
+      package_version?: string | null;
+      package_index?: string | null;
+    };
+    StackInfo: {
+      /** @example An example justification message */
+      message: string;
+      /**
+       * @example INFO
+       * @enum {string}
+       */
+      type: "WARNING" | "INFO" | "ERROR";
+      /** @example https://thoth-station.ninja/j/cve */
+      link: string;
+    }[];
+    Justification: {
+      /** @example An example justification message */
+      message: string;
+      /**
+       * @example INFO
+       * @enum {string}
+       */
+      type: "WARNING" | "INFO" | "ERROR";
+      /** @example https://thoth-station.ninja/j/cve */
+      link: string;
+    }[];
+  };
+  parameters: {
+    /** @description Name of an image - can also specify remote registry to pull image from */
+    image: string;
+    /** @description Registry user to be used for pulling images from registry */
+    registry_user: string;
+    /** @description Registry password or token to be used for pulling images from registry */
+    registry_password: string;
+    /** @description Verify TLS certificates of registry from where images are pulled from */
+    verify_tls: boolean;
+    /** @description An identifier of the requested analysis */
+    analysis_id: string;
+    /** @description Sort the response list */
+    order_by: "ASC" | "DESC";
+    /** @description Filter Python package name by string. (wildcard characters "%" and "_" are supported) */
+    starts_with: string;
+    /** @description Page offset in pagination */
+    page: number;
+    /** @description Number of items returned per page */
+    per_page: number;
+    /** @description Software environment name for run for which analyses should be retrieved */
+    environment_name: string;
+    /** @description Type of environment (runtime or buildtime) which is being analyzed */
+    environment_type: "buildtime" | "runtime";
+    /** @description A remote where the image is being used */
+    origin: string;
+    /** @description A repository where the application stack is used */
+    origin_py: string;
+    /** @description Run the given analyzer in a verbose mode so developers can debug it */
+    debug: boolean;
+    /** @description Do not use cached results, always run the analysis */
+    force: boolean;
+    /** @description Image hash for identifying image (including hash type, now supported only "sha256") */
+    image_hash: string;
+    /** @description An API token for authenticated requests */
+    token: string;
+    /** @description Recommendation type */
+    recommendation_type: "stable" | "testing" | "latest" | "performance" | "security";
+    /**
+     * @description A flag marking what Thoth integration is requesting adviser:
+     * * cli: Thamos CLI
+     * * s2i: OpenShift's S2I (Source-to-Image) build
+     * * kebechet: Kebechet Bot
+     * * jupyter_notebook: Jupyter Notebook using jupyterlab-requirements
+     */
+    source_type: ("cli" | "s2i" | "github_app" | "kebechet" | "jupyter_notebook") | null;
+    /** @description Consider or do not consider development dependencies when resolving stacks */
+    dev: boolean;
+    /** @description Name of the operating system to consider */
+    os_name: string;
+    /** @description Version of the operating system to consider */
+    os_version: string;
+    /** @description Version of Python interpreter provided */
+    python_version: string;
+    /** @description Filter based on CUDA version available */
+    cuda_version: string;
+    /** @description Filter based on the image name */
+    image_name: string;
+    /** @description Filter based on library name */
+    library_name: string;
+    /** @description Filter based on symbol */
+    symbol: string;
+    /** @description Filter based on Python package name */
+    package_name: string;
+    /** @description Filter based on RPM package name */
+    rpm_package_name: string;
+    /** @description Build log to be retrieved */
+    document_id: string;
+    /** @description Registry user to be used for pulling images from registry */
+    base_registry_user: string;
+    /** @description Registry password or token to be used for pulling images from source registry */
+    base_registry_password: string;
+    /** @description Verify TLS certificates of registry from where images are pulled from during the build */
+    base_registry_verify_tls: boolean;
+    /** @description Registry user to be used for pulling images from registry */
+    output_registry_user: string;
+    /** @description Registry password or token to be used for pulling images from destination registry */
+    output_registry_password: string;
+    /** @description Verify TLS certificates of registry from where images are pulled to during the build */
+    output_registry_verify_tls: boolean;
+    /** @description Name of the Python Package */
+    name: string;
+    /** @description Version of the Python Package */
+    version: string;
+    /** @description Index url of the Python Package */
+    index: string;
+    /** @description Name of operating system to consider as environment where package is installed in */
+    os_name_required: string;
+    /** @description Version of operating system to consider as environment where package is installed in */
+    os_version_required: string;
+    /** @description Version of Python interpreter used to install the given package */
+    python_version_required: string;
+    /** @description Consider marker evaluation result for the given environment. If set to None, marker evaluation result is not taken into account */
+    marker_evaluation_result: boolean | null;
+    /** @description Names of the Python Packages (name, version, index) for the given import package name */
+    import_name: string;
+  };
+  headers: {
+    /** Thoth User API version identifier */
+    "x-thoth-version"?: string;
+    /** Full Thoth User API version identifier used for debugging */
+    "x-user-api-service-version"?: string;
+    /** Thoth Search UI URL */
+    "x-thoth-search-ui-url"?: string;
+    /** Current page */
+    page?: number;
+    /** Page size */
+    per_page?: number;
+    /** Number of pages */
+    page_count?: number;
+    /** Total number of entries */
+    entries_count?: number;
+    /** Next page in pagination, if any */
+    next?: string | null;
+    /** Previous page in pagination, if any */
+    prev?: string | null;
+  };
+}
+
+export interface operations {
+  post_image_metadata: {
+    parameters: {
+      query: {
+        /** Name of an image - can also specify remote registry to pull image from */
+        image: components["parameters"]["image"];
+        /** Registry user to be used for pulling images from registry */
+        registry_user?: components["parameters"]["registry_user"];
+        /** Registry password or token to be used for pulling images from registry */
+        registry_password?: components["parameters"]["registry_password"];
+        /** Verify TLS certificates of registry from where images are pulled from */
+        verify_tls?: components["parameters"]["verify_tls"];
+      };
+    };
+    responses: {
+      /** Information about the given image */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["ImageMetadataResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** If the user or anonymous is not authorized to pull image */
+      403: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  post_analyze: {
+    parameters: {
+      query: {
+        /** Name of an image - can also specify remote registry to pull image from */
+        image: components["parameters"]["image"];
+        /** Registry user to be used for pulling images from registry */
+        registry_user?: components["parameters"]["registry_user"];
+        /** Registry password or token to be used for pulling images from registry */
+        registry_password?: components["parameters"]["registry_password"];
+        /** Type of environment (runtime or buildtime) which is being analyzed */
+        environment_type?: components["parameters"]["environment_type"];
+        /** A remote where the image is being used */
+        origin?: components["parameters"]["origin"];
+        /** Run the given analyzer in a verbose mode so developers can debug it */
+        debug?: components["parameters"]["debug"];
+        /** Verify TLS certificates of registry from where images are pulled from */
+        verify_tls?: components["parameters"]["verify_tls"];
+        /** Do not use cached results, always run the analysis */
+        force?: components["parameters"]["force"];
+      };
+    };
+    responses: {
+      /** Successful response with an analyzer identifier */
+      202: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  get_analyze: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
+    };
+    responses: {
+      /** Analyzer result retrieved */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResultResponse"];
+        };
+      };
+      /** Results are not ready yet */
+      202: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisStatusResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** The given document does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  get_analyze_by_hash: {
+    parameters: {
+      path: {
+        /** Image hash for identifying image (including hash type, now supported only "sha256") */
+        image_hash: components["parameters"]["image_hash"];
+      };
+    };
+    responses: {
+      /** Analyzer result retrieved */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResultResponse"];
+        };
+      };
+      /** Results are not ready yet */
+      202: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisStatusResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** The given document does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  get_analyze_log: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
+    };
+    responses: {
+      /** A container image analysis log */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisLogResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** The given image analysis log does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  get_analyze_status: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
+    };
+    responses: {
+      /** Status for the given container image analysis */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisStatusResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** No analysis with the given identifier found */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  post_provenance_python: {
+    parameters: {
+      query: {
+        /** A repository where the application stack is used */
+        origin?: components["parameters"]["origin_py"];
+        /** Run the given analyzer in a verbose mode so developers can debug it */
+        debug?: components["parameters"]["debug"];
+        /** Do not use cached results, always run the analysis */
+        force?: components["parameters"]["force"];
+        /** An API token for authenticated requests */
+        token?: components["parameters"]["token"];
+      };
+    };
+    responses: {
+      /** The provided files will be checked for provenance */
+      202: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisWithAuthenticationResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** Unauthorized request */
+      401: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisUnauthorizedError"];
+        };
+      };
+    };
+    /** Input to be checked for provenance */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProvenanceInput"];
+      };
+    };
+  };
+  get_provenance_python: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
+    };
+    responses: {
+      /** Provenance report retrieved */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["ProvenanceResultResponse"];
+        };
+      };
+      /** Results are not ready yet */
+      202: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisStatusResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** The given document does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  get_provenance_python_log: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
+    };
+    responses: {
+      /** A provenance check log */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisLogResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** The given image analysis log does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  get_provenance_python_status: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
+    };
+    responses: {
+      /** Status for the given provenance checker */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisStatusResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** No analysis with the given identifier found */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+    };
+  };
+  list_python_package_indexes: {
+    responses: {
+      /** Listing of available Python package indexes */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageIndexes"];
+        };
+      };
+    };
+  };
+  post_advise_python: {
+    parameters: {
+      query: {
+        /** Recommendation type */
+        recommendation_type: components["parameters"]["recommendation_type"];
+        /** A repository where the application stack is used */
+        origin?: components["parameters"]["origin_py"];
+        /**
+         * A flag marking what Thoth integration is requesting adviser:
          * * cli: Thamos CLI
          * * s2i: OpenShift's S2I (Source-to-Image) build
          * * kebechet: Kebechet Bot
          * * jupyter_notebook: Jupyter Notebook using jupyterlab-requirements
          */
-        source_type:
-            | ("cli" | "s2i" | "github_app" | "kebechet" | "jupyter_notebook")
-            | null;
-        /** @description Consider or do not consider development dependencies when resolving stacks */
-        dev: boolean;
-        /** @description Name of the operating system to consider */
-        os_name: string;
-        /** @description Version of the operating system to consider */
-        os_version: string;
-        /** @description Version of Python interpreter provided */
-        python_version: string;
-        /** @description Filter based on CUDA version available */
-        cuda_version: string;
-        /** @description Filter based on the image name */
-        image_name: string;
-        /** @description Filter based on library name */
-        library_name: string;
-        /** @description Filter based on symbol */
-        symbol: string;
-        /** @description Filter based on Python package name */
-        package_name: string;
-        /** @description Filter based on RPM package name */
-        rpm_package_name: string;
-        /** @description Build log to be retrieved */
-        document_id: string;
-        /** @description Registry user to be used for pulling images from registry */
-        base_registry_user: string;
-        /** @description Registry password or token to be used for pulling images from source registry */
-        base_registry_password: string;
-        /** @description Verify TLS certificates of registry from where images are pulled from during the build */
-        base_registry_verify_tls: boolean;
-        /** @description Registry user to be used for pulling images from registry */
-        output_registry_user: string;
-        /** @description Registry password or token to be used for pulling images from destination registry */
-        output_registry_password: string;
-        /** @description Verify TLS certificates of registry from where images are pulled to during the build */
-        output_registry_verify_tls: boolean;
-        /** @description Name of the Python Package */
-        name: string;
-        /** @description Version of the Python Package */
-        version: string;
-        /** @description Index url of the Python Package */
-        index: string;
-        /** @description Name of operating system to consider as environment where package is installed in */
-        os_name_required: string;
-        /** @description Version of operating system to consider as environment where package is installed in */
-        os_version_required: string;
-        /** @description Version of Python interpreter used to install the given package */
-        python_version_required: string;
-        /** @description Consider marker evaluation result for the given environment. If set to None, marker evaluation result is not taken into account */
-        marker_evaluation_result: boolean | null;
-        /** @description Names of the Python Packages (name, version, index) for the given import package name */
-        import_name: string;
+        source_type?: components["parameters"]["source_type"];
+        /** Consider or do not consider development dependencies when resolving stacks */
+        dev?: components["parameters"]["dev"];
+        /** Run the given analyzer in a verbose mode so developers can debug it */
+        debug?: components["parameters"]["debug"];
+        /** Do not use cached results, always run the analysis */
+        force?: components["parameters"]["force"];
+        /** An API token for authenticated requests */
+        token?: components["parameters"]["token"];
+      };
     };
-    headers: {
-        /** Thoth User API version identifier */
-        "x-thoth-version"?: string;
-        /** Full Thoth User API version identifier used for debugging */
-        "x-user-api-service-version"?: string;
-        /** Thoth Search UI URL */
-        "x-thoth-search-ui-url"?: string;
-        /** Current page */
-        page?: number;
-        /** Page size */
-        per_page?: number;
-        /** Number of pages */
-        page_count?: number;
-        /** Total number of entries */
-        entries_count?: number;
-        /** Next page in pagination, if any */
-        next?: string | null;
-        /** Previous page in pagination, if any */
-        prev?: string | null;
+    responses: {
+      /** The adviser is scheduled */
+      202: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisWithAuthenticationResponse"];
+        };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** Unauthorized request */
+      401: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisUnauthorizedError"];
+        };
+      };
     };
-}
-
-export interface operations {
-    post_image_metadata: {
-        parameters: {
-            query: {
-                /** Name of an image - can also specify remote registry to pull image from */
-                image: components["parameters"]["image"];
-                /** Registry user to be used for pulling images from registry */
-                registry_user?: components["parameters"]["registry_user"];
-                /** Registry password or token to be used for pulling images from registry */
-                registry_password?: components["parameters"]["registry_password"];
-                /** Verify TLS certificates of registry from where images are pulled from */
-                verify_tls?: components["parameters"]["verify_tls"];
-            };
-        };
-        responses: {
-            /** Information about the given image */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["ImageMetadataResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** If the user or anonymous is not authorized to pull image */
-            403: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+    /** Specification of Python application stack with runtime specific information */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AdviseInput"];
+      };
     };
-    post_analyze: {
-        parameters: {
-            query: {
-                /** Name of an image - can also specify remote registry to pull image from */
-                image: components["parameters"]["image"];
-                /** Registry user to be used for pulling images from registry */
-                registry_user?: components["parameters"]["registry_user"];
-                /** Registry password or token to be used for pulling images from registry */
-                registry_password?: components["parameters"]["registry_password"];
-                /** Type of environment (runtime or buildtime) which is being analyzed */
-                environment_type?: components["parameters"]["environment_type"];
-                /** A remote where the image is being used */
-                origin?: components["parameters"]["origin"];
-                /** Run the given analyzer in a verbose mode so developers can debug it */
-                debug?: components["parameters"]["debug"];
-                /** Verify TLS certificates of registry from where images are pulled from */
-                verify_tls?: components["parameters"]["verify_tls"];
-                /** Do not use cached results, always run the analysis */
-                force?: components["parameters"]["force"];
-            };
-        };
-        responses: {
-            /** Successful response with an analyzer identifier */
-            202: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+  };
+  list_thoth_container_images: {
+    parameters: {
+      query: {
+        /** Page offset in pagination */
+        page?: components["parameters"]["page"];
+        /** Number of items returned per page */
+        per_page?: components["parameters"]["per_page"];
+        /** Name of the operating system to consider */
+        os_name?: components["parameters"]["os_name"];
+        /** Version of the operating system to consider */
+        os_version?: components["parameters"]["os_version"];
+        /** Version of Python interpreter provided */
+        python_version?: components["parameters"]["python_version"];
+        /** Filter based on CUDA version available */
+        cuda_version?: components["parameters"]["cuda_version"];
+        /** Filter based on the image name */
+        image_name?: components["parameters"]["image_name"];
+        /** Filter based on library name */
+        library_name?: components["parameters"]["library_name"];
+        /** Filter based on symbol */
+        symbol?: components["parameters"]["symbol"];
+        /** Filter based on Python package name */
+        package_name?: components["parameters"]["package_name"];
+        /** Filter based on RPM package name */
+        rpm_package_name?: components["parameters"]["rpm_package_name"];
+      };
     };
-    get_analyze: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
+    responses: {
+      /** A list of available Thoth container images */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["ContainerImagesResponse"];
         };
-        responses: {
-            /** Analyzer result retrieved */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResultResponse"];
-                };
-            };
-            /** Results are not ready yet */
-            202: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisStatusResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** The given document does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["ContainerImagesResponseError"];
         };
+      };
     };
-    get_analyze_by_hash: {
-        parameters: {
-            path: {
-                /** Image hash for identifying image (including hash type, now supported only "sha256") */
-                image_hash: components["parameters"]["image_hash"];
-            };
-        };
-        responses: {
-            /** Analyzer result retrieved */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResultResponse"];
-                };
-            };
-            /** Results are not ready yet */
-            202: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisStatusResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** The given document does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+  };
+  get_advise_python_log: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
     };
-    get_analyze_log: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
+    responses: {
+      /** An adviser log */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisLogResponse"];
         };
-        responses: {
-            /** A container image analysis log */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisLogResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** The given image analysis log does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
         };
+      };
+      /** The given adviser log does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
     };
-    get_analyze_status: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
-        };
-        responses: {
-            /** Status for the given container image analysis */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisStatusResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** No analysis with the given identifier found */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+  };
+  get_advise_python_status: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
     };
-    post_provenance_python: {
-        parameters: {
-            query: {
-                /** A repository where the application stack is used */
-                origin?: components["parameters"]["origin_py"];
-                /** Run the given analyzer in a verbose mode so developers can debug it */
-                debug?: components["parameters"]["debug"];
-                /** Do not use cached results, always run the analysis */
-                force?: components["parameters"]["force"];
-                /** An API token for authenticated requests */
-                token?: components["parameters"]["token"];
-            };
+    responses: {
+      /** An adviser status */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisStatusResponse"];
         };
-        responses: {
-            /** The provided files will be checked for provenance */
-            202: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisWithAuthenticationResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** Unauthorized request */
-            401: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisUnauthorizedError"];
-                };
-            };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
         };
-        /** Input to be checked for provenance */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ProvenanceInput"];
-            };
+      };
+      /** No analysis with the given identifier found */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
         };
+      };
     };
-    get_provenance_python: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
-        };
-        responses: {
-            /** Provenance report retrieved */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["ProvenanceResultResponse"];
-                };
-            };
-            /** Results are not ready yet */
-            202: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisStatusResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** The given document does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+  };
+  get_advise_python: {
+    parameters: {
+      path: {
+        /** An identifier of the requested analysis */
+        analysis_id: components["parameters"]["analysis_id"];
+      };
     };
-    get_provenance_python_log: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
+    responses: {
+      /** Computed pinned down stack for the given Python application */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AdviserResultResponse"];
         };
-        responses: {
-            /** A provenance check log */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisLogResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** The given image analysis log does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
+      };
+      /** Results are not ready yet */
+      202: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisStatusResponse"];
         };
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
+      /** The given advise does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["AnalysisResponseError"];
+        };
+      };
     };
-    get_provenance_python_status: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
-        };
-        responses: {
-            /** Status for the given provenance checker */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisStatusResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** No analysis with the given identifier found */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+  };
+  get_buildlog: {
+    parameters: {
+      path: {
+        /** Build log to be retrieved */
+        document_id: components["parameters"]["document_id"];
+      };
     };
-    list_python_package_indexes: {
-        responses: {
-            /** Listing of available Python package indexes */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageIndexes"];
-                };
-            };
-        };
+    responses: {
+      /** Relevant build log document */
+      200: unknown;
+      /** On an invalid request */
+      400: unknown;
+      /** The given build log does not exist */
+      404: unknown;
     };
-    post_advise_python: {
-        parameters: {
-            query: {
-                /** Recommendation type */
-                recommendation_type: components["parameters"]["recommendation_type"];
-                /** A repository where the application stack is used */
-                origin?: components["parameters"]["origin_py"];
-                /**
-                 * A flag marking what Thoth integration is requesting adviser:
-                 * * cli: Thamos CLI
-                 * * s2i: OpenShift's S2I (Source-to-Image) build
-                 * * kebechet: Kebechet Bot
-                 * * jupyter_notebook: Jupyter Notebook using jupyterlab-requirements
-                 */
-                source_type?: components["parameters"]["source_type"];
-                /** Consider or do not consider development dependencies when resolving stacks */
-                dev?: components["parameters"]["dev"];
-                /** Run the given analyzer in a verbose mode so developers can debug it */
-                debug?: components["parameters"]["debug"];
-                /** Do not use cached results, always run the analysis */
-                force?: components["parameters"]["force"];
-                /** An API token for authenticated requests */
-                token?: components["parameters"]["token"];
-            };
-        };
-        responses: {
-            /** The adviser is scheduled */
-            202: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisWithAuthenticationResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** Unauthorized request */
-            401: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisUnauthorizedError"];
-                };
-            };
-        };
-        /** Specification of Python application stack with runtime specific information */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AdviseInput"];
-            };
-        };
+  };
+  schedule_kebechet_webhook: {
+    responses: {
+      /** Accepted */
+      202: unknown;
+      /** Invalid */
+      400: unknown;
+      /** Functionality not supported */
+      501: unknown;
     };
-    list_thoth_container_images: {
-        parameters: {
-            query: {
-                /** Page offset in pagination */
-                page?: components["parameters"]["page"];
-                /** Number of items returned per page */
-                per_page?: components["parameters"]["per_page"];
-                /** Name of the operating system to consider */
-                os_name?: components["parameters"]["os_name"];
-                /** Version of the operating system to consider */
-                os_version?: components["parameters"]["os_version"];
-                /** Version of Python interpreter provided */
-                python_version?: components["parameters"]["python_version"];
-                /** Filter based on CUDA version available */
-                cuda_version?: components["parameters"]["cuda_version"];
-                /** Filter based on the image name */
-                image_name?: components["parameters"]["image_name"];
-                /** Filter based on library name */
-                library_name?: components["parameters"]["library_name"];
-                /** Filter based on symbol */
-                symbol?: components["parameters"]["symbol"];
-                /** Filter based on Python package name */
-                package_name?: components["parameters"]["package_name"];
-                /** Filter based on RPM package name */
-                rpm_package_name?: components["parameters"]["rpm_package_name"];
-            };
-        };
-        responses: {
-            /** A list of available Thoth container images */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["ContainerImagesResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["ContainerImagesResponseError"];
-                };
-            };
-        };
+    /** Body of a git service webhook */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KebechetWebhookInput"];
+      };
     };
-    get_advise_python_log: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
-        };
-        responses: {
-            /** An adviser log */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisLogResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** The given adviser log does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+  };
+  initialize_repo: {
+    responses: {
+      /** Repository initialization has been scheduled */
+      202: unknown;
+      /** Invalid */
+      400: unknown;
     };
-    get_advise_python_status: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
-        };
-        responses: {
-            /** An adviser status */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisStatusResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** No analysis with the given identifier found */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RepoInitInput"];
+      };
     };
-    get_advise_python: {
-        parameters: {
-            path: {
-                /** An identifier of the requested analysis */
-                analysis_id: components["parameters"]["analysis_id"];
-            };
-        };
-        responses: {
-            /** Computed pinned down stack for the given Python application */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AdviserResultResponse"];
-                };
-            };
-            /** Results are not ready yet */
-            202: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisStatusResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-            /** The given advise does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["AnalysisResponseError"];
-                };
-            };
-        };
+  };
+  post_build: {
+    parameters: {
+      query: {
+        /** Registry user to be used for pulling images from registry */
+        base_registry_user?: components["parameters"]["base_registry_user"];
+        /** Registry password or token to be used for pulling images from source registry */
+        base_registry_password?: components["parameters"]["base_registry_password"];
+        /** Verify TLS certificates of registry from where images are pulled from during the build */
+        base_registry_verify_tls?: components["parameters"]["base_registry_verify_tls"];
+        /** Registry user to be used for pulling images from registry */
+        output_registry_user?: components["parameters"]["output_registry_user"];
+        /** Registry password or token to be used for pulling images from destination registry */
+        output_registry_password?: components["parameters"]["output_registry_password"];
+        /** Verify TLS certificates of registry from where images are pulled to during the build */
+        output_registry_verify_tls?: components["parameters"]["output_registry_verify_tls"];
+        /** Type of environment (runtime or buildtime) which is being analyzed */
+        environment_type?: components["parameters"]["environment_type"];
+        /** A remote where the image is being used */
+        origin?: components["parameters"]["origin"];
+        /** Run the given analyzer in a verbose mode so developers can debug it */
+        debug?: components["parameters"]["debug"];
+        /** Do not use cached results, always run the analysis */
+        force?: components["parameters"]["force"];
+      };
     };
-    get_buildlog: {
-        parameters: {
-            path: {
-                /** Build log to be retrieved */
-                document_id: components["parameters"]["document_id"];
-            };
+    responses: {
+      /** Successful response with an analyzer identifier */
+      202: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["BuildAnalysisResponse"];
         };
-        responses: {
-            /** Relevant build log document */
-            200: unknown;
-            /** On an invalid request */
-            400: unknown;
-            /** The given build log does not exist */
-            404: unknown;
+      };
+      /** On an invalid request */
+      400: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["BuildAnalysisResponseError"];
         };
+      };
     };
-    schedule_kebechet_webhook: {
-        responses: {
-            /** Accepted */
-            202: unknown;
-            /** Invalid */
-            400: unknown;
-            /** Functionality not supported */
-            501: unknown;
-        };
-        /** Body of a git service webhook */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["KebechetWebhookInput"];
-            };
-        };
+    /** Fill up the build details such as output imagestream, base imagestream, and build log */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Build"];
+      };
     };
-    initialize_repo: {
-        responses: {
-            /** Repository initialization has been scheduled */
-            202: unknown;
-            /** Invalid */
-            400: unknown;
+  };
+  get_python_platform: {
+    responses: {
+      /** A list of platforms supported for the Python ecosystem */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPlatforms"];
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RepoInitInput"];
-            };
-        };
+      };
     };
-    post_build: {
-        parameters: {
-            query: {
-                /** Registry user to be used for pulling images from registry */
-                base_registry_user?: components["parameters"]["base_registry_user"];
-                /** Registry password or token to be used for pulling images from source registry */
-                base_registry_password?: components["parameters"]["base_registry_password"];
-                /** Verify TLS certificates of registry from where images are pulled from during the build */
-                base_registry_verify_tls?: components["parameters"]["base_registry_verify_tls"];
-                /** Registry user to be used for pulling images from registry */
-                output_registry_user?: components["parameters"]["output_registry_user"];
-                /** Registry password or token to be used for pulling images from destination registry */
-                output_registry_password?: components["parameters"]["output_registry_password"];
-                /** Verify TLS certificates of registry from where images are pulled to during the build */
-                output_registry_verify_tls?: components["parameters"]["output_registry_verify_tls"];
-                /** Type of environment (runtime or buildtime) which is being analyzed */
-                environment_type?: components["parameters"]["environment_type"];
-                /** A remote where the image is being used */
-                origin?: components["parameters"]["origin"];
-                /** Run the given analyzer in a verbose mode so developers can debug it */
-                debug?: components["parameters"]["debug"];
-                /** Do not use cached results, always run the analysis */
-                force?: components["parameters"]["force"];
-            };
+  };
+  list_python_environments: {
+    responses: {
+      /** Listing of available environments */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonEnvironments"];
         };
-        responses: {
-            /** Successful response with an analyzer identifier */
-            202: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["BuildAnalysisResponse"];
-                };
-            };
-            /** On an invalid request */
-            400: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["BuildAnalysisResponseError"];
-                };
-            };
-        };
-        /** Fill up the build details such as output imagestream, base imagestream, and build log */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Build"];
-            };
-        };
+      };
     };
-    get_python_platform: {
-        responses: {
-            /** A list of platforms supported for the Python ecosystem */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPlatforms"];
-                };
-            };
-        };
+  };
+  get_python_package_dependencies: {
+    parameters: {
+      query: {
+        /** Name of the Python Package */
+        name: components["parameters"]["name"];
+        /** Version of the Python Package */
+        version: components["parameters"]["version"];
+        /** Index url of the Python Package */
+        index: components["parameters"]["index"];
+        /** Name of the operating system to consider */
+        os_name?: components["parameters"]["os_name"];
+        /** Version of the operating system to consider */
+        os_version?: components["parameters"]["os_version"];
+        /** Version of Python interpreter provided */
+        python_version?: components["parameters"]["python_version"];
+        /** Consider marker evaluation result for the given environment. If set to None, marker evaluation result is not taken into account */
+        marker_evaluation_result?: components["parameters"]["marker_evaluation_result"];
+      };
     };
-    list_python_environments: {
-        responses: {
-            /** Listing of available environments */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonEnvironments"];
-                };
-            };
+    responses: {
+      /** Dependencies for the given Python package */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageDependencies"];
         };
+      };
+      /** The given record does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageDependenciesError"];
+        };
+      };
     };
-    get_python_package_dependencies: {
-        parameters: {
-            query: {
-                /** Name of the Python Package */
-                name: components["parameters"]["name"];
-                /** Version of the Python Package */
-                version: components["parameters"]["version"];
-                /** Index url of the Python Package */
-                index: components["parameters"]["index"];
-                /** Name of the operating system to consider */
-                os_name?: components["parameters"]["os_name"];
-                /** Version of the operating system to consider */
-                os_version?: components["parameters"]["os_version"];
-                /** Version of Python interpreter provided */
-                python_version?: components["parameters"]["python_version"];
-                /** Consider marker evaluation result for the given environment. If set to None, marker evaluation result is not taken into account */
-                marker_evaluation_result?: components["parameters"]["marker_evaluation_result"];
-            };
-        };
-        responses: {
-            /** Dependencies for the given Python package */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageDependencies"];
-                };
-            };
-            /** The given record does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageDependenciesError"];
-                };
-            };
-        };
+  };
+  list_python_packages: {
+    parameters: {
+      query: {
+        /** Page offset in pagination */
+        page?: components["parameters"]["page"];
+        /** Number of items returned per page */
+        per_page?: components["parameters"]["per_page"];
+        /** Name of the operating system to consider */
+        os_name?: components["parameters"]["os_name"];
+        /** Version of the operating system to consider */
+        os_version?: components["parameters"]["os_version"];
+        /** Version of Python interpreter provided */
+        python_version?: components["parameters"]["python_version"];
+        /** Filter Python package name by string. (wildcard characters "%" and "_" are supported) */
+        like?: components["parameters"]["starts_with"];
+      };
     };
-    list_python_packages: {
-        parameters: {
-            query: {
-                /** Page offset in pagination */
-                page?: components["parameters"]["page"];
-                /** Number of items returned per page */
-                per_page?: components["parameters"]["per_page"];
-                /** Name of the operating system to consider */
-                os_name?: components["parameters"]["os_name"];
-                /** Version of the operating system to consider */
-                os_version?: components["parameters"]["os_version"];
-                /** Version of Python interpreter provided */
-                python_version?: components["parameters"]["python_version"];
-                /** Filter Python package name by string. (wildcard characters "%" and "_" are supported) */
-                like?: components["parameters"]["starts_with"];
-            };
+    responses: {
+      /** Listing of available Python packages */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackagesResponse"];
         };
-        responses: {
-            /** Listing of available Python packages */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackagesResponse"];
-                };
-            };
-        };
+      };
     };
-    list_python_package_versions: {
-        parameters: {
-            query: {
-                /** Sort the response list */
-                order_by?: components["parameters"]["order_by"];
-                /** Name of the Python Package */
-                name: components["parameters"]["name"];
-                /** Name of the operating system to consider */
-                os_name?: components["parameters"]["os_name"];
-                /** Version of the operating system to consider */
-                os_version?: components["parameters"]["os_version"];
-                /** Version of Python interpreter provided */
-                python_version?: components["parameters"]["python_version"];
-            };
-        };
-        responses: {
-            /** Listing of available Python versions */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageVersionsResponse"];
-                };
-            };
-            /** The given record does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageVersionsResponseError"];
-                };
-            };
-        };
+  };
+  list_python_package_versions: {
+    parameters: {
+      query: {
+        /** Sort the response list */
+        order_by?: components["parameters"]["order_by"];
+        /** Name of the Python Package */
+        name: components["parameters"]["name"];
+        /** Name of the operating system to consider */
+        os_name?: components["parameters"]["os_name"];
+        /** Version of the operating system to consider */
+        os_version?: components["parameters"]["os_version"];
+        /** Version of Python interpreter provided */
+        python_version?: components["parameters"]["python_version"];
+      };
     };
-    list_python_package_version_environments: {
-        parameters: {
-            query: {
-                /** Name of the Python Package */
-                name: components["parameters"]["name"];
-                /** Version of the Python Package */
-                version: components["parameters"]["version"];
-                /** Index url of the Python Package */
-                index: components["parameters"]["index"];
-            };
+    responses: {
+      /** Listing of available Python versions */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageVersionsResponse"];
         };
-        responses: {
-            /** Listing of environments used to solve the given Python package */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageVersionEnvironmentsResponse"];
-                };
-            };
+      };
+      /** The given record does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageVersionsResponseError"];
         };
+      };
     };
-    get_python_package_version_metadata: {
-        parameters: {
-            query: {
-                /** Name of the Python Package */
-                name: components["parameters"]["name"];
-                /** Version of the Python Package */
-                version: components["parameters"]["version"];
-                /** Index url of the Python Package */
-                index: components["parameters"]["index"];
-                /** Name of operating system to consider as environment where package is installed in */
-                os_name: components["parameters"]["os_name_required"];
-                /** Version of operating system to consider as environment where package is installed in */
-                os_version: components["parameters"]["os_version_required"];
-                /** Version of Python interpreter used to install the given package */
-                python_version: components["parameters"]["python_version_required"];
-            };
-        };
-        responses: {
-            /** Metadata information for the given Python package version */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageVersionMetadataResponse"];
-                };
-            };
-            /** No record found */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageVersionMetadataResponseError"];
-                };
-            };
-        };
+  };
+  list_python_package_version_environments: {
+    parameters: {
+      query: {
+        /** Name of the Python Package */
+        name: components["parameters"]["name"];
+        /** Version of the Python Package */
+        version: components["parameters"]["version"];
+        /** Index url of the Python Package */
+        index: components["parameters"]["index"];
+      };
     };
-    get_package_from_imported_packages: {
-        parameters: {
-            query: {
-                /** Names of the Python Packages (name, version, index) for the given import package name */
-                import_name: components["parameters"]["import_name"];
-            };
+    responses: {
+      /** Listing of environments used to solve the given Python package */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageVersionEnvironmentsResponse"];
         };
-        responses: {
-            /** Listing of available Python package names */
-            200: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageNameImportResponse"];
-                };
-            };
-            /** The given record does not exist */
-            404: {
-                headers: {};
-                content: {
-                    "application/json": components["schemas"]["PythonPackageNameResponseError"];
-                };
-            };
-        };
+      };
     };
+  };
+  get_python_package_version_metadata: {
+    parameters: {
+      query: {
+        /** Name of the Python Package */
+        name: components["parameters"]["name"];
+        /** Version of the Python Package */
+        version: components["parameters"]["version"];
+        /** Index url of the Python Package */
+        index: components["parameters"]["index"];
+        /** Name of operating system to consider as environment where package is installed in */
+        os_name: components["parameters"]["os_name_required"];
+        /** Version of operating system to consider as environment where package is installed in */
+        os_version: components["parameters"]["os_version_required"];
+        /** Version of Python interpreter used to install the given package */
+        python_version: components["parameters"]["python_version_required"];
+      };
+    };
+    responses: {
+      /** Metadata information for the given Python package version */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageVersionMetadataResponse"];
+        };
+      };
+      /** No record found */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageVersionMetadataResponseError"];
+        };
+      };
+    };
+  };
+  get_package_from_imported_packages: {
+    parameters: {
+      query: {
+        /** Names of the Python Packages (name, version, index) for the given import package name */
+        import_name: components["parameters"]["import_name"];
+      };
+    };
+    responses: {
+      /** Listing of available Python package names */
+      200: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageNameImportResponse"];
+        };
+      };
+      /** The given record does not exist */
+      404: {
+        headers: {};
+        content: {
+          "application/json": components["schemas"]["PythonPackageNameResponseError"];
+        };
+      };
+    };
+  };
 }
 
 export interface external {}

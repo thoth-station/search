@@ -13,36 +13,33 @@ let imageDocument: ImageDocumentRequestResponseSuccess;
 jest.mock("react-router-dom");
 
 beforeAll(() => {
-    imageDocument = generateImageDocument();
+  imageDocument = generateImageDocument();
 });
 
 beforeEach(() => {
-    // setup a DOM element as a render target
-    container = document.createElement("div");
-    document.body.appendChild(container);
+  // setup a DOM element as a render target
+  container = document.createElement("div");
+  document.body.appendChild(container);
 });
 
 afterEach(() => {
-    // cleanup on exiting
-    if (container) {
-        unmountComponentAtNode(container);
-        container.remove();
-    }
+  // cleanup on exiting
+  if (container) {
+    unmountComponentAtNode(container);
+    container.remove();
+  }
 });
 
 it("renders without any documents", async () => {
-    render_with_overlay(<ImageInfo />, container);
+  render_with_overlay(<ImageInfo />, container);
 
-    const exists = await findByTestId(container, "image-info-not-loaded");
-    expect(exists).toBeTruthy();
+  const exists = await findByTestId(container, "image-info-not-loaded");
+  expect(exists).toBeTruthy();
 });
 
 it("renders with only image document", async () => {
-    render_with_overlay(<ImageInfo imageDocument={imageDocument} />, container);
+  render_with_overlay(<ImageInfo imageDocument={imageDocument} />, container);
 
-    const arch = await findByText(
-        container,
-        imageDocument.result["skopeo-inspect"].Architecture,
-    );
-    expect(arch).toBeTruthy();
+  const arch = await findByText(container, imageDocument.result["skopeo-inspect"].Architecture);
+  expect(arch).toBeTruthy();
 });

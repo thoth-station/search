@@ -13,31 +13,31 @@ let imageDocument: ImageDocumentRequestResponseSuccess;
 jest.mock("react-router-dom");
 
 beforeAll(() => {
-    imageDocument = generateImageDocument();
+  imageDocument = generateImageDocument();
 });
 
 beforeEach(() => {
-    // setup a DOM element as a render target
-    container = document.createElement("div");
-    document.body.appendChild(container);
+  // setup a DOM element as a render target
+  container = document.createElement("div");
+  document.body.appendChild(container);
 });
 
 afterEach(() => {
-    // cleanup on exiting
-    unmountComponentAtNode(container);
-    container.remove();
+  // cleanup on exiting
+  unmountComponentAtNode(container);
+  container.remove();
 });
 
 it("renders without any documents", async () => {
-    render_with_overlay(<RPMInfo />, container);
+  render_with_overlay(<RPMInfo />, container);
 
-    const exists = await findByTestId(container, "rpm-info-not-loaded");
-    expect(exists).toBeTruthy();
+  const exists = await findByTestId(container, "rpm-info-not-loaded");
+  expect(exists).toBeTruthy();
 });
 
 it("renders with the document", async () => {
-    render_with_overlay(<RPMInfo imageDocument={imageDocument} />, container);
+  render_with_overlay(<RPMInfo imageDocument={imageDocument} />, container);
 
-    const exists = await findByTestId(container, "rpm-info-loaded");
-    expect(exists).toBeTruthy();
+  const exists = await findByTestId(container, "rpm-info-loaded");
+  expect(exists).toBeTruthy();
 });

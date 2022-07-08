@@ -14,68 +14,65 @@ const graph: Graph<Node<SimplePackageNodeValue>> = new Graph();
 jest.mock("react-router-dom");
 
 beforeAll(() => {
-    const app = graph.addVertex(
-        "*App",
-        {
-            id: "*App",
-            label: "App",
-            depth: -1,
-        },
-        Node,
+  const app = graph.addVertex(
+    "*App",
+    {
+      id: "*App",
+      label: "App",
+      depth: -1,
+    },
+    Node,
+  );
+  for (let i = 0; i < 10; i++) {
+    const node = graph.addVertex(
+      i.toString(),
+      {
+        label: `node-${i}`,
+        id: i.toString(),
+        depth: 0,
+        versions: [`v${i}`],
+        specifier: `==v${i}`,
+        extra: undefined,
+      },
+      Node,
     );
-    for (let i = 0; i < 10; i++) {
-        const node = graph.addVertex(
-            i.toString(),
-            {
-                label: `node-${i}`,
-                id: i.toString(),
-                depth: 0,
-                versions: [`v${i}`],
-                specifier: `==v${i}`,
-                extra: undefined,
-            },
-            Node,
-        );
 
-        graph.addEdge(app.key, node.key);
-    }
+    graph.addEdge(app.key, node.key);
+  }
 });
 
 beforeEach(() => {
-    // setup a DOM element as a render target
-    container = document.createElement("div");
-    document.body.appendChild(container);
+  // setup a DOM element as a render target
+  container = document.createElement("div");
+  document.body.appendChild(container);
 });
 
 afterEach(() => {
-    // cleanup on exiting
-    unmountComponentAtNode(container);
-    container.remove();
+  // cleanup on exiting
+  unmountComponentAtNode(container);
+  container.remove();
 });
 
 it("renders without a graph", async () => {
-    render_with_overlay(<PackageDependencies />, container);
+  render_with_overlay(<PackageDependencies />, container);
 
-    const exists = await findByTestId(
-        container,
-        "package-dependencies-not-loaded",
-    );
-    expect(exists).toBeTruthy();
+  const exists = await findByTestId(container, "package-dependencies-not-loaded");
+  expect(exists).toBeTruthy();
 });
 
 it("renders with a graph", async () => {
-    render_with_overlay(<PackageDependencies graph={graph} />, container);
+  render_with_overlay(<PackageDependencies graph={graph} />, container);
 
-    const exists = await findByTestId(container, "package-dependencies-loaded");
-    expect(exists).toBeTruthy();
+  const exists = await findByTestId(container, "package-dependencies-loaded");
+  expect(exists).toBeTruthy();
 });
 
 it("renders correct packages", async () => {
-    render_with_overlay(<PackageDependencies graph={graph} />, container);
+  render_with_overlay(<PackageDependencies graph={graph} />, container);
 
-    const node_0 = await findByText(container, "node-0");
-    expect(node_0).toBeTruthy();
+  const node_0 = await findByText(container, "node-0");
+  expect(node_0).toBeTruthy();
 
-    const node_9 = await findByText(container, "node-9");
-    expect(node_9).toBeTruthy();
+  const node_9 = await findByText(container, "node-9");
+  expect(node_9).toBeTruthy();
 });
