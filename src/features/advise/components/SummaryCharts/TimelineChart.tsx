@@ -1,11 +1,10 @@
-import React  from "react";
+import React from "react";
 
 import { FlexibleWidthXYPlot, MarkSeries, XAxis } from "react-vis";
 
-
 interface ITimeline {
-  source?: [string, string|undefined][]
-  selected?: string
+  source?: [string, string | undefined][];
+  selected?: string;
 }
 
 export const TimelineChart = ({ source, selected }: ITimeline) => {
@@ -13,15 +12,14 @@ export const TimelineChart = ({ source, selected }: ITimeline) => {
     if (source) {
       return source.map(([id, timestamp]) => {
         return {
-          x: (Date.now() - new Date(timestamp ?? Date.now()).getTime()) / 3.154e+10,
+          x: (Date.now() - new Date(timestamp ?? Date.now()).getTime()) / 3.154e10,
           y: 0,
-          opacity: .5,
-          id: id
+          opacity: 0.5,
+          id: id,
         };
       });
     }
   }, [source]);
-
 
   return (
     <div>
@@ -30,23 +28,22 @@ export const TimelineChart = ({ source, selected }: ITimeline) => {
           style={{
             ticks: { stroke: "#000000" },
             line: { stroke: "#000000", transform: "translateY(-44px)" },
-            text: { stroke: "none", transform: "translateY(-20px)"},
+            text: { stroke: "none", transform: "translateY(-20px)" },
           }}
         />
         <MarkSeries
           colorType="literal"
           data={data}
           getOpacity={point => {
-            if(selected === point.id) {
-              return 1
-            }
-            else {
-              return .5
+            if (selected === point.id) {
+              return 1;
+            } else {
+              return 0.5;
             }
           }}
           getColor={point => {
-            if(selected === point.id) {
-              return "#000000"
+            if (selected === point.id) {
+              return "#000000";
             }
           }}
         />

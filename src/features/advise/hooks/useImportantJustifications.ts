@@ -100,39 +100,45 @@ const findPackagesWithWarnings = (justifications: components["schemas"]["Justifi
 };
 
 const findUnmaintainedPackages = (justifications: components["schemas"]["Justification"]) => {
-  const pkgs = new Map<string, {
-    not_maintained?: boolean
-    last_release?: string
-    low_maintainers?: boolean
-  }>();
-  const visited = new Set()
+  const pkgs = new Map<
+    string,
+    {
+      not_maintained?: boolean;
+      last_release?: string;
+      low_maintainers?: boolean;
+    }
+  >();
+  const visited = new Set();
   justifications.forEach(just => {
     const package_name = (just as { package_name?: string }).package_name;
-    if(package_name) {
-      visited.add(package_name)
+    if (package_name) {
+      visited.add(package_name);
     }
 
     if (package_name && just.message.includes("actively maintained") && just.type === "WARNING") {
-        pkgs.set(package_name, {...pkgs.get(package_name), not_maintained: true})
+      pkgs.set(package_name, { ...pkgs.get(package_name), not_maintained: true });
     }
 
     if (package_name && just.message.includes("has no recent release")) {
-      const date = just.message.split("dates back to ").at(-1)
-        pkgs.set(package_name, {...pkgs.get(package_name), last_release: date})
+      const date = just.message.split("dates back to ").at(-1);
+      pkgs.set(package_name, { ...pkgs.get(package_name), last_release: date });
     }
 
     if (package_name && just.message.includes("has no recent release")) {
-      pkgs.set(package_name, {...pkgs.get(package_name), low_maintainers: true})
+      pkgs.set(package_name, { ...pkgs.get(package_name), low_maintainers: true });
     }
   });
 
   return {
     total: visited.size,
-    packages: Array.from(pkgs.entries()).map(([k,v]) => ({
+    packages: Array.from(pkgs.entries())
+      .map(([k, v]) => ({
         ...v,
-        id: k
-      })
-    ).sort((a,b) => new Date(b.last_release ?? Date.now()).getTime() - new Date(a.last_release ?? Date.now()).getTime())
+        id: k,
+      }))
+      .sort(
+        (a, b) => new Date(b.last_release ?? Date.now()).getTime() - new Date(a.last_release ?? Date.now()).getTime(),
+      ),
   };
 };
 
@@ -152,7 +158,7 @@ export const useImportantJustifications = (adviseDocument?: AdviseDocumentReques
     };
     unmaintainedPackages?: {
       total: number;
-      packages: {id: string, not_maintained?: boolean, last_release?: string, low_maintainers?: boolean}[]
+      packages: { id: string; not_maintained?: boolean; last_release?: string; low_maintainers?: boolean }[];
     };
   }>();
 
@@ -175,7 +181,7 @@ export const useImportantJustifications = (adviseDocument?: AdviseDocumentReques
         setResult({
           cvePackages: cvePackages,
           warningPackages: warningPackages,
-          unmaintainedPackages: unmaintainedPackages
+          unmaintainedPackages: unmaintainedPackages,
         });
       }
     }

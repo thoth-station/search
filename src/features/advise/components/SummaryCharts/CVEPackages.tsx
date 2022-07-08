@@ -158,7 +158,10 @@ export const CVEPackages = ({ cvePackages }: ICVEPackages) => {
                 {Array.from(cvePackages.entries()).map(([cve, value]) => (
                   <ListItem disablePadding dense key={cve}>
                     <ListItemButton onClick={() => setSelectedCVE(value.report ?? null)}>
-                      <ListItemText primary={cve} secondary={value.packages.map(pkg => `${pkg.name} ${pkg.version}`).join(", ")} />
+                      <ListItemText
+                        primary={cve}
+                        secondary={value.packages.map(pkg => `${pkg.name} ${pkg.version}`).join(", ")}
+                      />
                       <ListItemIcon>
                         <NavigateNextRoundedIcon />
                       </ListItemIcon>

@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 import { AdviseHeader } from "../components";
 import { AdviseDocumentRequestResponseSuccess } from "../api";
 import { useImportantJustifications } from "../hooks/useImportantJustifications";
@@ -13,7 +13,7 @@ import { Masonry } from "@mui/lab";
 
 interface IAdviseSummary {
   adviseDocument?: AdviseDocumentRequestResponseSuccess;
-  graph?: Graph<Node<PackageNodeValue>>,
+  graph?: Graph<Node<PackageNodeValue>>;
   lastLog?: { [key: string]: string };
 }
 
