@@ -1,4 +1,14 @@
 
+## Release 0.7.0 (2022-07-27T19:32:47)
+* 00e8410 fixed summary bugs
+* 66b95bd prettier
+* 0fe1fad added maintain summary
+* 5288c9d license summary
+* d433878 added cve metric and changed indent
+* 1ae1054 added Package Warning metric
+* e1fa1b5 runs formatted after pulling schema
+* 3751d8e fixed test case
+
 ## Release 0.6.0 (2022-06-08T01:01:43)
 * bb915a8 fixed test case
 * 1f37ac9 correct api calls after update
