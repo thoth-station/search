@@ -32,6 +32,18 @@ export const AdviseDetails = ({ graph }: IAdviseDetails) => {
   }, [params.pkg]);
 
   if (!graph) {
+    if (!state?.loading?.["graph"]) {
+      return (
+        <Box height="100vh" flexDirection="column" display="flex" justifyContent="center" alignItems="center">
+          <Typography variant="h5" align="center">
+            Package data not available
+          </Typography>
+          <Typography variant="body2" align="center">
+            The advise run encountered an error.
+          </Typography>
+        </Box>
+      );
+    }
     return (
       <Loading
         type="circular"

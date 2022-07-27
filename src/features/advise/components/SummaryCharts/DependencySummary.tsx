@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Grid, Skeleton, Stack, Typography } from "@mui/material";
+import { Card, CardContent, CardHeader, Grid, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { DependencyMetricType } from "../../../../hooks/metrics";
 import { PieChart } from "./PieChart";
@@ -10,13 +10,7 @@ interface IDependencySummary {
 export const DependencySummary = ({ dependencies }: IDependencySummary) => {
   const [hovered, setHovered] = useState<{ label: string } | undefined>();
   if (!dependencies) {
-    return (
-      <>
-        <Skeleton variant="text" />
-        <Skeleton variant="text" />
-        <Skeleton variant="rectangular" height={118} />
-      </>
-    );
+    return null;
   }
   return (
     <Card variant="outlined">

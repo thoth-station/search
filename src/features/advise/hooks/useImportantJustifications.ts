@@ -76,7 +76,7 @@ const findCVEPackages = async (justifications: components["schemas"]["Justificat
     }),
   );
 
-  return cves;
+  return { data: cves };
 };
 
 const findPackagesWithWarnings = (justifications: components["schemas"]["Justification"]) => {
@@ -93,9 +93,11 @@ const findPackagesWithWarnings = (justifications: components["schemas"]["Justifi
   const top_bucket = sorted_array.at(-1)?.[1] ?? 0;
 
   return {
-    values: sorted_array,
-    top_packages: sorted_array.filter(([, count]) => count === top_bucket),
-    avg: sorted_array.reduce((prev, [, cur]) => prev + cur, 0) / sorted_array.length,
+    data: {
+      values: sorted_array,
+      top_packages: sorted_array.filter(([, count]) => count === top_bucket),
+      avg: sorted_array.reduce((prev, [, cur]) => prev + cur, 0) / sorted_array.length,
+    },
   };
 };
 
@@ -124,41 +126,49 @@ const findUnmaintainedPackages = (justifications: components["schemas"]["Justifi
       pkgs.set(package_name, { ...pkgs.get(package_name), last_release: date });
     }
 
-    if (package_name && just.message.includes("has no recent release")) {
+    if (package_name && just.message.includes("low number of maintainers")) {
       pkgs.set(package_name, { ...pkgs.get(package_name), low_maintainers: true });
     }
   });
 
   return {
-    total: visited.size,
-    packages: Array.from(pkgs.entries())
-      .map(([k, v]) => ({
-        ...v,
-        id: k,
-      }))
-      .sort(
-        (a, b) => new Date(b.last_release ?? Date.now()).getTime() - new Date(a.last_release ?? Date.now()).getTime(),
-      ),
+    data: {
+      total: visited.size,
+      packages: Array.from(pkgs.entries())
+        .map(([k, v]) => ({
+          ...v,
+          id: k,
+        }))
+        .sort(
+          (a, b) => new Date(b.last_release ?? Date.now()).getTime() - new Date(a.last_release ?? Date.now()).getTime(),
+        ),
+    },
   };
 };
 
 export const useImportantJustifications = (adviseDocument?: AdviseDocumentRequestResponseSuccess) => {
   const [result, setResult] = useState<{
-    cvePackages?: Map<
-      string,
-      {
-        packages: { name: string; version: string; index: string }[];
-        report?: OpenSourceVulnerabilityFormat;
-      }
-    >;
+    cvePackages?: {
+      data?: Map<
+        string,
+        {
+          packages: { name: string; version: string; index: string }[];
+          report?: OpenSourceVulnerabilityFormat;
+        }
+      >;
+    };
     warningPackages?: {
-      values: [string, number][];
-      top_packages: [string, number][];
-      avg: number;
+      data?: {
+        values: [string, number][];
+        top_packages: [string, number][];
+        avg: number;
+      };
     };
     unmaintainedPackages?: {
-      total: number;
-      packages: { id: string; not_maintained?: boolean; last_release?: string; low_maintainers?: boolean }[];
+      data?: {
+        total: number;
+        packages: { id: string; not_maintained?: boolean; last_release?: string; low_maintainers?: boolean }[];
+      };
     };
   }>();
 
@@ -172,7 +182,16 @@ export const useImportantJustifications = (adviseDocument?: AdviseDocumentReques
 
     async function load() {
       if (adviseDocument) {
-        const justifications = adviseDocument?.result.report?.products?.[0].justification ?? [];
+        const justifications = adviseDocument?.result.report?.products?.[0].justification;
+
+        if (!justifications) {
+          setResult({
+            cvePackages: {},
+            warningPackages: {},
+            unmaintainedPackages: {},
+          });
+          return;
+        }
 
         const cvePackages = await findCVEPackages(justifications);
         const warningPackages = findPackagesWithWarnings(justifications);

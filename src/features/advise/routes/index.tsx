@@ -10,7 +10,7 @@ import { AdviseCompare } from "./AdviseCompare";
 import { useAdviseDocument, useAdviseLogs } from "../api";
 import { formatLockfile } from "utils/formatLockfile";
 import { useMetrics } from "../hooks";
-import { Requirements, useGraph } from "hooks";
+import { useGraph } from "hooks";
 
 // misc
 import { AdviseNotFound } from "./AdviseNotFound";
@@ -72,13 +72,16 @@ export const AdviseRoutes = () => {
     }
   }, [adviseDocument]);
 
+  // (
+  //   (adviseDocument?.data?.data?.result?.report?.products?.[0]?.project as components["schemas"]["ProjectDef"])
+  //     ?.requirements as Requirements
+  // )?.packages,
+
   const graph = useGraph(
     graphData,
-    (
-      (adviseDocument?.data?.data?.result?.report?.products?.[0]?.project as components["schemas"]["ProjectDef"])
-        ?.requirements as Requirements
-    )?.packages,
+    undefined,
     adviseDocument?.data?.data?.result?.report?.products?.[0]?.justification,
+    adviseDocument?.data?.data,
   );
 
   // compute metric data

@@ -47,7 +47,7 @@ export const AdviseHeader = ({ adviseDocument, lastLog }: IAdviseHeader) => {
   }, [adviseDocument]);
 
   return (
-    <>
+    <div>
       <Paper variant="outlined" sx={{ padding: 2 }}>
         <Typography variant="h5" mb={1}>
           <b>
@@ -88,6 +88,6 @@ export const AdviseHeader = ({ adviseDocument, lastLog }: IAdviseHeader) => {
           />
         ) : undefined}
       </>
-    </>
+    </div>
   );
 };

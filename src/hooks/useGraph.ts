@@ -28,6 +28,7 @@ export function useGraph(
   data: operations["get_python_package_version_metadata"]["parameters"]["query"][] = [],
   knownRoots?: Requirements["packages"],
   justifications?: components["schemas"]["Justification"],
+  advise_document?: components["schemas"]["AdviserResultResponse"],
 ) {
   const { updateLoading } = useContext(DispatchContext);
   const allMetadata = usePackagesMetadata(data);
@@ -91,7 +92,10 @@ export function useGraph(
           name: metadata.package_name,
           version: metadata.package_version,
           metadata: metadata.importlib_metadata.metadata as PackageMetadata,
-          size: metadata.importlib_metadata.files.reduce((prev, cur) => prev + (cur as { size: number })?.size, 0),
+          install_size: metadata.importlib_metadata.files.reduce(
+            (prev, cur) => prev + (cur as { size: number })?.size,
+            0,
+          ),
         };
 
         // add package to graph
@@ -99,29 +103,23 @@ export function useGraph(
       }
     });
 
-    // set edges
-    allMetadata.forEach(query => {
-      if (query.status === "error" || !query.data?.data) {
-        return;
-      }
+    const dependency_graph = advise_document?.["result"]?.["report"]?.["products"]?.[0]?.dependency_graph;
+    if (dependency_graph) {
+      dependency_graph.edges.forEach(([source, destination]) => {
+        const cleaned_source = dependency_graph.nodes[source]?.toLowerCase().replace(".", "-");
+        const cleaned_destination = dependency_graph.nodes[destination]?.toLowerCase().replace(".", "-");
 
-      const currentNode = tempGraph.nodes.get(query.data.data.metadata.package_name.toLowerCase());
+        const sourceNode = tempGraph.nodes.get(cleaned_source);
+        const destinationNode = tempGraph.nodes.get(cleaned_destination);
+        if (sourceNode && destinationNode) {
+          tempGraph.addEdge(sourceNode.value.id, destinationNode.value.id);
 
-      if (currentNode) {
-        Object.keys(query.data.data.metadata.dependencies).forEach(dep => {
-          const adjacentNode = tempGraph.nodes.get(dep);
-
-          // if package exists in lockfile
-          if (adjacentNode) {
-            // add edge connecting parent and dependency
-            tempGraph.addEdge(currentNode.value.id, adjacentNode.value.id);
-            // set parent
-            adjacentNode.parents.add(currentNode.value.id);
-            notRoot.push(adjacentNode.value.id);
-          }
-        });
-      }
-    });
+          // set parent
+          destinationNode.parents.add(sourceNode.value.id);
+          notRoot.push(destinationNode.value.id);
+        }
+      });
+    }
 
     // add app node to graph
     const app = tempGraph.addVertex(
