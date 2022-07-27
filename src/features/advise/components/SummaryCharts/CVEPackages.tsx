@@ -22,20 +22,22 @@ import { OpenSourceVulnerabilityFormat } from "../../hooks/useImportantJustifica
 import { Link } from "react-router-dom";
 
 interface ICVEPackages {
-  cvePackages?: Map<
-    string,
-    {
-      packages: { name: string; version: string; index: string }[];
-      report?: OpenSourceVulnerabilityFormat;
-    }
-  >;
+  cvePackages?: {
+    data?: Map<
+      string,
+      {
+        packages: { name: string; version: string; index: string }[];
+        report?: OpenSourceVulnerabilityFormat;
+      }
+    >;
+  };
 }
 
 export const CVEPackages = ({ cvePackages }: ICVEPackages) => {
   const [selectedCVE, setSelectedCVE] = useState<OpenSourceVulnerabilityFormat | null>(null);
   const containerRef = React.useRef(null);
 
-  if (!cvePackages || cvePackages?.size === 0) {
+  if (!cvePackages) {
     return (
       <>
         <Skeleton variant="text" />
@@ -47,7 +49,10 @@ export const CVEPackages = ({ cvePackages }: ICVEPackages) => {
         <Skeleton variant="text" />
       </>
     );
+  } else if (!cvePackages.data) {
+    return null;
   }
+
   return (
     <Card variant="outlined" ref={containerRef}>
       <CardHeader
@@ -155,7 +160,7 @@ export const CVEPackages = ({ cvePackages }: ICVEPackages) => {
           <div>
             {selectedCVE === null ? (
               <List disablePadding dense>
-                {Array.from(cvePackages.entries()).map(([cve, value]) => (
+                {Array.from(cvePackages.data.entries()).map(([cve, value]) => (
                   <ListItem disablePadding dense key={cve}>
                     <ListItemButton onClick={() => setSelectedCVE(value.report ?? null)}>
                       <ListItemText

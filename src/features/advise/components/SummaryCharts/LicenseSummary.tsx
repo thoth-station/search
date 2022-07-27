@@ -10,12 +10,15 @@ interface ILicenseSummary {
 }
 
 export const LicenseSummary = ({ licenses }: ILicenseSummary) => {
-  const { warnings, errors, totalPkgErrors, totalPkgWarnings } = useMemo(() => {
+  const { warnings, errors, approved, totalPkgErrors, totalPkgWarnings, totalPkgApproved } = useMemo(() => {
     if (licenses) {
       let warnings = 0;
       let totalPkgWarnings = 0;
       let errors = 0;
       let totalPkgErrors = 0;
+      let approved = 0;
+      let totalPkgApproved = 0;
+
       Object.entries(licenses).forEach(([, value]) => {
         if (value.metadata.isOsiApproved === null) {
           totalPkgWarnings += Object.keys(value.packages).length;
@@ -23,6 +26,9 @@ export const LicenseSummary = ({ licenses }: ILicenseSummary) => {
         } else if (!value.metadata.isOsiApproved) {
           totalPkgErrors += Object.keys(value.packages).length;
           errors++;
+        } else {
+          totalPkgApproved += Object.keys(value.packages).length;
+          approved++;
         }
       });
       return {
@@ -30,6 +36,8 @@ export const LicenseSummary = ({ licenses }: ILicenseSummary) => {
         totalPkgWarnings: totalPkgWarnings,
         totalPkgErrors: totalPkgErrors,
         errors: errors,
+        approved: approved,
+        totalPkgApproved: totalPkgApproved,
       };
     }
 
@@ -38,10 +46,14 @@ export const LicenseSummary = ({ licenses }: ILicenseSummary) => {
       totalPkgWarnings: null,
       errors: null,
       totalPkgErrors: null,
+      approved: null,
+      totalPkgApproved: null,
     };
   }, [licenses]);
 
-  if (!licenses || warnings === null || errors === null) {
+  if (!licenses) {
+    return null;
+  } else if (warnings === null || errors === null) {
     return (
       <>
         <Skeleton variant="text" />
@@ -57,46 +69,60 @@ export const LicenseSummary = ({ licenses }: ILicenseSummary) => {
         subheader="Total number of licenses that are unknown or unapproved by OSI"
       />
       <CardContent>
-        {warnings > 0 ? (
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Grid item>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <WarningAmberOutlinedIcon color="warning" />
-                <Typography variant="h4">Unknown Approval</Typography>
-              </Stack>
-            </Grid>
-            <Grid item>
-              <Typography variant="h4">{warnings}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography
-                sx={{ marginLeft: 4.5 }}
-                variant="body1"
-                color="gray"
-              >{`${totalPkgWarnings} total packages`}</Typography>
-            </Grid>
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <DoneRoundedIcon color="success" />
+              <Typography variant="h4">Approved</Typography>
+            </Stack>
           </Grid>
-        ) : undefined}
-        {errors > 0 ? (
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Grid item>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <ErrorOutlineOutlinedIcon color="error" />
-                <Typography variant="h4">Unapproved</Typography>
-              </Stack>
-            </Grid>
-            <Grid item>
-              <Typography variant="h4">{errors}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography
-                sx={{ marginLeft: 4.5 }}
-                variant="body1"
-                color="gray"
-              >{`${totalPkgErrors} total packages`}</Typography>
-            </Grid>
+          <Grid item>
+            <Typography variant="h4">{approved}</Typography>
           </Grid>
-        ) : undefined}
+          <Grid item xs={12}>
+            <Typography
+              sx={{ marginLeft: 4.5 }}
+              variant="body1"
+              color="gray"
+            >{`${totalPkgApproved} total packages`}</Typography>
+          </Grid>
+        </Grid>
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <WarningAmberOutlinedIcon color="warning" />
+              <Typography variant="h4">Unknown Approval</Typography>
+            </Stack>
+          </Grid>
+          <Grid item>
+            <Typography variant="h4">{warnings}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography
+              sx={{ marginLeft: 4.5 }}
+              variant="body1"
+              color="gray"
+            >{`${totalPkgWarnings} total packages`}</Typography>
+          </Grid>
+        </Grid>
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <ErrorOutlineOutlinedIcon color="error" />
+              <Typography variant="h4">Unapproved</Typography>
+            </Stack>
+          </Grid>
+          <Grid item>
+            <Typography variant="h4">{errors}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography
+              sx={{ marginLeft: 4.5 }}
+              variant="body1"
+              color="gray"
+            >{`${totalPkgErrors} total packages`}</Typography>
+          </Grid>
+        </Grid>
         {errors === 0 && warnings === 0 ? (
           <Stack direction="row" alignItems="center" spacing={1}>
             <DoneRoundedIcon color="success" />

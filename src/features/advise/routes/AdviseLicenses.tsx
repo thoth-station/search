@@ -32,6 +32,18 @@ export function AdviseLicenses({ metric }: IAdviseLicenses) {
   const [selected, setSelected] = useState<string | undefined>();
 
   if (metric === null || Object.keys(metric).length === 0) {
+    if (!state?.loading?.["graph"]) {
+      return (
+        <Box height="100vh" flexDirection="column" display="flex" justifyContent="center" alignItems="center">
+          <Typography variant="h5" align="center">
+            License data not available
+          </Typography>
+          <Typography variant="body2" align="center">
+            The advise run encountered an error.
+          </Typography>
+        </Box>
+      );
+    }
     return (
       <Loading
         type="circular"
