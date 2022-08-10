@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 
 import {
   Box,
@@ -17,11 +17,13 @@ import {
   DialogActions,
   Button,
   Paper,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
-import { AdviseDocumentRequestResponseSuccess, useAdviseDocument } from "../api";
+import { AdviseDocumentRequestResponseSuccess, getAdviseDocument, useAdviseDocument } from "../api";
 import { LOCAL_STORAGE_KEY } from "config";
 import { components } from "lib/schema";
 
@@ -29,18 +31,84 @@ import { Requirements } from "../../../hooks";
 import { Variant } from "@mui/material/styles/createTypography";
 import { Lockfile } from "../../../utils/formatLockfile";
 import { ScrollToTop } from "../../../components/Elements/ScrollToTop";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface IAdviseCompare {
   adviseDocument?: AdviseDocumentRequestResponseSuccess;
 }
 
 export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
+  const params = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (params.cmp) {
+      setComparison(params.cmp);
+    }
+  }, [params.cmp]);
+
   const [comparison, setComparison] = React.useState(adviseDocument?.metadata?.document_id ?? "");
 
   const compareDoc = useAdviseDocument(comparison);
 
   const [open, setOpen] = React.useState(false);
-  const [importText, setImportText] = React.useState("");
+  const [differencesOnly, setDifferencesOnly] = React.useState(false);
+
+  const [importText, setImportText] = React.useState<string | null>("");
+
+  const [optionList, setOptionList] = useState<
+    ({
+      id: string;
+      readable: ReactElement;
+      timestamp: number;
+    } | null)[]
+  >([]);
+
+  useEffect(() => {
+    let active = true;
+    load();
+    return () => {
+      active = false;
+    };
+
+    async function load() {
+      setOptionList([]); // this is optional
+
+      const options = await Promise.all(
+        localHistory.map(item => {
+          // get detail of runs
+          return getAdviseDocument(item)
+            .then(doc => {
+              const env = (doc.data?.result?.parameters as { project: components["schemas"]["ProjectDef"] })?.project
+                ?.runtime_environment;
+
+              if (env) {
+                return {
+                  id: item,
+                  timestamp: doc.data?.metadata?.timestamp ?? 0,
+                  readable: (
+                    <Typography>
+                      <i>{new Date(doc.data?.metadata?.datetime).toLocaleString()}</i> : <b>{env?.name ?? "N/A"}</b>,{" "}
+                      {env?.operating_system?.name}-{env?.operating_system?.version} (Python {env?.python_version})
+                    </Typography>
+                  ),
+                };
+              } else {
+                return null;
+              }
+            })
+            .catch(() => {
+              return null;
+            });
+        }),
+      );
+
+      if (!active) {
+        return;
+      }
+      setOptionList(options);
+    }
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -52,29 +120,36 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
     }
   };
 
-  const handleImport = () => {
-    const ids = localStorage.getItem(LOCAL_STORAGE_KEY) ?? "";
+  const handleImport = async () => {
+    if (importText) {
+      await getAdviseDocument(importText)
+        .then(() => {
+          const ids = localStorage.getItem(LOCAL_STORAGE_KEY) ?? "";
 
-    const split = ids.split(",");
-    if (!split.includes(importText)) {
-      split.push(importText);
-      localStorage.setItem(LOCAL_STORAGE_KEY, split.join(","));
+          const split = ids.split(",");
+          if (!split.includes(importText)) {
+            split.push(importText);
+            localStorage.setItem(LOCAL_STORAGE_KEY, split.join(","));
+          }
+
+          setImportText("");
+          setOpen(false);
+          setComparison(importText);
+          navigate("../compare/" + importText);
+        })
+        .catch(() => {
+          setImportText(null);
+        });
     }
-
-    setImportText("");
-    setOpen(false);
   };
 
   const handleChange = (event: SelectChangeEvent) => {
     setComparison(event.target.value);
+    navigate("../compare/" + event.target.value);
   };
 
   const localHistory: string[] = useMemo(() => {
     const history: string[] = [];
-
-    if ((adviseDocument?.result?.parameters?.project as components["schemas"]["ProjectDef"])?.requirements_locked) {
-      history.push("Original Lockfile");
-    }
 
     const ids = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (ids) {
@@ -86,16 +161,16 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
 
   const COMPARE_COLORS = {
     old: {
-      text: "errorContainer.contrastText",
-      background: "errorContainer.main",
+      text: "#b31412",
+      background: "#fad2cf",
     },
     new: {
-      text: "successContainer.contrastText",
-      background: "successContainer.main",
+      text: "#217f70",
+      background: "#e3fbf7",
     },
     change: {
-      text: "warningContainer.contrastText",
-      background: "warningContainer.main",
+      text: "#b38012",
+      background: "#fae7cf",
     },
     equal: {
       text: undefined,
@@ -111,12 +186,14 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
     // compare if equal
     if (obj1_mapped && obj2_mapped) {
       if (obj1_mapped === obj2_mapped) {
-        return (
-          <React.Fragment key={label}>
-            {renderCompareLine(obj1_mapped as string, "equal", label)}
-            {renderCompareLine(obj2_mapped as string, "equal", label)}
-          </React.Fragment>
-        );
+        if (!differencesOnly) {
+          return (
+            <React.Fragment key={label}>
+              {renderCompareLine(obj1_mapped as string, "equal", label)}
+              {renderCompareLine(obj2_mapped as string, "equal", label)}
+            </React.Fragment>
+          );
+        }
       } else {
         return (
           <React.Fragment key={label}>
@@ -424,56 +501,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
 
     return (
       <>
-        {doubleRenderTypography("h5", "Metadata", { paddingTop: 0 })}
-        {metadataFields.map(field => {
-          return comparePaths(doc1?.metadata?.[field], doc2.metadata?.[field], field);
-        })}
-        {comparePaths(doc1?.result?.error_msg, doc2?.result?.error_msg, "error_msg")}
-
-        {doubleRenderTypography("h6", "Arguments")}
-        {argumentFields.map(field => {
-          return comparePaths(
-            (
-              doc1?.metadata?.arguments?.advise as {
-                [key: string]: any;
-              }
-            )?.[field],
-            (
-              doc2?.metadata?.arguments?.advise as {
-                [key: string]: any;
-              }
-            )?.[field],
-            field,
-          );
-        })}
-
-        {doubleRenderTypography("h6", "Distribution")}
-        {distributionFields.map(field => {
-          return comparePaths(doc1?.metadata?.distribution?.[field], doc2?.metadata?.distribution?.[field], field);
-        })}
-
-        {doubleRenderTypography("h6", "OS Release")}
-        {osReleaseFields.map(field => {
-          return comparePaths(
-            doc1?.metadata?.os_release?.[field],
-            doc2?.metadata?.os_release?.[field],
-            field as string,
-          );
-        })}
-
-        {doubleRenderTypography("h6", "Python")}
-        {comparePaths(doc1?.metadata?.python, doc2?.metadata?.python, "version", obj => {
-          return `${obj.major}.${obj.minor}.${obj.micro}`;
-        })}
-        {comparePaths(doc1?.metadata?.python?.api_version, doc2?.metadata?.python?.api_version, "api_version")}
-        {comparePaths(
-          doc1?.metadata?.python?.implementation_name,
-          doc2?.metadata?.python?.implementation_name,
-          "implementation_name",
-        )}
-        {comparePaths(doc1?.metadata?.python?.releaselevel, doc2?.metadata?.python?.releaselevel, "release level")}
-
-        {doubleRenderTypography("h5", "Result")}
+        {doubleRenderTypography("h5", "Result", { paddingTop: 0 })}
         {comparePaths(
           doc1?.result?.report?.accepted_final_states_count,
           doc2?.result?.report?.accepted_final_states_count,
@@ -521,6 +549,55 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
         {compareArrays(doc1?.result?.report?.stack_info, doc2?.result?.report?.stack_info, obj => {
           return obj.message;
         })}
+
+        {doubleRenderTypography("h5", "Metadata")}
+        {metadataFields.map(field => {
+          return comparePaths(doc1?.metadata?.[field], doc2.metadata?.[field], field);
+        })}
+        {comparePaths(doc1?.result?.error_msg, doc2?.result?.error_msg, "error_msg")}
+
+        {doubleRenderTypography("h6", "Arguments")}
+        {argumentFields.map(field => {
+          return comparePaths(
+            (
+              doc1?.metadata?.arguments?.advise as {
+                [key: string]: any;
+              }
+            )?.[field],
+            (
+              doc2?.metadata?.arguments?.advise as {
+                [key: string]: any;
+              }
+            )?.[field],
+            field,
+          );
+        })}
+
+        {doubleRenderTypography("h6", "Distribution")}
+        {distributionFields.map(field => {
+          return comparePaths(doc1?.metadata?.distribution?.[field], doc2?.metadata?.distribution?.[field], field);
+        })}
+
+        {doubleRenderTypography("h6", "OS Release")}
+        {osReleaseFields.map(field => {
+          return comparePaths(
+            doc1?.metadata?.os_release?.[field],
+            doc2?.metadata?.os_release?.[field],
+            field as string,
+          );
+        })}
+
+        {doubleRenderTypography("h6", "Python")}
+        {comparePaths(doc1?.metadata?.python, doc2?.metadata?.python, "version", obj => {
+          return `${obj.major}.${obj.minor}.${obj.micro}`;
+        })}
+        {comparePaths(doc1?.metadata?.python?.api_version, doc2?.metadata?.python?.api_version, "api_version")}
+        {comparePaths(
+          doc1?.metadata?.python?.implementation_name,
+          doc2?.metadata?.python?.implementation_name,
+          "implementation_name",
+        )}
+        {comparePaths(doc1?.metadata?.python?.releaselevel, doc2?.metadata?.python?.releaselevel, "release level")}
       </>
     );
   };
@@ -560,7 +637,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
         })}
       </>
     );
-  }, [adviseDocument, compareDoc.data?.data]);
+  }, [adviseDocument, compareDoc.data?.data, differencesOnly]);
 
   if (!adviseDocument) {
     return (
@@ -583,6 +660,7 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
           <DialogContent>
             <Box component="form" sx={{ display: "flex", flexWrap: "wrap" }}>
               <TextField
+                error={importText === null}
                 onChange={event => setImportText(event.target.value)}
                 label="Document ID"
                 variant="outlined"
@@ -642,19 +720,38 @@ export const AdviseCompare = ({ adviseDocument }: IAdviseCompare) => {
                     <MenuItem disabled value="">
                       <em>Select a comparison</em>
                     </MenuItem>
-                    {localHistory.map((item, i) => {
-                      return (
-                        <MenuItem key={item + i} value={item}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
+
+                    {(adviseDocument?.result?.parameters?.project as components["schemas"]["ProjectDef"])
+                      ?.requirements_locked && <MenuItem value="Original Lockfile">Original Lockfile</MenuItem>}
+
+                    {optionList
+                      .sort((a, b) => (b ? b.timestamp : 0) - (a ? a.timestamp : 0))
+                      .map(option => {
+                        if (option) {
+                          return (
+                            <MenuItem key={option.id} value={option.id}>
+                              {option.readable}
+                            </MenuItem>
+                          );
+                        }
+                      })}
                   </Select>
                 </FormControl>
                 <IconButton onClick={handleClickOpen}>
                   <AddRoundedIcon />
                 </IconButton>
               </Stack>
+              <FormControlLabel
+                sx={{ marginX: "10%", marginTop: 0.5 }}
+                control={
+                  <Switch
+                    defaultChecked
+                    checked={differencesOnly}
+                    onChange={event => setDifferencesOnly(event.target.checked)}
+                  />
+                }
+                label="Differences only"
+              />
             </Paper>
           </Grid>
           {compareJSX}
