@@ -167,6 +167,7 @@ export const AdviseRoutes = () => {
             <Route path="packages/:pkg" element={<AdviseDetails graph={graph} />} />
             <Route path="logs" element={<AdviseLogs logs={logs.data?.data?.log} />} />
             <Route path="compare" element={<AdviseCompare adviseDocument={adviseDocument?.data?.data} />} />
+            <Route path="compare/:cmp" element={<AdviseCompare adviseDocument={adviseDocument?.data?.data} />} />
             <Route
               path="stack-info"
               element={<AdviseStackInfo stack_info={adviseDocument.data?.data?.result?.report?.stack_info} />}
