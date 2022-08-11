@@ -1,4 +1,7 @@
 
+## Release 0.8.0 (2022-08-11T11:38:14)
+* 9a2f254 compare screen updates
+
 ## Release 0.7.0 (2022-07-27T19:32:47)
 * 00e8410 fixed summary bugs
 * 66b95bd prettier
