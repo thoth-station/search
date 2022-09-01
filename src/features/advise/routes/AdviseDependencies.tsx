@@ -9,23 +9,17 @@ import {
   Collapse,
   Divider,
   Grid,
-  Grow,
   List,
   ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  ListSubheader,
-  Slide,
   Stack,
   Typography,
 } from "@mui/material";
-import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import Loading from "components/Elements/Loading/Loading";
 import { StateContext } from "stores/Global";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-import DoneRoundedIcon from "@mui/icons-material/DoneRounded";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import { DependencyMetricType } from "hooks/metrics";
