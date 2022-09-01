@@ -17,22 +17,24 @@ import { PackageNodeValue } from "lib/interfaces/PackageNodeValue";
 
 interface INetworkGraph {
   graph: Graph<Node<PackageNodeValue>>;
+  root?: Node<PackageNodeValue>;
+  graphHeight?: string | number;
 }
 
 /**
  * Renders a network graph visualization using `vis-network`.
  */
-const NetworkGraph = ({ graph, ...props }: INetworkGraph) => {
+const NetworkGraph = ({ graph, graphHeight, root, ...props }: INetworkGraph) => {
   const visJsRef = useRef<HTMLDivElement>(null);
   const { selected } = useContext(SelectedPackageContext);
 
   // create the graph
   useEffect(() => {
-    if (!selected || !graph) {
+    if ((!selected && !root) || !graph) {
       return;
     }
 
-    const selectedNode = graph.nodes.get(selected);
+    const selectedNode = root ?? graph.nodes.get(selected);
 
     if (selectedNode) {
       const nodes = graph.findAllNodesOnAllPaths(selectedNode, "*App");
@@ -107,11 +109,11 @@ const NetworkGraph = ({ graph, ...props }: INetworkGraph) => {
         });
       }
     }
-  }, [selected, graph, visJsRef]);
+  }, [selected, root, graph, visJsRef]);
 
   return (
     <div {...props} style={{ display: "flex", flexFlow: "column nowrap" }}>
-      <div ref={visJsRef} id="mynetwork" style={{ flex: "1 1 auto", height: "50vh" }} />
+      <div ref={visJsRef} id="mynetwork" style={{ flex: "1 1 auto", height: graphHeight ?? "50vh" }} />
     </div>
   );
 };

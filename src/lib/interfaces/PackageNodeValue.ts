@@ -10,4 +10,5 @@ export interface PackageNodeValue extends NodeValue, NodeOptions {
   version?: string;
   metadata?: PackageMetadata | null;
   justifications?: components["schemas"]["Justification"];
+  install_size?: number;
 }
