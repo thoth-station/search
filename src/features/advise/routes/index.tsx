@@ -23,6 +23,7 @@ import { AdviseLogs } from "./AdviseLogs";
 import { AdviseStackInfo } from "./AdviseStackInfo";
 import { AdviseEnvironmentInfo } from "./AdviseEnvironmentInfo";
 import { AdviseLicenses } from "./AdviseLicenses";
+import { AdviseDependencies } from "./AdviseDependencies";
 
 type statusResponse = components["schemas"]["AnalysisStatusResponse"];
 
@@ -197,6 +198,10 @@ export const AdviseRoutes = () => {
               }
             />
             <Route path="licenses" element={<AdviseLicenses metric={metrics.licenses} />} />
+            <Route
+              path="dependency-tree"
+              element={<AdviseDependencies metric={metrics.dependencies} graph={graph} />}
+            />
             <Route path="*" element={<Navigate to="summary" />} />
           </Routes>
         )}

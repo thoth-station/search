@@ -270,7 +270,6 @@ export const AdviserLayout = ({ children, chipData }: IProps) => {
             hideOnClosed
           />
           <CustomListItem
-            disabled
             label="Dependency Tree"
             to="dependency-tree"
             icon={<CircleRoundedIcon />}
