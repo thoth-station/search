@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/search/static/js/main.cee4c4cd.chunk.js",
-    "main.js.map": "/search/static/js/main.cee4c4cd.chunk.js.map",
+    "main.js": "/search/static/js/main.51529999.chunk.js",
+    "main.js.map": "/search/static/js/main.51529999.chunk.js.map",
     "runtime-main.js": "/search/static/js/runtime-main.56726026.js",
     "runtime-main.js.map": "/search/static/js/runtime-main.56726026.js.map",
-    "static/js/2.438a63a6.chunk.js": "/search/static/js/2.438a63a6.chunk.js",
-    "static/js/2.438a63a6.chunk.js.map": "/search/static/js/2.438a63a6.chunk.js.map",
+    "static/js/2.b2896ca9.chunk.js": "/search/static/js/2.b2896ca9.chunk.js",
+    "static/js/2.b2896ca9.chunk.js.map": "/search/static/js/2.b2896ca9.chunk.js.map",
     "index.html": "/search/index.html",
-    "static/js/2.438a63a6.chunk.js.LICENSE.txt": "/search/static/js/2.438a63a6.chunk.js.LICENSE.txt",
+    "static/js/2.b2896ca9.chunk.js.LICENSE.txt": "/search/static/js/2.b2896ca9.chunk.js.LICENSE.txt",
     "static/media/footer-logo.7d0f9037.png": "/search/static/media/footer-logo.7d0f9037.png",
     "static/media/thoth-logo.1a28a729.png": "/search/static/media/thoth-logo.1a28a729.png"
   },
   "entrypoints": [
     "static/js/runtime-main.56726026.js",
-    "static/js/2.438a63a6.chunk.js",
-    "static/js/main.cee4c4cd.chunk.js"
+    "static/js/2.b2896ca9.chunk.js",
+    "static/js/main.51529999.chunk.js"
   ]
 }
