@@ -1,4 +1,7 @@
 
+## Release 0.9.0 (2022-09-02T14:20:07)
+* 9e29fdb added dependency tree (#104)
+
 ## Release 0.8.0 (2022-08-11T11:38:14)
 * 9a2f254 compare screen updates
 
