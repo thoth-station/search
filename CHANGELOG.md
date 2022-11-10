@@ -1,4 +1,7 @@
 
+## Release 0.9.1 (2022-11-10T18:19:42)
+* 636fd70 check for no unmaintained packages
+
 ## Release 0.9.0 (2022-09-02T14:20:07)
 * 9e29fdb added dependency tree (#104)
 
