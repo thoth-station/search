@@ -38,7 +38,7 @@ export const UnmaintainedPackages = ({ unmaintainedPackages }: IUnmaintainedPack
         <Skeleton variant="rectangular" width={210} height={118} />
       </>
     );
-  } else if (!unmaintainedPackages.data) {
+  } else if (!unmaintainedPackages.data || unmaintainedPackages.data?.packages?.length === 0) {
     return null;
   }
 
