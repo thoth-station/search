@@ -1,10 +1,10 @@
 import { Button, Collapse, Grid, Typography } from "@mui/material";
-import SearchBar from "components/Elements/SearchBar";
+import SearchBar from "components/molecules/SearchBar";
 import React, { useMemo, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { postImageAnalyze, useContainerImages } from "../api";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import GenericTable from "components/Elements/GenericTable/GenericTable";
+import GenericTable from "components/organisms/GenericTable/GenericTable";
 import timeSince from "utils/timeSince";
 
 interface ImageSearchState {
@@ -182,7 +182,7 @@ export const ImageSearch = () => {
           <Typography variant={"h6"} mt={3} mb={1} ml={2}>
             Available Thoth Container Images
           </Typography>
-          <GenericTable headers={headCells} rows={rows} action={tableRowAction} />
+          <GenericTable headers={headCells} rows={rows} onAction={tableRowAction} />
         </>
       </Collapse>
     </>

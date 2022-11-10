@@ -7,7 +7,7 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import GavelIcon from "@mui/icons-material/Gavel";
 
 // local
-import IconText from "components/Elements/IconText";
+import IconText from "components/molecules/IconText";
 
 // utils
 import { ParamDropdown } from "../ParamDropdown";

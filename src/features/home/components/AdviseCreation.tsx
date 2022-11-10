@@ -1,5 +1,5 @@
 import { Button, Collapse, Grid, Paper, TextField, Typography } from "@mui/material";
-import SearchBar from "components/Elements/SearchBar";
+import SearchBar from "components/molecules/SearchBar";
 import React, { useMemo, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -7,10 +7,10 @@ import { postAdvise } from "../api";
 import ComboBox from "./ComboBox/ComboBox";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { components } from "lib/schema";
-import GenericTable from "../../../components/Elements/GenericTable/GenericTable";
-import { useAdviseDocuments } from "../../advise/api";
+import GenericTable from "components/organisms/GenericTable";
 import { LOCAL_STORAGE_KEY } from "../../../config";
 import { calcTime } from "../../../utils/calcTime";
+import { useAdviseDocuments } from "api";
 
 interface IAdviseState {
   error: { [key: string]: string | undefined };
@@ -117,30 +117,25 @@ export const AdviseCreation = () => {
   const adviseHistory = useAdviseDocuments(localHistory);
 
   const rows = useMemo(() => {
-    if (adviseHistory) {
+    if (adviseHistory?.every(doc => !doc.query.isLoading)) {
       return adviseHistory.map(doc => {
         const status = () => {
-          if (doc.data?.data?.status) {
-            return doc.data?.data?.status.state;
-          } else if (doc.data?.data.result.report?.products) {
+          if (doc?.data?.status) {
+            return doc.data?.status.state;
+          } else if (doc?.data?.result.report?.products) {
             return "success";
           } else {
             return "error";
           }
         };
         return {
-          document_id: doc.data?.data?.metadata?.document_id,
-          name: doc.data?.data?.result?.report?.products?.[0].project.runtime_environment?.name,
-          os_name: doc.data?.data?.result?.report?.products?.[0].project.runtime_environment?.operating_system?.name,
-          os_version:
-            doc.data?.data?.result?.report?.products?.[0].project.runtime_environment?.operating_system?.version,
-          python_version: doc.data?.data?.result?.report?.products?.[0].project.runtime_environment?.python_version,
+          document_id: doc?.data?.metadata?.document_id,
+          name: doc?.data?.result?.report?.products?.[0].project.runtime_environment?.name,
+          os_name: doc?.data?.result?.report?.products?.[0].project.runtime_environment?.operating_system?.name,
+          os_version: doc?.data?.result?.report?.products?.[0].project.runtime_environment?.operating_system?.version,
+          python_version: doc?.data?.result?.report?.products?.[0].project.runtime_environment?.python_version,
           status: status(),
-          date: calcTime(
-            doc.data?.data?.status?.finished_at,
-            doc.data?.data?.status?.started_at,
-            doc.data?.data?.metadata?.datetime,
-          ),
+          date: calcTime(doc?.data?.status?.finished_at, doc?.data?.status?.started_at, doc?.data?.metadata?.datetime),
         };
       });
     } else {
@@ -341,7 +336,7 @@ export const AdviseCreation = () => {
           <Typography variant={"h6"} mt={3} mb={1} ml={2}>
             Local Thoth Advise History
           </Typography>
-          <GenericTable headers={headCells} rows={rows} action={tableRowAction} />
+          <GenericTable headers={headCells} rows={rows} onAction={tableRowAction} />
         </>
       </Collapse>
 

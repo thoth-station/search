@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from "@mui/material";
-import SearchBar from "components/Elements/SearchBar";
+import SearchBar from "components/molecules/SearchBar";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";

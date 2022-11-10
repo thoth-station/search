@@ -25,3 +25,6 @@ yarn-error.log*
 .tern-project
 .eslintcache
 /.idea
+
+/storybook-static
+build-storybook.log

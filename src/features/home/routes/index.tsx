@@ -8,11 +8,11 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 // local
-import TabPanel from "components/Elements/TabPanel";
+import TabPanel from "components/atoms/TabPanel";
 import logo from "assets/thoth-logo.png";
 
 import { PackageSearch, AdviseCreation, ImageSearch } from "../components";
-import { Footer } from "../../../components/Footer";
+import Footer from "components/organisms/Footer";
 
 export const Home = () => {
   // utility states
@@ -44,8 +44,8 @@ export const Home = () => {
         <Grid item xs={12} alignItems="left">
           <Typography variant="subtitle1">
             Thoth Search is a tool that runs analysis on a Python application. It utilizes package metadata and Thoth
-            Adviser to analyse and recommend a software stack. You can run analysis on an entire Python application
-            using a properly formatted Pipfile and Pipfile.lock. Alternatively, you can analyse a single Python package
+            Adviser to analyze and recommend a software stack. You can run analysis on an entire Python application
+            using a properly formatted Pipfile and Pipfile.lock. Alternatively, you can analyze a single Python package
             to see what Thoth knows about the package.
           </Typography>
         </Grid>
@@ -56,9 +56,6 @@ export const Home = () => {
             </ToggleButton>
             <ToggleButton value="environment">
               <b>environment</b>
-            </ToggleButton>
-            <ToggleButton value="image">
-              <b>image</b>
             </ToggleButton>
           </ToggleButtonGroup>
         </Grid>

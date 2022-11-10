@@ -1,99 +1,75 @@
 import * as React from "react";
 
-interface IGlobal {
-  children?: JSX.Element;
-}
-
 export interface GlobalState {
-  notifications?: string[];
-  loading?: {
+  loading: {
     [key: string]: {
-      isLoading: boolean;
-      total?: number;
-      value?: number;
       text?: string;
+      percent?: number;
+      key: string;
+      isLoading: boolean;
+      isError: boolean;
     };
   };
 }
 
-export interface GlobalAction {
+interface GlobalAction {
   type: string;
   payload: unknown;
 }
 
-type LoadingPayload = {
-  name: string;
-  isLoading: boolean;
-  total?: number;
-  value?: number;
-  text?: string;
-};
-
-export const StateContext = React.createContext<GlobalState | undefined>(undefined);
+interface IActionMap {
+  setLoading: (key: string, isLoading?: boolean, isError?: boolean, percent?: number, text?: string) => void;
+}
 
 function reducer(state: GlobalState, action: GlobalAction) {
   switch (action.type) {
     case "loading": {
-      const input = action.payload as LoadingPayload;
+      const payload = action.payload as {
+        key: string;
+        isLoading: boolean;
+        isError: boolean;
+        percent?: number;
+        text?: string;
+      };
       return {
         ...state,
         loading: {
           ...state.loading,
-          [input.name]: {
-            isLoading: input.isLoading,
-            total: input.total,
-            value: input.value,
-            text: input.text,
-          },
+          [payload.key]: { ...payload },
         },
       };
     }
+
     default:
       return state;
   }
 }
-interface IActionMap {
-  updateLoading: (name: string, text?: string, value?: number, total?: number) => void;
-}
 
-export const DispatchContext = React.createContext<IActionMap>({
-  updateLoading: () => undefined,
+export const StateContext = React.createContext<GlobalState>({
+  loading: {},
 });
 
-const initState: GlobalState = {};
+export const DispatchContext = React.createContext<IActionMap>({
+  setLoading: () => undefined,
+});
 
-export default function Global({ children }: IGlobal) {
+interface IGlobal {
+  children?: JSX.Element;
+  defaultState?: GlobalState;
+}
+
+export default function Global({ children, defaultState }: IGlobal) {
   // for state control
-  const [state, dispatch] = React.useReducer(reducer, initState);
+  const [state, dispatch] = React.useReducer(
+    reducer,
+    defaultState ?? {
+      loading: {},
+    },
+  );
 
   const actionMap: IActionMap = {
-    updateLoading: (name: string, text?: string, value?: number, total?: number) => {
-      if (state.loading?.[name]?.value === value) {
-        return;
-      }
-      if (!value || !total) {
-        dispatch({
-          type: "loading",
-          payload: {
-            name: name,
-            isLoading: false,
-            value: 0,
-            total: 1,
-            text: text,
-          },
-        });
-      } else {
-        dispatch({
-          type: "loading",
-          payload: {
-            name: name,
-            isLoading: true,
-            value: value ?? 0,
-            total: total ? total : 1,
-            text: text,
-          },
-        });
-      }
+    setLoading: (key: string, isLoading?: boolean, isError?: boolean, percent?: number, text?: string) => {
+      dispatch({ type: "loading", payload: { key, isLoading, isError, percent, text } });
     },
   };
 

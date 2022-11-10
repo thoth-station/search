@@ -1,13 +1,14 @@
 import * as React from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "lib/react-query";
 import { Button } from "@mui/material";
 import Theme from "styles/Theme";
-import Global from "stores/Global";
+import Global, { GlobalState } from "stores/Global";
 
 interface IAppProvider {
   children?: JSX.Element;
+  defaultState?: GlobalState;
 }
 
 const ErrorFallback = () => {
@@ -19,10 +20,10 @@ const ErrorFallback = () => {
   );
 };
 
-export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
+export const AppProvider: React.FC<IAppProvider> = ({ children, defaultState }) => {
   return (
     <Theme>
-      <Global>
+      <Global defaultState={defaultState}>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
         </ErrorBoundary>
