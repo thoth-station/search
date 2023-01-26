@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 
 // material-ui
-import InfoCard from "components/Elements/InfoCard";
+import InfoCard from "components/molecules/InfoCard";
 import { Box, Divider, Grid, Skeleton, Typography } from "@mui/material";
 import { VersionDropdown } from "./VersionDropdown";
 import { Graph } from "lib/interfaces/Graph";

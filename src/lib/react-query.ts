@@ -1,8 +1,8 @@
-import { QueryClient } from "react-query";
+import { QueryClient } from "@tanstack/react-query";
 
 const queryConfig = {
   queries: {
-    useErrorBoundary: true,
+    useErrorBoundary: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     retry: false,

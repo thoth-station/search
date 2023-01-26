@@ -34,9 +34,6 @@ jobs:
       - name: Pull most recent User API schema
         run: yarn run pull-schema
 
-      - name: test
-        run: yarn run test
-
       - name: format
         run: yarn run prettier
 

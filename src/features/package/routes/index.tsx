@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 
 import { PackageOverview } from "./PackageOverview";
 import { NotFound } from "routes/NotFound";
-import { NavigationLayout } from "components/Layout/NavigationLayout";
+import { NavigationLayout } from "components/templates";
 
 // The page that displays all analysis data
 export const PackageRoutes = () => {

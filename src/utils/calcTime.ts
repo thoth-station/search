@@ -21,7 +21,7 @@ export const calcTime = (finished_at?: string | null, started_at?: string | null
   }
   // if status is nulled so use metadata end date
   else if (datetime) {
-    return "Advise finished " + timeSince(new Date(datetime + "Z")) + " ago.";
+    return "Advise finished " + timeSince(new Date(datetime)) + " ago.";
   } else {
     return "Time started/finished not available";
   }

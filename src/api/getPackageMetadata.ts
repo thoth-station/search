@@ -1,8 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { THOTH_URL } from "config";
-import { useQueries, useQuery } from "react-query";
+import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { paths } from "lib/schema";
-import { UseQueryResult } from "react-query/types/react/types";
 
 type path = paths["/python/package/version/metadata"]["get"];
 type requestParams = path["parameters"]["query"];
@@ -59,11 +58,11 @@ export const usePackageMetadata = (
 };
 
 export const usePackagesMetadata = (
-  packages: requestParams[],
+  packages: requestParams[] = [],
   config?: { [key: string]: any },
 ): UseQueryResult<AxiosResponse<PackageMetadataRequestResponseSuccess>, AxiosError<requestResponseFailure>>[] => {
-  return useQueries(
-    packages.map(p => {
+  return useQueries({
+    queries: packages.map(p => {
       return {
         ...config,
         enabled: !!p.name && !!p.version && !!p.index && !!p.os_name && !!p.os_version && !!p.python_version,
@@ -71,5 +70,5 @@ export const usePackagesMetadata = (
         queryFn: () => getPackageMetadata(p.name, p.version, p.index, p.os_name, p.os_version, p.python_version),
       };
     }),
-  ) as UseQueryResult<AxiosResponse<PackageMetadataRequestResponseSuccess>, AxiosError<requestResponseFailure>>[];
+  }) as UseQueryResult<AxiosResponse<PackageMetadataRequestResponseSuccess>, AxiosError<requestResponseFailure>>[];
 };
