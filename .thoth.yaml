@@ -1,8 +1,6 @@
 host: khemenu.thoth-station.ninja
 
 managers:
-    configuration:
-      labels: [bot]
   - name: info
   - name: version
     configuration:
